@@ -4,8 +4,11 @@ import Button from '@material-ui/core/Button';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { useOpenToggle } from '../../lib/hooks/useOpenToggle';
 
@@ -56,9 +59,21 @@ const AuthDropdown = () => {
           ref={ref}
         >
           <ListItem button className={classes.button}>
+            <ListItemIcon style={{ minWidth: 0 }}>
+              <FontAwesomeIcon
+                icon={['fas', 'sign-in-alt']}
+                style={{ marginRight: '0.5rem' }}
+              />
+            </ListItemIcon>
             <ListItemText primary="Sign In" />
           </ListItem>
           <ListItem button className={classes.button}>
+            <ListItemIcon style={{ minWidth: 0 }}>
+              <FontAwesomeIcon
+                icon={['fas', 'user-plus']}
+                style={{ marginRight: '0.5rem' }}
+              />
+            </ListItemIcon>
             <ListItemText primary="Register" />
           </ListItem>
         </List>
