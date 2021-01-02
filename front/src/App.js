@@ -2,6 +2,7 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { Container } from '@material-ui/core';
 import pink from '@material-ui/core/colors/pink';
 import indigo from '@material-ui/core/colors/indigo';
+import grey from '@material-ui/core/colors/grey';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 
@@ -15,8 +16,9 @@ const theme = createMuiTheme({
       main: indigo[300],
     },
     secondary: {
-      main: pink[500],
+      main: pink[300],
     },
+    gray: grey,
   },
 });
 

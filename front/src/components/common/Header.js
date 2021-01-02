@@ -2,11 +2,15 @@ import React from 'react';
 import { Container } from '@material-ui/core';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Logo from '../header/Logo';
+import AuthDropdown from '../header/AuthDropdown';
 
 const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
       backgroundColor: theme.palette.primary.dark,
       color: theme.palette.primary.contrastText,
       margin: 0,
@@ -24,15 +28,10 @@ const Header = () => {
 
   return (
     <Container component="header" className={classes.root} maxWidth={false}>
-      <h1>
-        <a href="/">
-          <FontAwesomeIcon
-            icon={['fas', 'poll']}
-            style={{ marginRight: '0.5rem' }}
-          />
-          Goract Survey
-        </a>
-      </h1>
+      <Logo />
+      <nav className="nav">
+        <AuthDropdown />
+      </nav>
     </Container>
   );
 };
