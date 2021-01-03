@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useCallback } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -38,6 +39,10 @@ const useStyles = makeStyles((theme) => {
 
 const AuthDropdown = () => {
   const classes = useStyles();
+  const history = useHistory();
+  const handleOnClick = useCallback((linkTo) => history.push(linkTo), [
+    history,
+  ]);
 
   const { ref, buttonRef, open, setOpen } = useOpenToggle(false);
 
@@ -58,7 +63,11 @@ const AuthDropdown = () => {
           className={classes.list}
           ref={ref}
         >
-          <ListItem button className={classes.button}>
+          <ListItem
+            button
+            className={classes.button}
+            onClick={() => handleOnClick('/login')}
+          >
             <ListItemIcon style={{ minWidth: 0 }}>
               <FontAwesomeIcon
                 icon={['fas', 'sign-in-alt']}
@@ -67,7 +76,11 @@ const AuthDropdown = () => {
             </ListItemIcon>
             <ListItemText primary="Sign In" />
           </ListItem>
-          <ListItem button className={classes.button}>
+          <ListItem
+            button
+            className={classes.button}
+            onClick={() => handleOnClick('/register')}
+          >
             <ListItemIcon style={{ minWidth: 0 }}>
               <FontAwesomeIcon
                 icon={['fas', 'user-plus']}
