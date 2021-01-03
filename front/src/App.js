@@ -1,19 +1,25 @@
 import React from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import {
+  createMuiTheme,
+  ThemeProvider,
+  makeStyles,
+} from '@material-ui/core/styles';
 import { Container } from '@material-ui/core';
 import pink from '@material-ui/core/colors/pink';
 import indigo from '@material-ui/core/colors/indigo';
 import grey from '@material-ui/core/colors/grey';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
+import { fab } from '@fortawesome/free-brands-svg-icons';
+import { far } from '@fortawesome/free-regular-svg-icons';
 
 import Header from './components/common/Header';
 import Home from './components/Home';
 import Register from './components/auth/Register';
 
-library.add(fas);
+library.add(fas, fab, far);
 
 const theme = createMuiTheme({
   palette: {
@@ -27,12 +33,22 @@ const theme = createMuiTheme({
   },
 });
 
+const useStyles = makeStyles((theme) => ({
+  main: {
+    padding: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: '100vh',
+  },
+}));
+
 function App() {
+  const classes = useStyles();
   return (
     <div className="App">
       <BrowserRouter>
         <ThemeProvider theme={theme}>
-          <Container style={{ padding: 0 }} maxWidth={false}>
+          <Container className={classes.main} maxWidth={false}>
             <Header />
             <Route component={Home} path="/" exact></Route>
             {/* <Route component={LoginPage} path="/login" /> */}

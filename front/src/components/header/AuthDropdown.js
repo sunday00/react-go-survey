@@ -40,11 +40,11 @@ const useStyles = makeStyles((theme) => {
 const AuthDropdown = () => {
   const classes = useStyles();
   const history = useHistory();
+  const { ref, buttonRef, open, setOpen } = useOpenToggle(false);
+
   const handleOnClick = useCallback((linkTo) => history.push(linkTo), [
     history,
   ]);
-
-  const { ref, buttonRef, open, setOpen } = useOpenToggle(false);
 
   const onOpen = (e) => {
     setOpen(!open);
