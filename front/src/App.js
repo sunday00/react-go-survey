@@ -18,6 +18,7 @@ import { far } from '@fortawesome/free-regular-svg-icons';
 import Header from './components/common/Header';
 import Home from './components/Home';
 import Register from './components/auth/Register';
+import AuthCallBack from './components/auth/AuthCallBack';
 
 library.add(fas, fab, far);
 
@@ -53,6 +54,10 @@ function App() {
             <Route component={Home} path="/" exact></Route>
             {/* <Route component={LoginPage} path="/login" /> */}
             <Route component={Register} path="/register" />
+            <Route
+              component={AuthCallBack}
+              path="/auth/:vendor/callback/:action"
+            />
           </Container>
         </ThemeProvider>
       </BrowserRouter>
