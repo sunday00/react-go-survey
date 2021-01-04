@@ -15,6 +15,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
+import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function Copyright() {
@@ -74,8 +75,11 @@ const Register = () => {
     // TODO:: /
 
     if (true) {
-      window.location.href =
-        'https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?client_id=826059446765-8om26462fcfft6t229u3pgql7ovedan8.apps.googleusercontent.com&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fgoogle%2Fcallback%2Fregister&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email&state=EJY-ZyUTifYwAm1pqJbD-Q%3D%3D&flowName=GeneralOAuthFlow';
+      axios
+        .get(process.env.REACT_APP_SERVER_DOMAIN + '/auth/google/register')
+        .then((res) => {
+          window.location = res.data;
+        });
     }
   };
 

@@ -10,6 +10,8 @@ import (
 func Middlewares(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	godotenv.Load()
 	w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CLIENT_DOMAIN"))
+	w.Header().Set("credentials", "true")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	CheckSignIn(w, r)
 
 	//========
