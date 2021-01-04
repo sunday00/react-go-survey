@@ -2,10 +2,14 @@ package app
 
 import (
 	"net/http"
+	"os"
+
+	"github.com/joho/godotenv"
 )
 
 func Middlewares(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	godotenv.Load()
+	w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CLIENT_DOMAIN"))
 	CheckSignIn(w, r)
 
 	//========

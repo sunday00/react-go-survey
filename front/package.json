@@ -15,6 +15,7 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "axios": "^0.21.1",
+    "env-cmd": "^10.1.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-router": "^5.2.0",
@@ -23,11 +24,11 @@
     "web-vitals": "^0.2.4"
   },
   "scripts": {
-    "start": "BROWSER=firefox react-scripts start",
-    "start-windows": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "BROWSER=firefox env-cmd -f ../.env react-scripts start",
+    "start-windows": "env-cmd -f ../.env react-scripts start",
+    "build": "env-cmd -f ../.env react-scripts build",
+    "test": "env-cmd -f ../.env react-scripts test",
+    "eject": "env-cmd -f ../.env react-scripts eject"
   },
   "eslintConfig": {
     "extends": [

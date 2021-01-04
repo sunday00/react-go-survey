@@ -38,7 +38,7 @@ func GoogleHandler(w http.ResponseWriter, r *http.Request, action string) {
 	}
 
 	if action == "register" {
-		oauthConfig.RedirectURL = "http://" + os.Getenv("CLIENT_DOMAIN") + "/auth/google/callback/register"
+		oauthConfig.RedirectURL = os.Getenv("CLIENT_DOMAIN") + "/auth/google/callback/register"
 		registerHandler(w, r)
 	}
 }
