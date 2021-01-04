@@ -1,12 +1,13 @@
 package auth
 
 import (
-	"context"
 	"crypto/rand"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -51,48 +52,60 @@ func GoogleHandler(w http.ResponseWriter, r *http.Request, action string) {
 }
 
 func generateStateOauthCookie(w http.ResponseWriter) string {
-	expiration := time.Now().Add(24 * time.Hour) // coo
 	b := make([]byte, 16)
 	rand.Read(b)
-	state := base64.URLEncoding.EncodeToString(b)
-	cookie := &http.Cookie{Name: "oauthstate", Value: state, Expires: expiration} // coo
-	http.SetCookie(w, cookie)                                                     //coo
+	state := base64.StdEncoding.EncodeToString(b)
+
 	return state
 }
 
+func createJWT(w http.ResponseWriter, token *oauth2.Token) {
+
+}
+
 func getGoogleUserInfo(code string, w http.ResponseWriter) ([]byte, error) {
-	token, err := oauthConfig.Exchange(context.Background(), code)
 
-	if err != nil {
-		return nil, fmt.Errorf("failed to Exchange %s", err.Error())
-	}
+	client := http.Client{}
 
-	resp, err := http.Get(os.Getenv("GOOGLE_USER_INFO_URL") + token.AccessToken)
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to get user info %s", err.Error())
-	}
+	resp, err := client.PostForm("https://www.googleapis.com/oauth2/v4/token",
+		url.Values{
+			"code":          {code},
+			"client_id":     {oauthConfig.ClientID},
+			"client_secret": {oauthConfig.ClientSecret},
+			"redirect_uri":  {oauthConfig.RedirectURL},
+			"grant_type":    {"authorization_code"},
+			"access_type":   {"offline"},
+		},
+	)
 
 	data, err := ioutil.ReadAll(resp.Body)
-	setSimpleCookie("userInfo", string(data), w)
+
+	body := make(map[string]interface{})
+	err = json.Unmarshal(data, &body)
+
+	println(body["access_token"].(string))
+	println(body["id_token"].(string))
 
 	return data, err
 }
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 	state := generateStateOauthCookie(w)
-	url := oauthConfig.AuthCodeURL(state)
+	option := oauth2.SetAuthURLParam("access_type", "offline")
+	url := oauthConfig.AuthCodeURL(state, option)
+	setSimpleCookie("oauthstate", state, w) //coo
 	fmt.Fprint(w, url)
 }
 
 func callbackHandler(w http.ResponseWriter, r *http.Request) {
-	for _, cookie := range r.Cookies() {
-		if cookie.Name == "userInfo" {
-			fmt.Fprint(w, cookie)
-			return
-		}
+
+	oauthState, _ := r.Cookie("oauthstate")
+
+	if oauthState != nil && oauthState.Value == r.FormValue("state") {
+
+		data, _ := getGoogleUserInfo(r.FormValue("code"), w)
+		fmt.Fprint(w, string(data))
+
 	}
 
-	data, _ := getGoogleUserInfo(r.FormValue("code"), w)
-	fmt.Fprint(w, string(data))
 }

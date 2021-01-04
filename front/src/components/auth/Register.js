@@ -76,7 +76,9 @@ const Register = () => {
 
     if (true) {
       axios
-        .get(process.env.REACT_APP_SERVER_DOMAIN + '/auth/google/register')
+        .get(process.env.REACT_APP_SERVER_DOMAIN + '/auth/google/register', {
+          withCredentials: true,
+        })
         .then((res) => {
           window.location = res.data;
         });

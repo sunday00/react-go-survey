@@ -5,8 +5,6 @@ const AuthCallBack = () => {
   const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
-    // let storageUser = window.localStorage.getItem('userInfo');
-    // if (!storageUser) {
     const url = window.location.href.replace(
       process.env.REACT_APP_CLIENT_DOMAIN,
       process.env.REACT_APP_SERVER_DOMAIN,
@@ -14,12 +12,8 @@ const AuthCallBack = () => {
 
     axios.get(url, { withCredentials: true }).then((res) => {
       setUserInfo(res.data);
-      // window.localStorage.setItem('userInfo', JSON.stringify(res.data));
     });
     return;
-    // }
-
-    // setUserInfo(JSON.parse(storageUser));
   }, []);
 
   return (
