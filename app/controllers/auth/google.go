@@ -29,6 +29,7 @@ func init() {
 	oauthConfig.ClientSecret = os.Getenv("GOOGLE_SECRET_KEY")
 }
 
+// GoogleHandler is http handler for google oauth2
 func GoogleHandler(w http.ResponseWriter, r *http.Request, action string) {
 
 	if strings.Contains(r.URL.Path, "/callback/register") {
@@ -56,13 +57,13 @@ func getGoogleUserInfo(code string) ([]byte, error) {
 	token, err := oauthConfig.Exchange(context.Background(), code)
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to Exchange %s\n", err.Error())
+		return nil, fmt.Errorf("failed to Exchange %s", err.Error())
 	}
 
 	resp, err := http.Get(os.Getenv("GOOGLE_USER_INFO_URL") + token.AccessToken)
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to get user info %s\n", err.Error())
+		return nil, fmt.Errorf("failed to get user info %s", err.Error())
 	}
 
 	return ioutil.ReadAll(resp.Body)
