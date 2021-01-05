@@ -20,7 +20,6 @@ const AuthCallBack = () => {
     <div>
       {userInfo && (
         <>
-          {console.log(userInfo)}
           <p>
             {
               userInfo.emailAddresses.find((m) => {

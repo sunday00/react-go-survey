@@ -97,12 +97,19 @@ func getGoogleUserInfoByPostForm(code string, w http.ResponseWriter) ([]byte, er
 	return data, err
 }
 
-func getGoogleUserInfoByExchange(code string, w http.ResponseWriter) ([]byte, error) {
-	token, err := oauthConfig.Exchange(context.Background(), code, oauth2.SetAuthURLParam("access_type", "offline"))
+func getGoogleUserInfoByExchange(code string, w http.ResponseWriter, r *http.Request) ([]byte, error) {
+	t := ""
+	accessToken, _ := r.Cookie("access_token")
+	if accessToken == nil {
+		token, _ := oauthConfig.Exchange(context.Background(), code, oauth2.SetAuthURLParam("access_type", "offline"))
+		t = token.AccessToken
+		setSimpleCookie("access_token", "Barer "+t, w)
+	} else {
+		t = accessToken.Value
+		t = strings.Replace(t, "Barer ", "", -1)
+	}
 
-	setSimpleCookie("access_token", "Barer "+token.AccessToken, w)
-
-	resp, err := http.Get("https://people.googleapis.com/v1/people/me?personFields=photos,names,emailAddresses,genders,birthdays&access_token=" + token.AccessToken)
+	resp, err := http.Get("https://people.googleapis.com/v1/people/me?personFields=photos,names,emailAddresses,genders,birthdays&access_token=" + t)
 
 	data, err := ioutil.ReadAll(resp.Body)
 	body := make(map[string]interface{})
@@ -126,7 +133,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 	if oauthState != nil && oauthState.Value == r.FormValue("state") {
 
 		// data, _ := getGoogleUserInfoByPostForm(r.FormValue("code"), w)
-		data, _ := getGoogleUserInfoByExchange(r.FormValue("code"), w)
+		data, _ := getGoogleUserInfoByExchange(r.FormValue("code"), w, r)
 		fmt.Fprint(w, string(data))
 
 	}
