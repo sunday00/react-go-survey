@@ -40,13 +40,16 @@ func init() {
 }
 
 func setSimpleCookie(name, value string, w http.ResponseWriter) {
-	expiration := time.Now().Add(24 * time.Hour)                          // coo
+	time.LoadLocation("Asia/Seoul")
+	expiration := time.Now().Add(24 * time.Hour)
 	cookie := &http.Cookie{Name: name, Value: value, Expires: expiration} // coo
 	http.SetCookie(w, cookie)
 }
 
 func delSimpleCookie(name string, w http.ResponseWriter) {
-	cookie := &http.Cookie{Name: name, Value: "", Expires: time.Now()}
+	time.LoadLocation("Asia/Seoul")
+	expiration := time.Now()
+	cookie := &http.Cookie{Name: name, Value: "", Expires: expiration}
 	http.SetCookie(w, cookie)
 }
 
@@ -70,10 +73,6 @@ func generateStateOauthCookie(w http.ResponseWriter) string {
 	state := base64.StdEncoding.EncodeToString(b)
 
 	return state
-}
-
-func createJWT(w http.ResponseWriter, token *oauth2.Token) {
-
 }
 
 func getGoogleUserInfoByPostForm(code string, w http.ResponseWriter) ([]byte, error) {
@@ -105,16 +104,19 @@ func getGoogleUserInfoByPostForm(code string, w http.ResponseWriter) ([]byte, er
 func getGoogleUserInfoByExchange(code string, w http.ResponseWriter, r *http.Request) ([]byte, error) {
 	t := ""
 	accessToken, _ := r.Cookie("access_token")
-	if accessToken == nil {
+	if accessToken == nil { // issuing new access_token
 		token, _ := oauthConfig.Exchange(context.Background(), code, oauth2.SetAuthURLParam("access_type", "offline"))
 		t = token.AccessToken
-		setSimpleCookie("access_token", "Barer "+t, w)
+		setSimpleCookie("access_token", "Barer "+t, w) // save token for cookie
+		// TODO: should not simple cookie. expiration time is
+		// token.Expiry time
 	} else {
 		t = accessToken.Value
 		t = strings.Replace(t, "Barer ", "", -1)
 	}
 
 	resp, err := http.Get("https://people.googleapis.com/v1/people/me?personFields=photos,names,emailAddresses,genders,birthdays&access_token=" + t)
+	// get user info from google
 
 	data, err := ioutil.ReadAll(resp.Body)
 	body := make(map[string]interface{})
@@ -124,11 +126,12 @@ func getGoogleUserInfoByExchange(code string, w http.ResponseWriter, r *http.Req
 }
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
-	state := generateStateOauthCookie(w)
+	state := generateStateOauthCookie(w)    // csrf
+	setSimpleCookie("oauthstate", state, w) // csrf cookie
+
 	option := oauth2.SetAuthURLParam("access_type", "offline")
-	url := oauthConfig.AuthCodeURL(state, option)
-	setSimpleCookie("oauthstate", state, w) //coo
-	fmt.Fprint(w, url)
+	url := oauthConfig.AuthCodeURL(state, option) // redirect url for login
+	fmt.Fprint(w, url)                            //response for react can redirect
 }
 
 func callbackHandler(w http.ResponseWriter, r *http.Request) {
@@ -136,12 +139,12 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 	oauthState, _ := r.Cookie("oauthstate")
 
 	if oauthState != nil && oauthState.Value == r.FormValue("state") {
+		// TODO:: fix this
+		delSimpleCookie("oauthstate", w) // empty csrf token.... but works weired...
 
 		// data, _ := getGoogleUserInfoByPostForm(r.FormValue("code"), w)
-		data, _ := getGoogleUserInfoByExchange(r.FormValue("code"), w, r)
-		delSimpleCookie("oauthstate", w)
-		fmt.Fprint(w, string(data))
-
+		data, _ := getGoogleUserInfoByExchange(r.FormValue("code"), w, r) // result
+		fmt.Fprint(w, string(data))                                       // json data for react
 	}
 
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
+import { Provider } from 'react-redux';
 
 import {
   createMuiTheme,
@@ -14,6 +15,8 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
+
+import store from './modules/index';
 
 import Header from './components/common/Header';
 import Home from './components/Home';
@@ -47,20 +50,22 @@ function App() {
   const classes = useStyles();
   return (
     <div className="App">
-      <BrowserRouter>
-        <ThemeProvider theme={theme}>
-          <Container className={classes.main} maxWidth={false}>
-            <Header />
-            <Route component={Home} path="/" exact></Route>
-            {/* <Route component={LoginPage} path="/login" /> */}
-            <Route component={Register} path="/register" />
-            <Route
-              component={AuthCallBack}
-              path="/auth/:vendor/callback/:action"
-            />
-          </Container>
-        </ThemeProvider>
-      </BrowserRouter>
+      <Provider store={store}>
+        <BrowserRouter>
+          <ThemeProvider theme={theme}>
+            <Container className={classes.main} maxWidth={false}>
+              <Header />
+              <Route component={Home} path="/" exact></Route>
+              {/* <Route component={LoginPage} path="/login" /> */}
+              <Route component={Register} path="/register" />
+              <Route
+                component={AuthCallBack}
+                path="/auth/:vendor/callback/:action"
+              />
+            </Container>
+          </ThemeProvider>
+        </BrowserRouter>
+      </Provider>
     </div>
   );
 }

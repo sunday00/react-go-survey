@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useSelector, useDispatch } from 'react-redux';
+import { setAccessKey } from '../../modules/auth';
 
 const AuthCallBack = () => {
   const [userInfo, setUserInfo] = useState(null);
+  const state = useSelector((state) => state);
+  const dispatch = useDispatch();
+  console.log(state);
 
   useEffect(() => {
     const url = window.location.href.replace(
@@ -12,6 +17,7 @@ const AuthCallBack = () => {
 
     axios.get(url, { withCredentials: true }).then((res) => {
       setUserInfo(res.data);
+      dispatch(setAccessKey('asd'));
     });
     return;
   }, []);

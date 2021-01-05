@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/joho/godotenv"
 
@@ -12,6 +13,7 @@ func main() {
 	println("Server is now started")
 
 	godotenv.Load()
+	time.LoadLocation("Asia/Seoul")
 
 	h := app.MakeHandler()
 
