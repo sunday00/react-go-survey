@@ -10,12 +10,13 @@ import (
 	"net/url"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/joho/godotenv"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
+
+	"survey/app/libs"
 )
 
 var oauthConfig = oauth2.Config{
@@ -39,30 +40,16 @@ func init() {
 	oauthConfig.RedirectURL = os.Getenv("CLIENT_DOMAIN") + "/auth/google/callback/register"
 }
 
-func setSimpleCookie(name, value string, w http.ResponseWriter) {
-	time.LoadLocation("Asia/Seoul")
-	expiration := time.Now().Add(24 * time.Hour)
-	cookie := &http.Cookie{Name: name, Value: value, Expires: expiration} // coo
-	http.SetCookie(w, cookie)
-}
-
-func delSimpleCookie(name string, w http.ResponseWriter) {
-	time.LoadLocation("Asia/Seoul")
-	expiration := time.Now()
-	cookie := &http.Cookie{Name: name, Value: "", Expires: expiration}
-	http.SetCookie(w, cookie)
-}
-
 // GoogleHandler is http handler for google oauth2
 func GoogleHandler(w http.ResponseWriter, r *http.Request, action string) {
 
 	if strings.Contains(r.URL.Path, "/callback/register") {
-		callbackHandler(w, r)
+		googleCallbackHandler(w, r)
 		return
 	}
 
 	if action == "register" {
-		registerHandler(w, r)
+		googleRegisterHandler(w, r)
 		return
 	}
 }
@@ -107,7 +94,7 @@ func getGoogleUserInfoByExchange(code string, w http.ResponseWriter, r *http.Req
 	if accessToken == nil { // issuing new access_token
 		token, _ := oauthConfig.Exchange(context.Background(), code, oauth2.SetAuthURLParam("access_type", "offline"))
 		t = token.AccessToken
-		setSimpleCookie("access_token", "Barer "+t, w) // save token for cookie
+		libs.SetSimpleCookie("access_token", "Barer "+t, w) // save token for cookie
 		// TODO: should not simple cookie. expiration time is
 		// token.Expiry time
 	} else {
@@ -125,22 +112,22 @@ func getGoogleUserInfoByExchange(code string, w http.ResponseWriter, r *http.Req
 	return data, err
 }
 
-func registerHandler(w http.ResponseWriter, r *http.Request) {
-	state := generateStateOauthCookie(w)    // csrf
-	setSimpleCookie("oauthstate", state, w) // csrf cookie
+func googleRegisterHandler(w http.ResponseWriter, r *http.Request) {
+	state := generateStateOauthCookie(w)         // csrf
+	libs.SetSimpleCookie("oauthstate", state, w) // csrf cookie
 
 	option := oauth2.SetAuthURLParam("access_type", "offline")
 	url := oauthConfig.AuthCodeURL(state, option) // redirect url for login
 	fmt.Fprint(w, url)                            //response for react can redirect
 }
 
-func callbackHandler(w http.ResponseWriter, r *http.Request) {
+func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	oauthState, _ := r.Cookie("oauthstate")
 
 	if oauthState != nil && oauthState.Value == r.FormValue("state") {
 		// TODO:: fix this
-		delSimpleCookie("oauthstate", w) // empty csrf token.... but works weired...
+		libs.DelSimpleCookie("oauthstate", w) // empty csrf token.... but works weired...
 
 		// data, _ := getGoogleUserInfoByPostForm(r.FormValue("code"), w)
 		data, _ := getGoogleUserInfoByExchange(r.FormValue("code"), w, r) // result

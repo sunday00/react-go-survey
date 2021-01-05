@@ -20,4 +20,8 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 		auth.GoogleHandler(w, r, action)
 	}
 
+	if vendor == "kakao" {
+		auth.KakaoHandler(w, r, action)
+	}
+
 }
