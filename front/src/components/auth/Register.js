@@ -69,7 +69,6 @@ const Register = () => {
   const history = useHistory();
 
   const handleGoogleButton = () => {
-    // TODO:: 백엔드에서 csrf쿠키 만들고
     //  TODO:: 이미 로그인 되어 있는 지 확인 (client 에서 로긴 cookie)
     // TODO:: 로그인 하면 로그인 토큰 내려주고
     // TODO:: /

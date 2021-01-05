@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
+	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
@@ -21,14 +22,21 @@ var oauthConfig = oauth2.Config{
 	RedirectURL:  "",
 	ClientID:     "",
 	ClientSecret: "",
-	Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
-	Endpoint:     google.Endpoint,
+	Scopes: []string{
+		"https://www.googleapis.com/auth/userinfo.email",
+		"https://www.googleapis.com/auth/userinfo.profile",
+		"https://www.googleapis.com/auth/user.birthday.read",
+		"https://www.googleapis.com/auth/user.gender.read",
+		"openid",
+	},
+	Endpoint: google.Endpoint,
 }
 
 func init() {
 	godotenv.Load()
 	oauthConfig.ClientID = os.Getenv("GOOGLE_CLIENT_ID")
 	oauthConfig.ClientSecret = os.Getenv("GOOGLE_SECRET_KEY")
+	oauthConfig.RedirectURL = os.Getenv("CLIENT_DOMAIN") + "/auth/google/callback/register"
 }
 
 func setSimpleCookie(name, value string, w http.ResponseWriter) {
@@ -46,8 +54,8 @@ func GoogleHandler(w http.ResponseWriter, r *http.Request, action string) {
 	}
 
 	if action == "register" {
-		oauthConfig.RedirectURL = os.Getenv("CLIENT_DOMAIN") + "/auth/google/callback/register"
 		registerHandler(w, r)
+		return
 	}
 }
 
@@ -63,7 +71,7 @@ func createJWT(w http.ResponseWriter, token *oauth2.Token) {
 
 }
 
-func getGoogleUserInfo(code string, w http.ResponseWriter) ([]byte, error) {
+func getGoogleUserInfoByPostForm(code string, w http.ResponseWriter) ([]byte, error) {
 
 	client := http.Client{}
 
@@ -89,6 +97,20 @@ func getGoogleUserInfo(code string, w http.ResponseWriter) ([]byte, error) {
 	return data, err
 }
 
+func getGoogleUserInfoByExchange(code string, w http.ResponseWriter) ([]byte, error) {
+	token, err := oauthConfig.Exchange(context.Background(), code, oauth2.SetAuthURLParam("access_type", "offline"))
+
+	setSimpleCookie("access_token", "Barer "+token.AccessToken, w)
+
+	resp, err := http.Get("https://people.googleapis.com/v1/people/me?personFields=photos,names,emailAddresses,genders,birthdays&access_token=" + token.AccessToken)
+
+	data, err := ioutil.ReadAll(resp.Body)
+	body := make(map[string]interface{})
+	err = json.Unmarshal(data, &body)
+
+	return data, err
+}
+
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 	state := generateStateOauthCookie(w)
 	option := oauth2.SetAuthURLParam("access_type", "offline")
@@ -103,7 +125,8 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	if oauthState != nil && oauthState.Value == r.FormValue("state") {
 
-		data, _ := getGoogleUserInfo(r.FormValue("code"), w)
+		// data, _ := getGoogleUserInfoByPostForm(r.FormValue("code"), w)
+		data, _ := getGoogleUserInfoByExchange(r.FormValue("code"), w)
 		fmt.Fprint(w, string(data))
 
 	}

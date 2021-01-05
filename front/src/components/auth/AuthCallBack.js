@@ -20,9 +20,23 @@ const AuthCallBack = () => {
     <div>
       {userInfo && (
         <>
-          <p>{userInfo.email}</p>
-          <p>{userInfo.id}</p>
-          <img src={userInfo.picture} alt="avatar" />
+          {console.log(userInfo)}
+          <p>
+            {
+              userInfo.emailAddresses.find((m) => {
+                return m.metadata.primary === true;
+              }).value
+            }
+          </p>
+          <p>{userInfo.names[0].metadata.source.id}</p>
+          <img
+            src={
+              userInfo.photos.find((p) => {
+                return p.metadata.primary === true;
+              }).url
+            }
+            alt="user"
+          />
         </>
       )}
     </div>
