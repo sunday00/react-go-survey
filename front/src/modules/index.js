@@ -1,8 +1,10 @@
 import { combineReducers, createStore } from 'redux';
 import auth from './auth';
+import system from './system';
 
 const rootReducer = combineReducers({
   auth,
+  system,
 });
 
 const store = createStore(

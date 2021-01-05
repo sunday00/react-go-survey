@@ -125,13 +125,19 @@ func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	oauthState, _ := r.Cookie("oauthstate")
 
-	if oauthState != nil && oauthState.Value == r.FormValue("state") {
+	if oauthState != nil && oauthState.Value != "" && oauthState.Value == r.FormValue("state") {
 		// TODO:: fix this
 		libs.DelSimpleCookie("oauthstate", w) // empty csrf token.... but works weired...
 
 		// data, _ := getGoogleUserInfoByPostForm(r.FormValue("code"), w)
 		data, _ := getGoogleUserInfoByExchange(r.FormValue("code"), w, r) // result
 		fmt.Fprint(w, string(data))                                       // json data for react
+		return
 	}
+
+	libs.DelSimpleCookie("oauthstate", w)
+	libs.DelSimpleCookie("access_token", w)
+	w.WriteHeader(http.StatusUnauthorized)
+	http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 
 }
