@@ -45,6 +45,11 @@ func setSimpleCookie(name, value string, w http.ResponseWriter) {
 	http.SetCookie(w, cookie)
 }
 
+func delSimpleCookie(name string, w http.ResponseWriter) {
+	cookie := &http.Cookie{Name: name, Value: "", Expires: time.Now()}
+	http.SetCookie(w, cookie)
+}
+
 // GoogleHandler is http handler for google oauth2
 func GoogleHandler(w http.ResponseWriter, r *http.Request, action string) {
 
@@ -134,6 +139,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 		// data, _ := getGoogleUserInfoByPostForm(r.FormValue("code"), w)
 		data, _ := getGoogleUserInfoByExchange(r.FormValue("code"), w, r)
+		delSimpleCookie("oauthstate", w)
 		fmt.Fprint(w, string(data))
 
 	}
