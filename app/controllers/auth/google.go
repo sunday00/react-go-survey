@@ -92,7 +92,14 @@ func getGoogleUserInfoByExchange(code string, w http.ResponseWriter, r *http.Req
 	t := ""
 	accessToken, _ := r.Cookie("access_token")
 	if accessToken == nil { // issuing new access_token
-		token, _ := oauthConfig.Exchange(context.Background(), code, oauth2.SetAuthURLParam("access_type", "offline"))
+		token, err := oauthConfig.Exchange(context.Background(), code, oauth2.SetAuthURLParam("access_type", "offline"))
+
+		// if err != nil && err.(*oauth2.RetrieveError).Response.StatusCode == 400 {
+		if err != nil {
+			libs.Response401(w)
+			return nil, err
+		}
+
 		t = token.AccessToken
 		libs.SetCookieWithExpireHour("access_token", "Barer "+t, 1, w) // save token for cookie
 	} else {
@@ -104,11 +111,8 @@ func getGoogleUserInfoByExchange(code string, w http.ResponseWriter, r *http.Req
 	// get user info from google
 
 	if resp.StatusCode == 401 || resp.StatusCode == 403 {
-		libs.DelSimpleCookie("oauthstate", w)
-		libs.DelSimpleCookie("access_token", w)
-		w.WriteHeader(http.StatusUnauthorized)
-		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
-		return nil, nil
+		libs.Response401(w)
+		return nil, err
 	}
 
 	data, err := ioutil.ReadAll(resp.Body)
@@ -132,19 +136,20 @@ func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	oauthState, _ := r.Cookie("oauthstate")
 
 	if oauthState != nil && oauthState.Value != "" && oauthState.Value == r.FormValue("state") {
-		// TODO:: fix this
-		libs.DelSimpleCookie("oauthstate", w) // empty csrf token.... but works weired...
+		libs.DelSimpleCookie("oauthstate", w)
 
 		// data, _ := getGoogleUserInfoByPostForm(r.FormValue("code"), w)
-		data, _ := getGoogleUserInfoByExchange(r.FormValue("code"), w, r) // result
+		data, err := getGoogleUserInfoByExchange(r.FormValue("code"), w, r) // result
+
+		if err != nil {
+			libs.Response401(w)
+			return
+		}
 
 		fmt.Fprint(w, string(data)) // json data for react
 		return
 	}
 
-	libs.DelSimpleCookie("oauthstate", w)
-	libs.DelSimpleCookie("access_token", w)
-	w.WriteHeader(http.StatusUnauthorized)
-	http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+	libs.Response401(w)
 
 }
