@@ -47,7 +47,7 @@ const AuthDropdown = () => {
       setOpen(false);
       return history.push(linkTo);
     },
-    [history],
+    [history, setOpen],
   );
 
   const onOpen = (e) => {
