@@ -21,7 +21,7 @@ import store from './modules/index';
 import Header from './components/common/Header';
 import Home from './components/Home';
 import Register from './components/auth/Register';
-import AuthGoogleCallBack from './components/auth/AuthGoogleCallBack';
+import AuthGoogleCallBackContainer from './components/auth/AuthGoogleCallBackContainer';
 
 library.add(fas, fab, far);
 
@@ -60,7 +60,7 @@ function App() {
               <Route component={Register} path="/register" />
               <Route
                 path="/auth/google/callback/:action"
-                render={() => <AuthGoogleCallBack vendor="google" />}
+                render={() => <AuthGoogleCallBackContainer vendor="google" />}
               />
             </Container>
           </ThemeProvider>
