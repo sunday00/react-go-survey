@@ -22,6 +22,7 @@ import Header from './components/common/Header';
 import Home from './components/Home';
 import Register from './components/auth/Register';
 import AuthGoogleCallBackContainer from './components/auth/AuthGoogleCallBackContainer';
+import AuthKakaoCallBackContainer from './components/auth/AuthKakaoCallBackContainer';
 
 library.add(fas, fab, far);
 
@@ -61,6 +62,10 @@ function App() {
               <Route
                 path="/auth/google/callback/:action"
                 render={() => <AuthGoogleCallBackContainer vendor="google" />}
+              />
+              <Route
+                path="/auth/kakao/callback/:action"
+                render={() => <AuthKakaoCallBackContainer vendor="kakao" />}
               />
             </Container>
           </ThemeProvider>

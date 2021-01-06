@@ -1,14 +1,14 @@
+import { createAction, handleActions } from 'redux-actions';
+
 const SET_USER_PROFILE = 'auth/SET_USER_PROFILE';
 const SET_USER_PHOTO = 'auth/SET_USER_PHOTO';
 
-export const setUserProfile = (user) => ({
-  type: SET_USER_PROFILE,
-  user,
-});
-export const setUserPhoto = (photo) => ({
-  type: SET_USER_PHOTO,
-  photo,
-});
+export const setUserProfile = createAction(
+  SET_USER_PROFILE,
+  (profile) => profile,
+);
+
+export const setUserPhoto = createAction(SET_USER_PHOTO, (photo) => photo);
 
 const initialState = {
   user: {
@@ -17,7 +17,7 @@ const initialState = {
     email: '',
     name: '',
     gender: '',
-    birthday: '',
+    ageRange: '',
   },
   photo: '',
   subInfo: {
@@ -28,21 +28,18 @@ const initialState = {
   },
 };
 
-const auth = (state = initialState, action) => {
-  switch (action.type) {
-    case SET_USER_PROFILE:
-      return {
-        ...state,
-        user: action.user,
-      };
-    case SET_USER_PHOTO:
-      return {
-        ...state,
-        photo: action.photo,
-      };
-    default:
-      return state;
-  }
-};
+const auth = handleActions(
+  {
+    [SET_USER_PROFILE]: (state, { payload: user }) => ({
+      ...state,
+      user,
+    }),
+    [SET_USER_PHOTO]: (state, { payload: photo }) => ({
+      ...state,
+      photo,
+    }),
+  },
+  initialState,
+);
 
 export default auth;

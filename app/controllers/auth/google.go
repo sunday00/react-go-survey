@@ -1,8 +1,6 @@
 package auth
 
 import (
-	"crypto/rand"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -19,29 +17,35 @@ import (
 	"survey/app/libs"
 )
 
-var oauthConfig = oauth2.Config{
-	RedirectURL:  "",
-	ClientID:     "",
-	ClientSecret: "",
-	Scopes: []string{
+// var oauthConfig = oauth2.Config{
+// 	RedirectURL:  "",
+// 	ClientID:     "",
+// 	ClientSecret: "",
+// 	Scopes: []string{
+// 		"https://www.googleapis.com/auth/userinfo.email",
+// 		"https://www.googleapis.com/auth/userinfo.profile",
+// 		"https://www.googleapis.com/auth/user.birthday.read",
+// 		"https://www.googleapis.com/auth/user.gender.read",
+// 		"openid",
+// 	},
+// 	Endpoint: google.Endpoint,
+// }
+
+// GoogleHandler is http handler for google oauth2
+func GoogleHandler(w http.ResponseWriter, r *http.Request, action string) {
+
+	godotenv.Load()
+	oauthConfig.ClientID = os.Getenv("GOOGLE_CLIENT_ID")
+	oauthConfig.ClientSecret = os.Getenv("GOOGLE_SECRET_KEY")
+	oauthConfig.RedirectURL = os.Getenv("CLIENT_DOMAIN") + "/auth/google/callback/register"
+	oauthConfig.Scopes = []string{
 		"https://www.googleapis.com/auth/userinfo.email",
 		"https://www.googleapis.com/auth/userinfo.profile",
 		"https://www.googleapis.com/auth/user.birthday.read",
 		"https://www.googleapis.com/auth/user.gender.read",
 		"openid",
-	},
-	Endpoint: google.Endpoint,
-}
-
-func init() {
-	godotenv.Load()
-	oauthConfig.ClientID = os.Getenv("GOOGLE_CLIENT_ID")
-	oauthConfig.ClientSecret = os.Getenv("GOOGLE_SECRET_KEY")
-	oauthConfig.RedirectURL = os.Getenv("CLIENT_DOMAIN") + "/auth/google/callback/register"
-}
-
-// GoogleHandler is http handler for google oauth2
-func GoogleHandler(w http.ResponseWriter, r *http.Request, action string) {
+	}
+	oauthConfig.Endpoint = google.Endpoint
 
 	if strings.Contains(r.URL.Path, "/callback/register") {
 		googleCallbackHandler(w, r)
@@ -52,14 +56,6 @@ func GoogleHandler(w http.ResponseWriter, r *http.Request, action string) {
 		googleRegisterHandler(w, r)
 		return
 	}
-}
-
-func generateStateOauthCookie(w http.ResponseWriter) string {
-	b := make([]byte, 16)
-	rand.Read(b)
-	state := base64.StdEncoding.EncodeToString(b)
-
-	return state
 }
 
 func getGoogleUserInfoByPostForm(code string, w http.ResponseWriter) ([]byte, error) {
@@ -76,6 +72,7 @@ func getGoogleUserInfoByPostForm(code string, w http.ResponseWriter) ([]byte, er
 			"access_type":   {"offline"},
 		},
 	)
+	defer resp.Body.Close()
 
 	data, err := ioutil.ReadAll(resp.Body)
 
@@ -101,13 +98,14 @@ func getGoogleUserInfoByExchange(code string, w http.ResponseWriter, r *http.Req
 		}
 
 		t = token.AccessToken
-		libs.SetCookieWithExpireHour("access_token", "Barer "+t, 1, w) // save token for cookie
+		libs.SetCookieWithExpireHour("access_token", "Bearer "+t, 1, w) // save token for cookie
 	} else {
 		t = accessToken.Value
-		t = strings.Replace(t, "Barer ", "", -1)
+		t = strings.Replace(t, "Bearer ", "", -1)
 	}
 
 	resp, err := http.Get("https://people.googleapis.com/v1/people/me?personFields=photos,names,emailAddresses,genders,birthdays&access_token=" + t)
+	defer resp.Body.Close()
 	// get user info from google
 
 	if resp.StatusCode == 401 || resp.StatusCode == 403 {
@@ -123,7 +121,7 @@ func getGoogleUserInfoByExchange(code string, w http.ResponseWriter, r *http.Req
 }
 
 func googleRegisterHandler(w http.ResponseWriter, r *http.Request) {
-	state := generateStateOauthCookie(w)         // csrf
+	state := libs.GenerateCsrfCookie(w)          // csrf
 	libs.SetSimpleCookie("oauthstate", state, w) // csrf cookie
 
 	option := oauth2.SetAuthURLParam("access_type", "offline")

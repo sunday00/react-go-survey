@@ -3,10 +3,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { useHistory } from 'react-router';
 
-import AuthGoogleCallBack from './AuthGoogleCallBack';
+import AuthKakaoCallBack from './AuthKakaoCallBack';
 import { setUserProfile, setUserPhoto } from '../../modules/auth';
 
-const AuthGoogleCallBackContainer = ({ vendor }) => {
+const AuthKakaoCallBackContainer = ({ vendor }) => {
   const { photo } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -24,30 +24,17 @@ const AuthGoogleCallBackContainer = ({ vendor }) => {
       .then((res) => {
         const userInfo = res.data;
 
-        const birthdays = userInfo.birthdays.find((b) => {
-          return b.metadata.primary === true;
-        }).date;
-
         dispatch(
           setUserProfile({
-            id: userInfo.names[0].metadata.source.id,
-            vendor: 'google',
-            email: userInfo.emailAddresses.find((m) => {
-              return m.metadata.primary === true;
-            }).value,
-            name: userInfo.names[0].displayName,
-            gender: userInfo.genders[0].formattedValue.toLowerCase(),
-            ageRange:
-              Math.floor((new Date().getFullYear() - birthdays.year) / 10) * 10,
+            id: userInfo.id,
+            vendor: 'kakao',
+            email: userInfo.kakao_account.email,
+            name: userInfo.properties.nickname,
+            gender: userInfo.kakao_account.gender,
+            ageRange: userInfo.kakao_account.age_range.split('~')[0],
           }),
         );
-        dispatch(
-          setUserPhoto(
-            userInfo.photos.find((p) => {
-              return p.metadata.primary === true;
-            }).url,
-          ),
-        );
+        dispatch(setUserPhoto(userInfo.properties.profile_image));
       })
       .catch((err) => {
         console.error(err);
@@ -73,7 +60,7 @@ const AuthGoogleCallBackContainer = ({ vendor }) => {
     return;
   }, [dispatch, setModal, history]);
 
-  return <AuthGoogleCallBack photo={photo} modal={modal} />;
+  return <AuthKakaoCallBack photo={photo} modal={modal} />;
 };
 
-export default AuthGoogleCallBackContainer;
+export default AuthKakaoCallBackContainer;
