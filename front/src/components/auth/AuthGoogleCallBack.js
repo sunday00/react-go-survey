@@ -58,7 +58,7 @@ const AuthGoogleCallBack = ({ vendor }) => {
       .catch((err) => {
         console.error(err);
 
-        if (err.response.status === 401) {
+        if (err.response.status === 401 || err.response.status === 403) {
           const message = {
             msgType: 'error',
             msg:
@@ -77,7 +77,7 @@ const AuthGoogleCallBack = ({ vendor }) => {
         }
       });
     return;
-  }, [dispatch, setModal]);
+  }, [dispatch, setModal, history]);
 
   return (
     <>

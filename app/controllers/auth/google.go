@@ -94,9 +94,7 @@ func getGoogleUserInfoByExchange(code string, w http.ResponseWriter, r *http.Req
 	if accessToken == nil { // issuing new access_token
 		token, _ := oauthConfig.Exchange(context.Background(), code, oauth2.SetAuthURLParam("access_type", "offline"))
 		t = token.AccessToken
-		libs.SetSimpleCookie("access_token", "Barer "+t, w) // save token for cookie
-		// TODO: should not simple cookie. expiration time is
-		// token.Expiry time
+		libs.SetCookieWithExpireHour("access_token", "Barer "+t, 1, w) // save token for cookie
 	} else {
 		t = accessToken.Value
 		t = strings.Replace(t, "Barer ", "", -1)
@@ -104,6 +102,14 @@ func getGoogleUserInfoByExchange(code string, w http.ResponseWriter, r *http.Req
 
 	resp, err := http.Get("https://people.googleapis.com/v1/people/me?personFields=photos,names,emailAddresses,genders,birthdays&access_token=" + t)
 	// get user info from google
+
+	if resp.StatusCode == 401 || resp.StatusCode == 403 {
+		libs.DelSimpleCookie("oauthstate", w)
+		libs.DelSimpleCookie("access_token", w)
+		w.WriteHeader(http.StatusUnauthorized)
+		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		return nil, nil
+	}
 
 	data, err := ioutil.ReadAll(resp.Body)
 	body := make(map[string]interface{})
@@ -131,7 +137,8 @@ func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 		// data, _ := getGoogleUserInfoByPostForm(r.FormValue("code"), w)
 		data, _ := getGoogleUserInfoByExchange(r.FormValue("code"), w, r) // result
-		fmt.Fprint(w, string(data))                                       // json data for react
+
+		fmt.Fprint(w, string(data)) // json data for react
 		return
 	}
 
