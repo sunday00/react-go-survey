@@ -42,9 +42,13 @@ const AuthDropdown = () => {
   const history = useHistory();
   const { ref, buttonRef, open, setOpen } = useOpenToggle(false);
 
-  const handleOnClick = useCallback((linkTo) => history.push(linkTo), [
-    history,
-  ]);
+  const handleOnClick = useCallback(
+    (linkTo) => {
+      setOpen(false);
+      return history.push(linkTo);
+    },
+    [history],
+  );
 
   const onOpen = (e) => {
     setOpen(!open);
