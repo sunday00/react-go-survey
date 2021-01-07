@@ -12,6 +12,7 @@ const useStyle = makeStyles({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(100, 100, 100, 0.7)',
+    zIndex: 10,
   },
   header: {
     color: 'white',
