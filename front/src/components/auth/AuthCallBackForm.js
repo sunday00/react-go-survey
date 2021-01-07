@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
 
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -12,10 +13,11 @@ import Container from '@material-ui/core/Container';
 import Copyright from './Copyright';
 import ReactTagify from './ReactTagify';
 
-import { setUserTags } from '../../modules/auth';
+import { setUserTags, setUserSubInfo } from '../../modules/auth';
 
 const AuthCallBackForm = ({ classes, photo }) => {
   const dispatch = useDispatch();
+  const auth = useSelector((state) => state.auth);
 
   const initialTags = useRef([]);
 
@@ -26,6 +28,19 @@ const AuthCallBackForm = ({ classes, photo }) => {
     dispatch(setUserTags(tags));
   };
 
+  const handleSubInfoChange = (e, field) => {
+    dispatch(setUserSubInfo({ key: field, value: e.target.value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    axios.post('/auth/store', auth).then((res) => {
+      console.log(res);
+      // TODO:: link to home
+      // setSinged
+    });
+  };
+
   return (
     <Container component="main" maxWidth="xs" className={classes.main}>
       <CssBaseline />
@@ -34,7 +49,7 @@ const AuthCallBackForm = ({ classes, photo }) => {
         <Typography component="h1" variant="h5">
           Register
         </Typography>
-        <form className={classes.form} noValidate>
+        <form className={classes.form} noValidate onSubmit={handleSubmit}>
           <TextField
             variant="outlined"
             margin="normal"
@@ -44,6 +59,7 @@ const AuthCallBackForm = ({ classes, photo }) => {
             label="Job"
             id="Job"
             autoFocus
+            onChange={(e) => handleSubInfoChange(e, 'job')}
           />
           <TextField
             variant="outlined"
@@ -53,6 +69,7 @@ const AuthCallBackForm = ({ classes, photo }) => {
             id="Group"
             label="Group"
             name="Group"
+            onChange={(e) => handleSubInfoChange(e, 'group')}
           />
           <TextField
             variant="outlined"
@@ -61,6 +78,7 @@ const AuthCallBackForm = ({ classes, photo }) => {
             name="SubGroup"
             label="SubGroup"
             id="SubGroup"
+            onChange={(e) => handleSubInfoChange(e, 'subGroup')}
           />
           <ReactTagify
             initialValues={initialTags.current}

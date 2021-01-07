@@ -25,3 +25,7 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+func AuthStoreHandler(w http.ResponseWriter, r *http.Request) {
+	auth.Store(w, r)
+}

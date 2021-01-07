@@ -41,6 +41,8 @@ const AuthDropdown = () => {
   const classes = useStyles();
   const history = useHistory();
   const { ref, buttonRef, open, setOpen } = useOpenToggle(false);
+  // TODO:: useSelector auth.isSigned, if signed then replace
+  // make modify userInfo, logout (just request cookie del post)
 
   const handleOnClick = useCallback(
     (linkTo) => {
