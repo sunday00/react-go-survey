@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -24,24 +24,16 @@ const tagifyConfig = {
     enabled: 0,
   },
   whitelist: ['coding', 'development', 'sports'],
-  callbacks: {
-    // add: handleChange,
-    // remove: handleChange,
-    // blur: handleChange,
-    // edit: handleChange,
-    // invalid: handleChange,
-    // click: handleChange,
-    // focus: handleChange,
-    // "edit:updated": handleChange,
-    // "edit:start": handleChange
-  },
 };
 
-const ReactTagify = ({ classes }) => {
-  const [tags, setTags] = useState([]);
-
+const ReactTagify = ({ classes, initialValues, handleChange }) => {
   return (
-    <Tags className={classes.input} settings={tagifyConfig} value={tags} />
+    <Tags
+      onChange={handleChange}
+      className={classes.input}
+      settings={tagifyConfig}
+      value={initialValues}
+    />
   );
 };
 

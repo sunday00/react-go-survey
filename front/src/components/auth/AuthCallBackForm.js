@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { useDispatch } from 'react-redux';
 
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -11,7 +12,20 @@ import Container from '@material-ui/core/Container';
 import Copyright from './Copyright';
 import ReactTagify from './ReactTagify';
 
+import { setUserTags } from '../../modules/auth';
+
 const AuthCallBackForm = ({ classes, photo }) => {
+  const dispatch = useDispatch();
+
+  const initialTags = useRef([]);
+
+  const handleTagsChange = (e) => {
+    if (e.target.value === '') return;
+    const tags = JSON.parse(e.target.value).map((t) => t.value);
+
+    dispatch(setUserTags(tags));
+  };
+
   return (
     <Container component="main" maxWidth="xs" className={classes.main}>
       <CssBaseline />
@@ -48,15 +62,10 @@ const AuthCallBackForm = ({ classes, photo }) => {
             label="SubGroup"
             id="SubGroup"
           />
-          {/* <TextField
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            name="Interested"
-            label="Interested"
-            id="Interested"
-          /> */}
-          <ReactTagify></ReactTagify>
+          <ReactTagify
+            initialValues={initialTags.current}
+            handleChange={handleTagsChange}
+          />
           <Button
             type="submit"
             fullWidth
