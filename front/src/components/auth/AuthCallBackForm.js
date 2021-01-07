@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 
 import Copyright from './Copyright';
+import ReactTagify from './ReactTagify';
 
 const AuthCallBackForm = ({ classes, photo }) => {
   return (
@@ -47,14 +48,15 @@ const AuthCallBackForm = ({ classes, photo }) => {
             label="SubGroup"
             id="SubGroup"
           />
-          <TextField
+          {/* <TextField
             variant="outlined"
             margin="normal"
             fullWidth
             name="Interested"
             label="Interested"
             id="Interested"
-          />
+          /> */}
+          <ReactTagify></ReactTagify>
           <Button
             type="submit"
             fullWidth
