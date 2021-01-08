@@ -35,7 +35,7 @@ const AuthCallBackForm = ({ classes, photo }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     axios.post('/auth/store', auth).then((res) => {
-      console.log(res);
+      console.log(res.data);
       // TODO:: link to home
       // setSinged
     });

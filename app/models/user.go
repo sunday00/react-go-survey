@@ -56,7 +56,7 @@ func NewUser() *userModel {
 	return &userModel{}
 }
 
-func (u *userModel) Save() {
+func (u *userModel) Save() int64 {
 	Conn()
 	pstmt, err := DB.Prepare(`
 		INSERT INTO users (
@@ -82,7 +82,7 @@ func (u *userModel) Save() {
 		}
 
 		pstmt2, err := DB.Prepare(`
-		INSERT INTO user_tags VALUES ( ?,? )
+			INSERT INTO user_tags VALUES ( ?,? )
 		`)
 
 		if err != nil {
@@ -90,6 +90,9 @@ func (u *userModel) Save() {
 		}
 
 		pstmt2.Exec(id, tagID)
+
 	}
+
+	return id
 
 }
