@@ -1,6 +1,7 @@
 package models
 
 import (
+	"go-console"
 	"time"
 )
 
@@ -22,17 +23,17 @@ func init() {
 			id					INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
 			vendorId		VARCHAR(100) NOT NULL ,
 			vendor			VARCHAR(10) NOT NULL ,
-			Job       	VARCHAR(10),
-			GroupName  	VARCHAR(10),
-			SubGroup  	VARCHAR(10),
-			CreatedAt 	DATETIME
+			job       	VARCHAR(10),
+			groupName  	VARCHAR(10),
+			subGroup  	VARCHAR(10),
+			createdAt 	DATETIME
 		);
 	`)
 
 	DB.Exec(`
 		CREATE TABLE IF NOT EXISTS tags (
 			id					INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-			title				VARCHAR(100) NOT NULL
+			title				VARCHAR(100) UNIQUE NOT NULL
 		);
 	`)
 
@@ -53,4 +54,42 @@ func init() {
 
 func NewUser() *userModel {
 	return &userModel{}
+}
+
+func (u *userModel) Save() {
+	Conn()
+	pstmt, err := DB.Prepare(`
+		INSERT INTO users (
+			vendorId, vendor, job, groupName, subGroup, createdAt
+		) VALUES (
+			?,?,?,?,?, NOW()
+		)
+	`)
+
+	if err != nil {
+		console.PrintColoredLn(err, console.Danger)
+	}
+
+	result, _ := pstmt.Exec(u.VendorID, u.Vendor, u.Job, u.Group, u.SubGroup)
+	id, _ := result.LastInsertId()
+
+	for _, tag := range u.Interested {
+		newTag := NewTag()
+		newTag.Title = tag
+		tagID := newTag.FindByTitle()
+		if tagID < 0 {
+			tagID = newTag.Save()
+		}
+
+		pstmt2, err := DB.Prepare(`
+		INSERT INTO user_tags VALUES ( ?,? )
+		`)
+
+		if err != nil {
+			console.PrintColoredLn(err, console.Panic)
+		}
+
+		pstmt2.Exec(id, tagID)
+	}
+
 }

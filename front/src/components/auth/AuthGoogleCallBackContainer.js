@@ -30,7 +30,7 @@ const AuthGoogleCallBackContainer = ({ vendor }) => {
 
         dispatch(
           setUserProfile({
-            vendorId: userInfo.names[0].metadata.source.id,
+            vendorId: userInfo.names[0].metadata.source.id.toString(),
             vendor: 'google',
             email: userInfo.emailAddresses.find((m) => {
               return m.metadata.primary === true;

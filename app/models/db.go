@@ -16,6 +16,10 @@ type dbInterface interface{}
 var DB *sql.DB
 
 func init() {
+	Conn()
+}
+
+func Conn() *sql.DB {
 	godotenv.Load()
 
 	connStr := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
@@ -32,5 +36,5 @@ func init() {
 	}
 
 	DB = db
-
+	return db
 }

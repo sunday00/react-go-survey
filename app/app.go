@@ -3,6 +3,7 @@ package app
 import (
 	"net/http"
 	"survey/app/controllers"
+	"survey/app/models"
 
 	"github.com/gorilla/mux"
 	"github.com/unrolled/render"
@@ -30,6 +31,8 @@ func MakeHandler() http.Handler {
 	r.HandleFunc("/auth/{vendor}/{action}", controllers.Auth.GetTokenHandler).Methods("GET").Name("auth")
 	r.HandleFunc("/auth/store", controllers.Auth.StoreHandler).Methods("POST").Name("auth.store")
 	r.HandleFunc("/", controllers.IndexHandler).Methods("GET")
+
+	models.DB.Close()
 
 	return n
 }

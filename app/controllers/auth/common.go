@@ -38,6 +38,7 @@ func Store(w http.ResponseWriter, r *http.Request) {
 	user.SubGroup = reqUserInfo.Subinfo.SubGroup
 	user.Interested = reqUserInfo.Subinfo.Interested
 
+	user.Save()
 	// save serialnumber, vendor, subinfo
 	// response stored message
 
