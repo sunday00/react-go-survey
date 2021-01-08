@@ -48,7 +48,8 @@ func Store(w http.ResponseWriter, r *http.Request) {
 	token, _ := GenerateJwtToken(id, user.Vendor, user.VendorID)
 
 	response := fmt.Sprintf("{\"access_key\" : \"%s\", \"success\": 1}", token)
-	fmt.Fprint(w, json.NewEncoder(w).Encode(response))
+	// json.NewEncoder(w).Encode(response)
+	fmt.Fprint(w, response)
 
 }
 
