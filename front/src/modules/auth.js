@@ -19,7 +19,7 @@ export const setSigned = createAction(SET_SIGNED, (isSigned) => !isSigned);
 
 const initialState = {
   user: {
-    id: '',
+    vendorId: '',
     vendor: '',
     email: '',
     name: '',

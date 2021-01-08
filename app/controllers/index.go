@@ -7,12 +7,24 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func IndexHandler(w http.ResponseWriter, r *http.Request) {
+type authInstance struct{}
 
+type authController interface {
+	GetTokenHandler(w http.ResponseWriter, r *http.Request)
+	StoreHandler(w http.ResponseWriter, r *http.Request)
+}
+
+var Auth authController
+
+func init() {
+	Auth = &authInstance{}
+}
+
+func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/index.html", http.StatusTemporaryRedirect)
 }
 
-func AuthHandler(w http.ResponseWriter, r *http.Request) {
+func (a *authInstance) GetTokenHandler(w http.ResponseWriter, r *http.Request) {
 	vendor := mux.Vars(r)["vendor"]
 	action := mux.Vars(r)["action"]
 
@@ -23,9 +35,8 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 	if vendor == "kakao" {
 		auth.KakaoHandler(w, r, action)
 	}
-
 }
 
-func AuthStoreHandler(w http.ResponseWriter, r *http.Request) {
+func (a *authInstance) StoreHandler(w http.ResponseWriter, r *http.Request) {
 	auth.Store(w, r)
 }

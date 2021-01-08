@@ -26,7 +26,7 @@ const AuthKakaoCallBackContainer = ({ vendor }) => {
 
         dispatch(
           setUserProfile({
-            id: userInfo.id,
+            vendorId: userInfo.id,
             vendor: 'kakao',
             email: userInfo.kakao_account.email,
             name: userInfo.properties.nickname,

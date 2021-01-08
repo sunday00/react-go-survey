@@ -26,9 +26,9 @@ func MakeHandler() http.Handler {
 
 	n.UseHandler(r)
 
-	r.HandleFunc("/auth/{vendor}/callback/{action}", controllers.AuthHandler).Methods("GET").Name("auth.callback")
-	r.HandleFunc("/auth/{vendor}/{action}", controllers.AuthHandler).Methods("GET").Name("auth")
-	r.HandleFunc("/auth/store", controllers.AuthStoreHandler).Methods("POST").Name("auth.store")
+	r.HandleFunc("/auth/{vendor}/callback/{action}", controllers.Auth.GetTokenHandler).Methods("GET").Name("auth.callback")
+	r.HandleFunc("/auth/{vendor}/{action}", controllers.Auth.GetTokenHandler).Methods("GET").Name("auth")
+	r.HandleFunc("/auth/store", controllers.Auth.StoreHandler).Methods("POST").Name("auth.store")
 	r.HandleFunc("/", controllers.IndexHandler).Methods("GET")
 
 	return n
