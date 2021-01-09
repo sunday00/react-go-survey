@@ -1,7 +1,9 @@
 import React, { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 import Button from '@material-ui/core/Button';
+import Avatar from '@material-ui/core/Avatar';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -11,6 +13,7 @@ import { makeStyles } from '@material-ui/core';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import { setSigned } from '../../modules/auth';
 import { useOpenToggle } from '../../lib/hooks/useOpenToggle';
 
 const useStyles = makeStyles((theme) => {
@@ -34,12 +37,17 @@ const useStyles = makeStyles((theme) => {
       borderRadius: '0.3rem',
       margin: '0.4rem auto',
     },
+    avatar: {
+      margin: theme.spacing(1),
+      backgroundColor: theme.palette.secondary.main,
+    },
   };
 });
 
 const AuthDropdown = () => {
   const classes = useStyles();
   const history = useHistory();
+  const { isSigned, photo } = useSelector((state) => state.auth);
   const { ref, buttonRef, open, setOpen } = useOpenToggle(false);
   // TODO:: useSelector auth.isSigned, if signed then replace
   // make modify userInfo, logout (just request cookie del post)
@@ -59,7 +67,8 @@ const AuthDropdown = () => {
   return (
     <>
       <Button color="secondary" onClick={onOpen} ref={buttonRef}>
-        <AccountCircle />
+        {!isSigned && <AccountCircle />}
+        {isSigned && <Avatar className={classes.avatar} src={photo}></Avatar>}
       </Button>
 
       {open && (
