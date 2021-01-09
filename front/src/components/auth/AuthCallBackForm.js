@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 
 import Avatar from '@material-ui/core/Avatar';
@@ -13,10 +14,11 @@ import Container from '@material-ui/core/Container';
 import Copyright from './Copyright';
 import ReactTagify from './ReactTagify';
 
-import { setUserTags, setUserSubInfo } from '../../modules/auth';
+import { setUserTags, setUserSubInfo, setSigned } from '../../modules/auth';
 
 const AuthCallBackForm = ({ classes, photo }) => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const auth = useSelector((state) => state.auth);
 
   const initialTags = useRef([]);
@@ -35,7 +37,10 @@ const AuthCallBackForm = ({ classes, photo }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     axios.post('/auth/store', auth).then((res) => {
-      console.log(res.data);
+      if (res.data.success === 1) {
+        dispatch(setSigned(true));
+        history.push('/');
+      }
       // TODO:: link to home
       // setSinged
     });

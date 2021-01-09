@@ -15,7 +15,7 @@ export const setUserPhoto = createAction(SET_USER_PHOTO, (photo) => photo);
 export const setUserSubInfo = createAction(SET_USER_SUB_INFO, (info) => info);
 export const setUserTags = createAction(SET_USER_TAGS, (tags) => tags);
 
-export const setSigned = createAction(SET_SIGNED, (isSigned) => !isSigned);
+export const setSigned = createAction(SET_SIGNED, (isSigned) => isSigned);
 
 const initialState = {
   user: {

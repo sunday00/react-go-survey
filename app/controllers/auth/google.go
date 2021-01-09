@@ -98,7 +98,7 @@ func getGoogleUserInfoByExchange(code string, w http.ResponseWriter, r *http.Req
 		}
 
 		t = token.AccessToken
-		libs.SetCookieWithExpireHour("access_token", "Bearer "+t, 1, w) // save token for cookie
+		libs.SetCookieWithExpireHour("access_token", "Bearer "+t, 60, w) // save token for cookie
 	} else {
 		t = accessToken.Value
 		t = strings.Replace(t, "Bearer ", "", -1)

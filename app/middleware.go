@@ -3,6 +3,9 @@ package app
 import (
 	"net/http"
 	"os"
+	"survey/app/libs"
+
+	"github.com/sunday00/go-console"
 
 	"github.com/joho/godotenv"
 )
@@ -20,18 +23,7 @@ func Middlewares(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) 
 }
 
 func CheckSignIn(w http.ResponseWriter, r *http.Request) {
-	// if GetUserID(r) != "" {
-	// 	if strings.Contains(r.URL.Path, "/sign") {
-	// 		http.Redirect(w, r, "/todo.html", http.StatusTemporaryRedirect)
-	// 		return
-	// 	}
-	// 	return
-	// }
+	user := libs.GetSimpleSession("user.User", r)
 
-	// if strings.Contains(r.URL.Path, "/sign") || strings.Contains(r.URL.Path, "/auth") {
-	// 	return
-	// }
-
-	// http.Redirect(w, r, "/sign.html", http.StatusTemporaryRedirect)
-	// return
+	console.PrintColoredLn(user["Gender"], console.Success)
 }

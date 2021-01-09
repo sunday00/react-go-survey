@@ -1,8 +1,9 @@
 package models
 
 import (
-	"go-console"
 	"time"
+
+	"github.com/sunday00/go-console"
 )
 
 type userModel struct {
@@ -70,7 +71,10 @@ func (u *userModel) Save() int64 {
 		console.PrintColoredLn(err, console.Danger)
 	}
 
-	result, _ := pstmt.Exec(u.VendorID, u.Vendor, u.Job, u.Group, u.SubGroup)
+	result, err := pstmt.Exec(u.VendorID, u.Vendor, u.Job, u.Group, u.SubGroup)
+	if err != nil {
+		console.PrintColoredLn(err, console.Danger)
+	}
 	id, _ := result.LastInsertId()
 
 	for _, tag := range u.Interested {

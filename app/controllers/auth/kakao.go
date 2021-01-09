@@ -51,7 +51,7 @@ func getKakaoUserInfoByExchange(code string, w http.ResponseWriter, r *http.Requ
 		}
 
 		t = "Bearer " + token.AccessToken
-		libs.SetCookieWithExpireHour("access_token", t, 1, w) // save token for cookie
+		libs.SetCookieWithExpireHour("access_token", t, 60, w) // save token for cookie
 	} else {
 		t = accessToken.Value
 	}

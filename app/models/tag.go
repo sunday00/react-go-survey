@@ -1,7 +1,7 @@
 package models
 
 import (
-	"go-console"
+	"github.com/sunday00/go-console"
 )
 
 type tagModel struct {

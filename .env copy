@@ -15,3 +15,4 @@ DB_USER=""
 DB_PASS=""
 
 JWT_KEY=""
+SESSION_KEY=""
