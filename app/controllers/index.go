@@ -12,6 +12,7 @@ type authInstance struct{}
 type authController interface {
 	GetTokenHandler(w http.ResponseWriter, r *http.Request)
 	StoreHandler(w http.ResponseWriter, r *http.Request)
+	CheckSigned(w http.ResponseWriter, r *http.Request)
 }
 
 var Auth authController
@@ -39,4 +40,8 @@ func (a *authInstance) GetTokenHandler(w http.ResponseWriter, r *http.Request) {
 
 func (a *authInstance) StoreHandler(w http.ResponseWriter, r *http.Request) {
 	auth.Store(w, r)
+}
+
+func (a *authInstance) CheckSigned(w http.ResponseWriter, r *http.Request) {
+	auth.CheckSigned(w, r)
 }

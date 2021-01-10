@@ -14,7 +14,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Copyright from './Copyright';
 import useAuthStyle from '../../lib/styles/authStyle';
 
-const Register = () => {
+const ChooseVendor = ({ mode }) => {
   const classes = useAuthStyle();
 
   const handleGoogleButton = () => {
@@ -24,7 +24,7 @@ const Register = () => {
 
     if (true) {
       axios
-        .get('/auth/google/register', {
+        .get(`/auth/google/${mode}`, {
           withCredentials: true,
         })
         .then((res) => {
@@ -40,7 +40,7 @@ const Register = () => {
 
     if (true) {
       axios
-        .get('/auth/kakao/register', {
+        .get(`/auth/kakao/${mode}`, {
           withCredentials: true,
         })
         .then((res) => {
@@ -57,7 +57,7 @@ const Register = () => {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Register
+          {mode.toUpperCase()}
         </Typography>
         <Button
           type="button"
@@ -93,4 +93,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default ChooseVendor;

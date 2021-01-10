@@ -20,7 +20,7 @@ import store from './modules/index';
 
 import Header from './components/common/Header';
 import Home from './components/Home';
-import Register from './components/auth/Register';
+import ChooseVendor from './components/auth/ChooseVendor';
 import AuthGoogleCallBackContainer from './components/auth/AuthGoogleCallBackContainer';
 import AuthKakaoCallBackContainer from './components/auth/AuthKakaoCallBackContainer';
 
@@ -58,7 +58,14 @@ function App() {
               <Header />
               <Route component={Home} path="/" exact></Route>
               {/* <Route component={LoginPage} path="/login" /> */}
-              <Route component={Register} path="/register" />
+              <Route
+                render={() => <ChooseVendor mode="register" />}
+                path="/register"
+              />
+              <Route
+                render={() => <ChooseVendor mode="login" />}
+                path="/login"
+              />
               <Route
                 path="/auth/google/callback/:action"
                 render={() => <AuthGoogleCallBackContainer vendor="google" />}

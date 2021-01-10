@@ -31,7 +31,12 @@ const AuthCallBackForm = ({ classes, photo }) => {
   };
 
   const handleSubInfoChange = (e, field) => {
-    dispatch(setUserSubInfo({ key: field, value: e.target.value }));
+    dispatch(
+      setUserSubInfo({
+        ...auth.subInfo,
+        [field]: e.target.value,
+      }),
+    );
   };
 
   const handleSubmit = (e) => {

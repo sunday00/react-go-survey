@@ -1,6 +1,7 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import axios from 'axios';
 
 import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
@@ -13,7 +14,12 @@ import { makeStyles } from '@material-ui/core';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { setSigned } from '../../modules/auth';
+import {
+  setSigned,
+  setUserProfile,
+  setUserPhoto,
+  setUserSubInfo,
+} from '../../modules/auth';
 import { useOpenToggle } from '../../lib/hooks/useOpenToggle';
 
 const useStyles = makeStyles((theme) => {
@@ -47,10 +53,22 @@ const useStyles = makeStyles((theme) => {
 const AuthDropdown = () => {
   const classes = useStyles();
   const history = useHistory();
+  const dispatch = useDispatch();
   const { isSigned, photo } = useSelector((state) => state.auth);
   const { ref, buttonRef, open, setOpen } = useOpenToggle(false);
   // TODO:: useSelector auth.isSigned, if signed then replace
   // make modify userInfo, logout (just request cookie del post)
+
+  useEffect(() => {
+    axios.post('/auth/check').then((res) => {
+      if (res.data) {
+        dispatch(setSigned(true));
+        dispatch(setUserProfile(res.data.User));
+        dispatch(setUserPhoto(res.data.Photo));
+        dispatch(setUserSubInfo(res.data.SubInfo));
+      }
+    });
+  }, [dispatch]);
 
   const handleOnClick = useCallback(
     (linkTo) => {

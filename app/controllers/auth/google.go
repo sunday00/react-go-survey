@@ -121,8 +121,8 @@ func getGoogleUserInfoByExchange(code string, w http.ResponseWriter, r *http.Req
 }
 
 func googleRegisterHandler(w http.ResponseWriter, r *http.Request) {
-	state := libs.GenerateCsrfCookie(w)          // csrf
-	libs.SetSimpleCookie("oauthstate", state, w) // csrf cookie
+	state := libs.GenerateCsrfCookie(w)    // csrf
+	libs.SetSimpleCookie("csrf", state, w) // csrf cookie
 
 	option := oauth2.SetAuthURLParam("access_type", "offline")
 	url := oauthConfig.AuthCodeURL(state, option) // redirect url for login
@@ -131,10 +131,10 @@ func googleRegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
-	oauthState, _ := r.Cookie("oauthstate")
+	oauthState, _ := r.Cookie("csrf")
 
 	if oauthState != nil && oauthState.Value != "" && oauthState.Value == r.FormValue("state") {
-		libs.DelSimpleCookie("oauthstate", w)
+		libs.DelSimpleCookie("csrf", w)
 
 		// data, _ := getGoogleUserInfoByPostForm(r.FormValue("code"), w)
 		data, err := getGoogleUserInfoByExchange(r.FormValue("code"), w, r) // result

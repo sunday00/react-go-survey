@@ -10,6 +10,8 @@ import (
 	"survey/app/models"
 	"time"
 
+	"github.com/sunday00/go-console"
+
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/joho/godotenv"
 	"golang.org/x/oauth2"
@@ -18,25 +20,26 @@ import (
 var oauthConfig = oauth2.Config{}
 
 type mainInfo struct {
-	VendorId string
-	Vendor   string
-	Email    string
-	Name     string
-	Gender   string
-	AgeRange int
+	VendorId string `json:"vendorId"`
+	Vendor   string `json:"vendor"`
+	Email    string `json:"email"`
+	Name     string `json:"name"`
+	Gender   string `json:"gender"`
+	AgeRange int    `json:"ageRange"`
 }
 
 type subInfo struct {
-	Job        string
-	Group      string
-	SubGroup   string
-	Interested []string
+	Job        string   `json:"job"`
+	Group      string   `json:"group"`
+	SubGroup   string   `json:"subGroup"`
+	Interested []string `json:"interested"`
 }
 
 type ReqUserInfo struct {
+	ID      int64
 	User    mainInfo
 	Photo   string
-	Subinfo subInfo
+	SubInfo subInfo
 }
 
 func Store(w http.ResponseWriter, r *http.Request) {
@@ -48,12 +51,13 @@ func Store(w http.ResponseWriter, r *http.Request) {
 	user := models.NewUser()
 	user.VendorID = reqUserInfo.User.VendorId
 	user.Vendor = reqUserInfo.User.Vendor
-	user.Job = reqUserInfo.Subinfo.Job
-	user.Group = reqUserInfo.Subinfo.Group
-	user.SubGroup = reqUserInfo.Subinfo.SubGroup
-	user.Interested = reqUserInfo.Subinfo.Interested
+	user.Job = reqUserInfo.SubInfo.Job
+	user.Group = reqUserInfo.SubInfo.Group
+	user.SubGroup = reqUserInfo.SubInfo.SubGroup
+	user.Interested = reqUserInfo.SubInfo.Interested
 
 	id := user.Save()
+	reqUserInfo.ID = id
 
 	token, _ := GenerateJwtToken(id, user.Vendor, user.VendorID)
 
@@ -83,24 +87,45 @@ func GenerateJwtToken(id int64, vendor, vendorId string) (string, error) {
 }
 
 func SetUserSessions(user *ReqUserInfo, w http.ResponseWriter, r *http.Request) {
-	// godotenv.Load()
-	// var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
-	// session, _ := store.New(r, "user")
-
-	// session.Values["vendorId"] = user.User.VendorId
-	// session.Values["vendor"] = user.User.VendorId
-	// session.Values["email"] = user.User.Email
-	// session.Values["name"] = user.User.Name
-	// session.Values["gender"] = user.User.Gender
-	// session.Values["ageRange"] = user.User.AgeRange
-	// session.Values["photo"] = user.Photo
-	// session.Values["job"] = user.Subinfo.Job
-	// session.Values["group"] = user.Subinfo.Group
-	// session.Values["subgroup"] = user.Subinfo.SubGroup
-	// session.Values["interested"] = user.Subinfo.Interested
-
-	// session.Save(r, w)
-
 	libs.SetSimpleSession("user", user, w, r)
+
+}
+
+func CheckSigned(w http.ResponseWriter, r *http.Request) {
+	jwtCookie, err := r.Cookie("jwt")
+
+	if err != nil {
+		console.PrintColoredLn(err, console.Panic)
+		return
+	}
+
+	jwtStr := jwtCookie.Value
+
+	if jwtStr == "" {
+		return
+	}
+
+	jwtMap := jwt.MapClaims{}
+
+	t, err := jwt.ParseWithClaims(jwtStr, jwtMap, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_KEY")), nil
+	})
+
+	if !t.Valid {
+		//TODO:: if expired use refresh token
+		libs.ResponseError(w)
+	}
+
+	// idStr := libs.GetSimpleSession("user.ID", r)
+	// userStr := libs.GetSimpleSession("user.User", r)
+	// photoStr := libs.GetSimpleSession("user.Photo", r)
+	// subInfoStr := libs.GetSimpleSession("user.SubInfo", r)
+
+	// console.KeyValue("id", idStr["str"])
+	// console.KeyValue("user", userStr)
+	// console.KeyValue("photo", photoStr["str"])
+	// console.KeyValue("subInfo", subInfoStr)
+
+	fmt.Fprint(w, libs.GetBulkSession("user", r))
 
 }

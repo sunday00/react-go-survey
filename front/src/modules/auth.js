@@ -10,9 +10,12 @@ export const setUserProfile = createAction(
   SET_USER_PROFILE,
   (profile) => profile,
 );
-
+export const setUserSubInfo = createAction(
+  SET_USER_SUB_INFO,
+  (subInfo) => subInfo,
+);
 export const setUserPhoto = createAction(SET_USER_PHOTO, (photo) => photo);
-export const setUserSubInfo = createAction(SET_USER_SUB_INFO, (info) => info);
+
 export const setUserTags = createAction(SET_USER_TAGS, (tags) => tags);
 
 export const setSigned = createAction(SET_SIGNED, (isSigned) => isSigned);
@@ -46,12 +49,9 @@ const auth = handleActions(
       ...state,
       photo,
     }),
-    [SET_USER_SUB_INFO]: (state, { payload: info }) => ({
+    [SET_USER_SUB_INFO]: (state, { payload: subInfo }) => ({
       ...state,
-      subInfo: {
-        ...state.subInfo,
-        [info.key]: info.value,
-      },
+      subInfo,
     }),
     [SET_USER_TAGS]: (state, { payload: tags }) => ({
       ...state,

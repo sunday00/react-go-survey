@@ -87,8 +87,8 @@ func getKakaoUserInfoByExchange(code string, w http.ResponseWriter, r *http.Requ
 }
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
-	state := libs.GenerateCsrfCookie(w)          // csrf
-	libs.SetSimpleCookie("oauthstate", state, w) // csrf cookie
+	state := libs.GenerateCsrfCookie(w)    // csrf
+	libs.SetSimpleCookie("csrf", state, w) // csrf cookie
 
 	url := oauthConfig.AuthCodeURL(state)
 	// redirect url for login
@@ -97,10 +97,10 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 
 func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
-	oauthState, _ := r.Cookie("oauthstate")
+	oauthState, _ := r.Cookie("csrf")
 
 	if oauthState != nil && oauthState.Value != "" && oauthState.Value == r.FormValue("state") {
-		libs.DelSimpleCookie("oauthstate", w)
+		libs.DelSimpleCookie("csrf", w)
 
 		// data, _ := getGoogleUserInfoByPostForm(r.FormValue("code"), w)
 		data, err := getKakaoUserInfoByExchange(r.FormValue("code"), w, r) // result
