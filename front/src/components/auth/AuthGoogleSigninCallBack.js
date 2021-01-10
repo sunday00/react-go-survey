@@ -6,7 +6,7 @@ import { useHistory } from 'react-router';
 import AuthRegisterCallBack from './AuthRegisterCallBack';
 import { setUserProfile, setUserPhoto } from '../../modules/auth';
 
-const AuthGoogleCallBackContainer = ({ vendor }) => {
+const AuthGoogleSigninCallBack = ({ vendor }) => {
   const { photo } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -22,7 +22,7 @@ const AuthGoogleCallBackContainer = ({ vendor }) => {
     axios
       .get(url, { withCredentials: true })
       .then((res) => {
-        const userInfo = res.data;
+        const userInfo = res.data.data;
 
         const birthdays = userInfo.birthdays.find((b) => {
           return b.metadata.primary === true;
@@ -73,7 +73,7 @@ const AuthGoogleCallBackContainer = ({ vendor }) => {
     return;
   }, [dispatch, setModal, history]);
 
-  return <AuthRegisterCallBack photo={photo} modal={modal} />;
+  return <></>;
 };
 
-export default AuthGoogleCallBackContainer;
+export default AuthGoogleSigninCallBack;

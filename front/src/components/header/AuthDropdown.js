@@ -99,7 +99,7 @@ const AuthDropdown = () => {
           <ListItem
             button
             className={classes.button}
-            onClick={() => handleOnClick('/login')}
+            onClick={() => handleOnClick('/signin')}
           >
             <ListItemIcon style={{ minWidth: 0 }}>
               <FontAwesomeIcon

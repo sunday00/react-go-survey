@@ -46,8 +46,6 @@ const AuthCallBackForm = ({ classes, photo }) => {
         dispatch(setSigned(true));
         history.push('/');
       }
-      // TODO:: link to home
-      // setSinged
     });
   };
 

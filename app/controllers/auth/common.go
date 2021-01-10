@@ -129,3 +129,10 @@ func CheckSigned(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, libs.GetBulkSession("user", r))
 
 }
+
+func addDataSubInfo(vendor, vendorId string) *models.UserModel {
+	user := models.NewUser()
+	subdata := user.FindByVendorWithTags(vendor, vendorId)
+
+	return subdata
+}

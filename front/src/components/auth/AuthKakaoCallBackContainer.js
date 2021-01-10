@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { useHistory } from 'react-router';
 
-import AuthKakaoCallBack from './AuthKakaoCallBack';
+import AuthRegisterCallBack from './AuthRegisterCallBack';
 import { setUserProfile, setUserPhoto } from '../../modules/auth';
 
 const AuthKakaoCallBackContainer = ({ vendor }) => {
@@ -60,7 +60,7 @@ const AuthKakaoCallBackContainer = ({ vendor }) => {
     return;
   }, [dispatch, setModal, history]);
 
-  return <AuthKakaoCallBack photo={photo} modal={modal} />;
+  return <AuthRegisterCallBack photo={photo} modal={modal} />;
 };
 
 export default AuthKakaoCallBackContainer;

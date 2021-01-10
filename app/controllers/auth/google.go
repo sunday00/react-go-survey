@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"os"
 	"strings"
+
+	"github.com/sunday00/go-console"
 
 	"github.com/joho/godotenv"
 	"golang.org/x/net/context"
@@ -16,20 +17,6 @@ import (
 
 	"survey/app/libs"
 )
-
-// var oauthConfig = oauth2.Config{
-// 	RedirectURL:  "",
-// 	ClientID:     "",
-// 	ClientSecret: "",
-// 	Scopes: []string{
-// 		"https://www.googleapis.com/auth/userinfo.email",
-// 		"https://www.googleapis.com/auth/userinfo.profile",
-// 		"https://www.googleapis.com/auth/user.birthday.read",
-// 		"https://www.googleapis.com/auth/user.gender.read",
-// 		"openid",
-// 	},
-// 	Endpoint: google.Endpoint,
-// }
 
 // GoogleHandler is http handler for google oauth2
 func GoogleHandler(w http.ResponseWriter, r *http.Request, action string) {
@@ -48,41 +35,27 @@ func GoogleHandler(w http.ResponseWriter, r *http.Request, action string) {
 	oauthConfig.Endpoint = google.Endpoint
 
 	if strings.Contains(r.URL.Path, "/callback/register") {
-		googleCallbackHandler(w, r)
+		googleCallbackHandler(w, r, "register")
+		return
+	}
+
+	if strings.Contains(r.URL.Path, "/callback/signin") {
+		oauthConfig.RedirectURL = os.Getenv("CLIENT_DOMAIN") + "/auth/google/callback/signin"
+		googleCallbackHandler(w, r, "signin")
 		return
 	}
 
 	if action == "register" {
-		googleRegisterHandler(w, r)
+		googleAuthHandler(w, r)
 		return
 	}
-}
 
-func getGoogleUserInfoByPostForm(code string, w http.ResponseWriter) ([]byte, error) {
+	if action == "signin" {
+		oauthConfig.RedirectURL = os.Getenv("CLIENT_DOMAIN") + "/auth/google/callback/signin"
+		googleAuthHandler(w, r)
+		return
+	}
 
-	client := http.Client{}
-
-	resp, err := client.PostForm("https://www.googleapis.com/oauth2/v4/token",
-		url.Values{
-			"code":          {code},
-			"client_id":     {oauthConfig.ClientID},
-			"client_secret": {oauthConfig.ClientSecret},
-			"redirect_uri":  {oauthConfig.RedirectURL},
-			"grant_type":    {"authorization_code"},
-			"access_type":   {"offline"},
-		},
-	)
-	defer resp.Body.Close()
-
-	data, err := ioutil.ReadAll(resp.Body)
-
-	body := make(map[string]interface{})
-	err = json.Unmarshal(data, &body)
-
-	println(body["access_token"].(string))
-	println(body["id_token"].(string))
-
-	return data, err
 }
 
 func getGoogleUserInfoByExchange(code string, w http.ResponseWriter, r *http.Request) ([]byte, error) {
@@ -93,6 +66,7 @@ func getGoogleUserInfoByExchange(code string, w http.ResponseWriter, r *http.Req
 
 		// if err != nil && err.(*oauth2.RetrieveError).Response.StatusCode == 400 {
 		if err != nil {
+			console.KeyValue("err", err)
 			libs.Response401(w)
 			return nil, err
 		}
@@ -105,10 +79,10 @@ func getGoogleUserInfoByExchange(code string, w http.ResponseWriter, r *http.Req
 	}
 
 	resp, err := http.Get("https://people.googleapis.com/v1/people/me?personFields=photos,names,emailAddresses,genders,birthdays&access_token=" + t)
-	defer resp.Body.Close()
 	// get user info from google
 
 	if resp.StatusCode == 401 || resp.StatusCode == 403 {
+		console.KeyValue("err", err)
 		libs.Response401(w)
 		return nil, err
 	}
@@ -117,10 +91,11 @@ func getGoogleUserInfoByExchange(code string, w http.ResponseWriter, r *http.Req
 	body := make(map[string]interface{})
 	err = json.Unmarshal(data, &body)
 
+	defer resp.Body.Close()
 	return data, err
 }
 
-func googleRegisterHandler(w http.ResponseWriter, r *http.Request) {
+func googleAuthHandler(w http.ResponseWriter, r *http.Request) {
 	state := libs.GenerateCsrfCookie(w)    // csrf
 	libs.SetSimpleCookie("csrf", state, w) // csrf cookie
 
@@ -129,7 +104,7 @@ func googleRegisterHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, url)                            //response for react can redirect
 }
 
-func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
+func googleCallbackHandler(w http.ResponseWriter, r *http.Request, mode string) {
 
 	oauthState, _ := r.Cookie("csrf")
 
@@ -140,7 +115,25 @@ func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		data, err := getGoogleUserInfoByExchange(r.FormValue("code"), w, r) // result
 
 		if err != nil {
+			console.KeyValue("err", err)
 			libs.Response401(w)
+			return
+		}
+
+		if mode == "signin" {
+			byt := []byte(data)
+			var dat map[string]interface{}
+			json.Unmarshal(byt, &dat)
+			vendorId := strings.Split(dat["resourceName"].(string), "/")
+
+			subInfo := addDataSubInfo("google", vendorId[1])
+			subJson, _ := json.Marshal(subInfo)
+
+			//TODO:: make jwt cookie
+			// make user session ref store
+			// TODO:: frontends divide login page
+
+			fmt.Fprintf(w, "{\"data\" : %s, \"sub\" : %s}", string(data), string(subJson))
 			return
 		}
 

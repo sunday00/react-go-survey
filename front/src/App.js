@@ -23,6 +23,7 @@ import Home from './components/Home';
 import ChooseVendor from './components/auth/ChooseVendor';
 import AuthGoogleCallBackContainer from './components/auth/AuthGoogleCallBackContainer';
 import AuthKakaoCallBackContainer from './components/auth/AuthKakaoCallBackContainer';
+import AuthGoogleSigninCallBack from './components/auth/AuthGoogleSigninCallBack';
 
 library.add(fas, fab, far);
 
@@ -63,17 +64,25 @@ function App() {
                 path="/register"
               />
               <Route
-                render={() => <ChooseVendor mode="login" />}
-                path="/login"
+                render={() => <ChooseVendor mode="signin" />}
+                path="/signin"
               />
               <Route
-                path="/auth/google/callback/:action"
+                path="/auth/google/callback/register"
                 render={() => <AuthGoogleCallBackContainer vendor="google" />}
               />
               <Route
-                path="/auth/kakao/callback/:action"
+                path="/auth/kakao/callback/register"
                 render={() => <AuthKakaoCallBackContainer vendor="kakao" />}
               />
+              <Route
+                path="/auth/google/callback/signin"
+                render={() => <AuthGoogleSigninCallBack vendor="google" />}
+              />
+              {/* <Route
+                path="/auth/kakao/callback/signin"
+                render={() => <AuthKakaoCallBackContainer vendor="kakao" />}
+              /> */}
             </Container>
           </ThemeProvider>
         </BrowserRouter>

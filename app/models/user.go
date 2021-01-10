@@ -1,13 +1,14 @@
 package models
 
 import (
+	"log"
 	"time"
 
 	"github.com/sunday00/go-console"
 )
 
-type userModel struct {
-	ID         int       `json:"id"`
+type UserModel struct {
+	ID         int64     `json:"id"`
 	VendorID   string    `json:"vendorId"`
 	Vendor     string    `json:"vendor"`
 	Job        string    `json:"subInfo.job"`
@@ -53,11 +54,11 @@ func init() {
 
 }
 
-func NewUser() *userModel {
-	return &userModel{}
+func NewUser() *UserModel {
+	return &UserModel{}
 }
 
-func (u *userModel) Save() int64 {
+func (u *UserModel) Save() int64 {
 	Conn()
 	pstmt, err := DB.Prepare(`
 		INSERT INTO users (
@@ -99,4 +100,52 @@ func (u *userModel) Save() int64 {
 
 	return id
 
+}
+
+func (u *UserModel) FindByVendor(vendor, vendorId string) *UserModel {
+	Conn()
+
+	user := &UserModel{}
+
+	err := DB.QueryRow(`
+		SELECT id, vendor, vendorId, job, groupName, subGroup, createdAt FROM users WHERE vendor = ? AND vendorId = ?
+	`, vendor, vendorId).Scan(&user.ID, &user.Vendor, &user.VendorID, &user.Job, &user.Group, &user.SubGroup, &user.CreatedAt)
+
+	if err != nil {
+		console.PrintColoredLn(err, console.Panic)
+	}
+
+	return user
+}
+
+func (u *UserModel) FindByVendorWithTags(vendor, vendorId string) *UserModel {
+	Conn()
+
+	user := &UserModel{}
+
+	err := DB.QueryRow(`
+		SELECT id, vendor, vendorId, job, groupName, subGroup, createdAt FROM users WHERE vendor = ? AND vendorId = ?
+	`, vendor, vendorId).Scan(&user.ID, &user.Vendor, &user.VendorID, &user.Job, &user.Group, &user.SubGroup, &user.CreatedAt)
+
+	if err != nil {
+		console.PrintColoredLn(err, console.Panic)
+	}
+
+	tags, err := DB.Query(`
+		SELECT t.title FROM tags t
+			LEFT JOIN user_tags ut
+			ON t.id = ut.tag_id
+		WHERE ut.user_id = ?
+	`, user.ID)
+
+	for tags.Next() {
+		var title string
+		err := tags.Scan(&title)
+		if err != nil {
+			log.Fatal(err)
+		}
+		user.Interested = append(user.Interested, title)
+	}
+
+	return user
 }

@@ -4,7 +4,7 @@ import useAuthStyle from '../../lib/styles/authStyle';
 import AuthCallBackForm from './AuthCallBackForm';
 import Modal from '../common/Modal';
 
-const AuthKakaoCallBack = ({ photo, modal }) => {
+const AuthRegisterCallBack = ({ photo, modal }) => {
   const classes = useAuthStyle();
 
   return (
@@ -16,4 +16,4 @@ const AuthKakaoCallBack = ({ photo, modal }) => {
   );
 };
 
-export default AuthKakaoCallBack;
+export default AuthRegisterCallBack;

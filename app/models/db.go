@@ -22,7 +22,7 @@ func init() {
 func Conn() *sql.DB {
 	godotenv.Load()
 
-	connStr := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
+	connStr := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true",
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASS"),
 		os.Getenv("DB_HOST"),
