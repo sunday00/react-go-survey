@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) =>
 const Header = () => {
   const classes = useStyles();
 
+  // TODO: about page
   // TODO: search
   // TODO: create
   // TODO: auth / info

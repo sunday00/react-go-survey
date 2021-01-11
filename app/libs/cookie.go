@@ -121,3 +121,21 @@ func GetBulkSession(name string, r *http.Request) string {
 
 	return string(m)
 }
+
+func FlushUserSession(w http.ResponseWriter, r *http.Request) {
+	DelSimpleCookie("user", w)
+	DelSimpleCookie("jwt", w)
+	DelSimpleCookie("access_token", w)
+
+	godotenv.Load()
+	var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
+
+	session, _ := store.New(r, "user")
+	session.Options = &sessions.Options{
+		Path:     "/",
+		HttpOnly: true,
+		MaxAge:   -1,
+	}
+
+	session.Save(r, w)
+}

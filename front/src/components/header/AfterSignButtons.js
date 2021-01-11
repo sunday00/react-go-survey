@@ -11,7 +11,7 @@ const AfterSignButtons = ({ classesProp, handleOnClick }) => {
       <ListItem
         button
         className={classesProp.button}
-        onClick={() => handleOnClick('/create')}
+        onClick={() => handleOnClick('/survey/create')}
       >
         <ListItemIcon style={{ minWidth: 0 }}>
           <FontAwesomeIcon

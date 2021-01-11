@@ -19,12 +19,13 @@ import { far } from '@fortawesome/free-regular-svg-icons';
 import store from './modules/index';
 
 import Header from './components/common/Header';
-import Home from './components/Home';
+
 import ChooseVendor from './components/auth/ChooseVendor';
 import AuthGoogleCallBackContainer from './components/auth/AuthGoogleCallBackContainer';
 import AuthKakaoCallBackContainer from './components/auth/AuthKakaoCallBackContainer';
 import AuthGoogleSigninCallBack from './components/auth/AuthGoogleSigninCallBack';
 import AuthKakaoSigninCallBack from './components/auth/AuthKakaoSigninCallBack';
+import MainWrapper from './components/MainWrapper';
 
 library.add(fas, fab, far);
 
@@ -32,6 +33,7 @@ const theme = createMuiTheme({
   palette: {
     primary: {
       main: indigo[300],
+      superLight: indigo[100],
     },
     secondary: {
       main: pink[300],
@@ -58,32 +60,39 @@ function App() {
           <ThemeProvider theme={theme}>
             <Container className={classes.main} maxWidth={false}>
               <Header />
-              <Route component={Home} path="/" exact></Route>
-              {/* <Route component={LoginPage} path="/login" /> */}
-              <Route
-                render={() => <ChooseVendor mode="register" />}
-                path="/register"
-              />
-              <Route
-                render={() => <ChooseVendor mode="signin" />}
-                path="/signin"
-              />
-              <Route
-                path="/auth/google/callback/register"
-                render={() => <AuthGoogleCallBackContainer vendor="google" />}
-              />
-              <Route
-                path="/auth/kakao/callback/register"
-                render={() => <AuthKakaoCallBackContainer vendor="kakao" />}
-              />
-              <Route
-                path="/auth/google/callback/signin"
-                render={() => <AuthGoogleSigninCallBack vendor="google" />}
-              />
-              <Route
-                path="/auth/kakao/callback/signin"
-                render={() => <AuthKakaoSigninCallBack vendor="kakao" />}
-              />
+              {
+                //auth
+                <>
+                  <Route
+                    render={() => <ChooseVendor mode="register" />}
+                    path="/register"
+                  />
+                  <Route
+                    render={() => <ChooseVendor mode="signin" />}
+                    path="/signin"
+                  />
+                  <Route
+                    path="/auth/google/callback/register"
+                    render={() => (
+                      <AuthGoogleCallBackContainer vendor="google" />
+                    )}
+                  />
+                  <Route
+                    path="/auth/kakao/callback/register"
+                    render={() => <AuthKakaoCallBackContainer vendor="kakao" />}
+                  />
+                  <Route
+                    path="/auth/google/callback/signin"
+                    render={() => <AuthGoogleSigninCallBack vendor="google" />}
+                  />
+                  <Route
+                    path="/auth/kakao/callback/signin"
+                    render={() => <AuthKakaoSigninCallBack vendor="kakao" />}
+                  />
+                </>
+              }
+              <Route render={() => <MainWrapper />} path="/" exact />
+              <Route render={() => <MainWrapper />} path={['/survey/:mode']} />
             </Container>
           </ThemeProvider>
         </BrowserRouter>
