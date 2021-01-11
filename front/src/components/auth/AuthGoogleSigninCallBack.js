@@ -3,13 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { useHistory } from 'react-router';
 
-import Modal from '../common/Modal';
 import {
   setUserProfile,
   setUserPhoto,
   setUserSubInfo,
   setSigned,
 } from '../../modules/auth';
+import SimpleModal from '../common/SimpleModal';
 
 const AuthGoogleSigninCallBack = ({ vendor }) => {
   const dispatch = useDispatch();
@@ -109,11 +109,7 @@ const AuthGoogleSigninCallBack = ({ vendor }) => {
     });
   }, [auth, dispatch, id, history]);
 
-  return (
-    <>
-      {modal && <Modal message={modal.message} button={modal.button}></Modal>}
-    </>
-  );
+  return <>{modal && <SimpleModal modal={modal}></SimpleModal>}</>;
 };
 
 export default AuthGoogleSigninCallBack;

@@ -2,7 +2,7 @@ import React from 'react';
 
 import useAuthStyle from '../../lib/styles/authStyle';
 import AuthCallBackForm from './AuthCallBackForm';
-import Modal from '../common/Modal';
+import SimpleModal from '../common/SimpleModal';
 
 const AuthRegisterCallBack = ({ photo, modal }) => {
   const classes = useAuthStyle();
@@ -11,7 +11,7 @@ const AuthRegisterCallBack = ({ photo, modal }) => {
     <>
       <AuthCallBackForm classes={classes} photo={photo} />
 
-      {modal && <Modal message={modal.message} button={modal.button}></Modal>}
+      {modal && <SimpleModal modal={modal}></SimpleModal>}
     </>
   );
 };

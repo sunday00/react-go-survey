@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { useHistory } from 'react-router';
 
-import Modal from '../common/Modal';
+import SimpleModal from '../common/SimpleModal';
 import {
   setUserProfile,
   setUserPhoto,
@@ -96,11 +96,7 @@ const AuthKakaoSignCallBack = ({ vendor }) => {
     });
   }, [auth, dispatch, id, history]);
 
-  return (
-    <>
-      {modal && <Modal message={modal.message} button={modal.button}></Modal>}
-    </>
-  );
+  return <>{modal && <SimpleModal modal={modal}></SimpleModal>}</>;
 };
 
 export default AuthKakaoSignCallBack;
