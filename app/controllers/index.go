@@ -14,6 +14,7 @@ type authController interface {
 	StoreHandler(w http.ResponseWriter, r *http.Request)
 	CheckSigned(w http.ResponseWriter, r *http.Request)
 	SignHandler(w http.ResponseWriter, r *http.Request)
+	SignOut(w http.ResponseWriter, r *http.Request)
 }
 
 var Auth authController
@@ -49,4 +50,8 @@ func (a *authInstance) CheckSigned(w http.ResponseWriter, r *http.Request) {
 
 func (a *authInstance) SignHandler(w http.ResponseWriter, r *http.Request) {
 	auth.ResponseJWTAndSessionProcess("sign", w, r)
+}
+
+func (a *authInstance) SignOut(w http.ResponseWriter, r *http.Request) {
+	auth.SignOut(w, r)
 }

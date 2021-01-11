@@ -16,10 +16,7 @@ func Middlewares(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) 
 	w.Header().Set("credentials", "true")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	CheckCSRF(w, r, CheckSignIn)
-	CheckSignIn(w, r)
-
 	//========
-
 	next(w, r)
 }
 
@@ -34,5 +31,5 @@ func CheckSignIn(w http.ResponseWriter, r *http.Request) {
 
 	user := libs.GetSimpleSession("user.User", r)
 
-	console.PrintColoredLn(user, console.Success)
+	console.KeyValue("user", user)
 }

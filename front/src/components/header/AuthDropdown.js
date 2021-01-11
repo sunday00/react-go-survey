@@ -7,12 +7,8 @@ import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import { makeStyles } from '@material-ui/core';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { makeStyles } from '@material-ui/core';
 
 import {
   setSigned,
@@ -21,6 +17,8 @@ import {
   setUserSubInfo,
 } from '../../modules/auth';
 import { useOpenToggle } from '../../lib/hooks/useOpenToggle';
+import BeforSignButtons from './BeforSignButtons';
+import AfterSignButtons from './AfterSignButtons';
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -73,9 +71,20 @@ const AuthDropdown = () => {
   const handleOnClick = useCallback(
     (linkTo) => {
       setOpen(false);
+
+      if (linkTo === '/signout') {
+        axios.post('/auth/signout').then((res) => {
+          dispatch(setSigned(false));
+          dispatch(setUserProfile({}));
+          dispatch(setUserPhoto(''));
+          dispatch(setUserSubInfo({}));
+          return history.push('/');
+        });
+      }
+
       return history.push(linkTo);
     },
-    [history, setOpen],
+    [history, setOpen, dispatch],
   );
 
   const onOpen = (e) => {
@@ -96,32 +105,18 @@ const AuthDropdown = () => {
           className={classes.list}
           ref={ref}
         >
-          <ListItem
-            button
-            className={classes.button}
-            onClick={() => handleOnClick('/signin')}
-          >
-            <ListItemIcon style={{ minWidth: 0 }}>
-              <FontAwesomeIcon
-                icon={['fas', 'sign-in-alt']}
-                style={{ marginRight: '0.5rem' }}
-              />
-            </ListItemIcon>
-            <ListItemText primary="Sign In" />
-          </ListItem>
-          <ListItem
-            button
-            className={classes.button}
-            onClick={() => handleOnClick('/register')}
-          >
-            <ListItemIcon style={{ minWidth: 0 }}>
-              <FontAwesomeIcon
-                icon={['fas', 'user-plus']}
-                style={{ marginRight: '0.5rem' }}
-              />
-            </ListItemIcon>
-            <ListItemText primary="Register" />
-          </ListItem>
+          {!isSigned && (
+            <BeforSignButtons
+              classesProp={classes}
+              handleOnClick={handleOnClick}
+            />
+          )}
+          {isSigned && (
+            <AfterSignButtons
+              classesProp={classes}
+              handleOnClick={handleOnClick}
+            />
+          )}
         </List>
       )}
     </>

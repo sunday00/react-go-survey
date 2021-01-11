@@ -10,6 +10,7 @@ import (
 	"survey/app/models"
 	"time"
 
+	"github.com/gorilla/sessions"
 	"github.com/sunday00/go-console"
 
 	jwt "github.com/dgrijalva/jwt-go"
@@ -135,4 +136,25 @@ func addDataSubInfo(vendor, vendorID string) *models.UserModel {
 	subdata := user.FindByVendorWithTags(vendor, vendorID)
 
 	return subdata
+}
+
+// SignOut delete session and cookie and all token
+func SignOut(w http.ResponseWriter, r *http.Request) {
+	libs.DelSimpleCookie("user", w)
+	libs.DelSimpleCookie("jwt", w)
+	libs.DelSimpleCookie("access_token", w)
+
+	godotenv.Load()
+	var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
+
+	session, _ := store.New(r, "user")
+	session.Options = &sessions.Options{
+		Path:     "/",
+		HttpOnly: true,
+		MaxAge:   -1,
+	}
+
+	session.Save(r, w)
+
+	fmt.Fprint(w, "{\"success\" : \"1\"}")
 }
