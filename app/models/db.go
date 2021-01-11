@@ -13,12 +13,14 @@ import (
 
 type dbInterface interface{}
 
+// DB is DB object
 var DB *sql.DB
 
 func init() {
 	Conn()
 }
 
+// Conn is connect for db
 func Conn() *sql.DB {
 	godotenv.Load()
 
