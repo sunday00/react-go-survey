@@ -1,17 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { useHistory } from 'react-router';
 
-import AuthRegisterCallBack from './AuthRegisterCallBack';
-import { setUserProfile, setUserPhoto } from '../../modules/auth';
+import Modal from '../common/Modal';
+import {
+  setUserProfile,
+  setUserPhoto,
+  setUserSubInfo,
+  setSigned,
+} from '../../modules/auth';
 
 const AuthGoogleSigninCallBack = ({ vendor }) => {
-  const { photo } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const history = useHistory();
 
   const [modal, setModal] = useState();
+  const [id, setId] = useState();
+
+  const auth = useSelector((state) => state.auth);
 
   useEffect(() => {
     const url = window.location.href.replace(
@@ -27,6 +34,13 @@ const AuthGoogleSigninCallBack = ({ vendor }) => {
         const birthdays = userInfo.birthdays.find((b) => {
           return b.metadata.primary === true;
         }).date;
+
+        const subInfo = {
+          job: res.data.sub.job,
+          group: res.data.sub.group,
+          subGroup: res.data.sub.group,
+          interested: res.data.sub.interested,
+        };
 
         dispatch(
           setUserProfile({
@@ -48,6 +62,10 @@ const AuthGoogleSigninCallBack = ({ vendor }) => {
             }).url,
           ),
         );
+
+        dispatch(setUserSubInfo(subInfo));
+
+        setId(res.data.sub.id);
       })
       .catch((err) => {
         console.error(err);
@@ -73,7 +91,29 @@ const AuthGoogleSigninCallBack = ({ vendor }) => {
     return;
   }, [dispatch, setModal, history]);
 
-  return <></>;
+  useEffect(() => {
+    if (
+      !auth.user.vendorId ||
+      !auth.subInfo.job ||
+      !auth.subInfo.group ||
+      !id
+    ) {
+      return;
+    }
+
+    axios.post('/auth/sign', { ...auth, id }).then((res) => {
+      if (res.data.success === 1) {
+        dispatch(setSigned(true));
+        history.push('/');
+      }
+    });
+  }, [auth, dispatch, id]);
+
+  return (
+    <>
+      {modal && <Modal message={modal.message} button={modal.button}></Modal>}
+    </>
+  );
 };
 
 export default AuthGoogleSigninCallBack;

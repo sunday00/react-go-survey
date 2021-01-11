@@ -17,7 +17,7 @@ import (
 	"survey/app/libs"
 )
 
-// GoogleHandler is http handler for google oauth2
+// KakaoHandler is http handler for google oauth2
 func KakaoHandler(w http.ResponseWriter, r *http.Request, action string) {
 
 	godotenv.Load()
@@ -57,10 +57,10 @@ func getKakaoUserInfoByExchange(code string, w http.ResponseWriter, r *http.Requ
 	}
 
 	// get user info from google
-	reqUrl, _ := url.Parse("https://kapi.kakao.com/v2/user/me")
+	reqURL, _ := url.Parse("https://kapi.kakao.com/v2/user/me")
 	req := &http.Request{
 		Method: "GET",
-		URL:    reqUrl,
+		URL:    reqURL,
 		Header: map[string][]string{
 			"Authorization": {t},
 		},

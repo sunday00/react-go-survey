@@ -11,10 +11,10 @@ type UserModel struct {
 	ID         int64     `json:"id"`
 	VendorID   string    `json:"vendorId"`
 	Vendor     string    `json:"vendor"`
-	Job        string    `json:"subInfo.job"`
-	Group      string    `json:"subInfo.group"`
-	SubGroup   string    `json:"subInfo.subGroup"`
-	Interested []string  `json:"subInfo.interested"`
+	Job        string    `json:"job"`
+	Group      string    `json:"group"`
+	SubGroup   string    `json:"subGroup"`
+	Interested []string  `json:"interested"`
 	CreatedAt  time.Time `json:"created_at"`
 }
 
