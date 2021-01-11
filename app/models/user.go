@@ -7,6 +7,7 @@ import (
 	"github.com/sunday00/go-console"
 )
 
+// UserModel is model of user
 type UserModel struct {
 	ID         int64     `json:"id"`
 	VendorID   string    `json:"vendorId"`
@@ -54,10 +55,12 @@ func init() {
 
 }
 
+// NewUser returns user model
 func NewUser() *UserModel {
 	return &UserModel{}
 }
 
+// Save user and returns db id
 func (u *UserModel) Save() int64 {
 	Conn()
 	pstmt, err := DB.Prepare(`
@@ -102,14 +105,15 @@ func (u *UserModel) Save() int64 {
 
 }
 
-func (u *UserModel) FindByVendor(vendor, vendorId string) *UserModel {
+// FindByVendor returns one user by vendor, vendorId. Not DB id
+func (u *UserModel) FindByVendor(vendor, vendorID string) *UserModel {
 	Conn()
 
 	user := &UserModel{}
 
 	err := DB.QueryRow(`
 		SELECT id, vendor, vendorId, job, groupName, subGroup, createdAt FROM users WHERE vendor = ? AND vendorId = ?
-	`, vendor, vendorId).Scan(&user.ID, &user.Vendor, &user.VendorID, &user.Job, &user.Group, &user.SubGroup, &user.CreatedAt)
+	`, vendor, vendorID).Scan(&user.ID, &user.Vendor, &user.VendorID, &user.Job, &user.Group, &user.SubGroup, &user.CreatedAt)
 
 	if err != nil {
 		console.PrintColoredLn(err, console.Panic)
@@ -118,14 +122,16 @@ func (u *UserModel) FindByVendor(vendor, vendorId string) *UserModel {
 	return user
 }
 
-func (u *UserModel) FindByVendorWithTags(vendor, vendorId string) *UserModel {
+// FindByVendorWithTags returns one user by vendor, vendorId. Not DB id
+// returns with tags
+func (u *UserModel) FindByVendorWithTags(vendor, vendorID string) *UserModel {
 	Conn()
 
 	user := &UserModel{}
 
 	err := DB.QueryRow(`
 		SELECT id, vendor, vendorId, job, groupName, subGroup, createdAt FROM users WHERE vendor = ? AND vendorId = ?
-	`, vendor, vendorId).Scan(&user.ID, &user.Vendor, &user.VendorID, &user.Job, &user.Group, &user.SubGroup, &user.CreatedAt)
+	`, vendor, vendorID).Scan(&user.ID, &user.Vendor, &user.VendorID, &user.Job, &user.Group, &user.SubGroup, &user.CreatedAt)
 
 	if err != nil {
 		console.PrintColoredLn(err, console.Panic)

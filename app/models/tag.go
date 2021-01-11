@@ -4,7 +4,7 @@ import (
 	"github.com/sunday00/go-console"
 )
 
-type tagModel struct {
+type TagModel struct {
 	ID    int    `json:"id"`
 	Title string `json:"title"`
 }
@@ -14,11 +14,11 @@ func init() {
 	// because user have tags and need foreign key.
 }
 
-func NewTag() *tagModel {
-	return &tagModel{}
+func NewTag() *TagModel {
+	return &TagModel{}
 }
 
-func (t *tagModel) Save() int64 {
+func (t *TagModel) Save() int64 {
 	Conn()
 	pstmt, err := DB.Prepare(`
 		INSERT INTO tags (
@@ -40,7 +40,7 @@ func (t *tagModel) Save() int64 {
 	return id
 }
 
-func (t *tagModel) FindByTitle() int64 {
+func (t *TagModel) FindByTitle() int64 {
 
 	var id int64
 

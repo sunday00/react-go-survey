@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { useHistory } from 'react-router';
 
@@ -11,7 +11,7 @@ import {
   setSigned,
 } from '../../modules/auth';
 
-const AuthGoogleSigninCallBack = ({ vendor }) => {
+const AuthKakaoSignCallBack = ({ vendor }) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -31,10 +31,6 @@ const AuthGoogleSigninCallBack = ({ vendor }) => {
       .then((res) => {
         const userInfo = res.data.data;
 
-        const birthdays = userInfo.birthdays.find((b) => {
-          return b.metadata.primary === true;
-        }).date;
-
         const subInfo = {
           job: res.data.sub.job,
           group: res.data.sub.group,
@@ -44,24 +40,15 @@ const AuthGoogleSigninCallBack = ({ vendor }) => {
 
         dispatch(
           setUserProfile({
-            vendorId: userInfo.names[0].metadata.source.id.toString(),
-            vendor: 'google',
-            email: userInfo.emailAddresses.find((m) => {
-              return m.metadata.primary === true;
-            }).value,
-            name: userInfo.names[0].displayName,
-            gender: userInfo.genders[0].formattedValue.toLowerCase(),
-            ageRange:
-              Math.floor((new Date().getFullYear() - birthdays.year) / 10) * 10,
+            vendorId: userInfo.id.toString(),
+            vendor: 'kakao',
+            email: userInfo.kakao_account.email,
+            name: userInfo.properties.nickname,
+            gender: userInfo.kakao_account.gender,
+            ageRange: userInfo.kakao_account.age_range.split('~')[0],
           }),
         );
-        dispatch(
-          setUserPhoto(
-            userInfo.photos.find((p) => {
-              return p.metadata.primary === true;
-            }).url,
-          ),
-        );
+        dispatch(setUserPhoto(userInfo.properties.profile_image));
 
         dispatch(setUserSubInfo(subInfo));
 
@@ -116,4 +103,4 @@ const AuthGoogleSigninCallBack = ({ vendor }) => {
   );
 };
 
-export default AuthGoogleSigninCallBack;
+export default AuthKakaoSignCallBack;

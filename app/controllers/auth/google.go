@@ -129,10 +129,6 @@ func googleCallbackHandler(w http.ResponseWriter, r *http.Request, mode string) 
 			subInfo := addDataSubInfo("google", vendorID[1])
 			subJSON, _ := json.Marshal(subInfo)
 
-			//TODO:: make jwt cookie
-			// make user session ref store
-			// TODO:: frontends divide login page
-
 			fmt.Fprintf(w, "{\"data\" : %s, \"sub\" : %s}", string(data), string(subJSON))
 			return
 		}

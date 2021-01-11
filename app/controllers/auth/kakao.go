@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/joho/godotenv"
@@ -28,12 +29,24 @@ func KakaoHandler(w http.ResponseWriter, r *http.Request, action string) {
 	oauthConfig.Endpoint = kakao.Endpoint
 
 	if strings.Contains(r.URL.Path, "/callback/register") {
-		callbackHandler(w, r)
+		kakaoCallbackHandler(w, r, "register")
+		return
+	}
+
+	if strings.Contains(r.URL.Path, "/callback/signin") {
+		oauthConfig.RedirectURL = os.Getenv("CLIENT_DOMAIN") + "/auth/kakao/callback/signin"
+		kakaoCallbackHandler(w, r, "signin")
 		return
 	}
 
 	if action == "register" {
-		registerHandler(w, r)
+		kakaoAuthHandler(w, r)
+		return
+	}
+
+	if action == "signin" {
+		oauthConfig.RedirectURL = os.Getenv("CLIENT_DOMAIN") + "/auth/kakao/callback/signin"
+		kakaoAuthHandler(w, r)
 		return
 	}
 }
@@ -86,7 +99,7 @@ func getKakaoUserInfoByExchange(code string, w http.ResponseWriter, r *http.Requ
 	return data, err
 }
 
-func registerHandler(w http.ResponseWriter, r *http.Request) {
+func kakaoAuthHandler(w http.ResponseWriter, r *http.Request) {
 	state := libs.GenerateCsrfCookie(w)    // csrf
 	libs.SetSimpleCookie("csrf", state, w) // csrf cookie
 
@@ -95,7 +108,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, url) //response for react can redirect
 }
 
-func callbackHandler(w http.ResponseWriter, r *http.Request) {
+func kakaoCallbackHandler(w http.ResponseWriter, r *http.Request, mode string) {
 
 	oauthState, _ := r.Cookie("csrf")
 
@@ -107,6 +120,22 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			libs.Response401(w)
+			return
+		}
+
+		if mode == "signin" {
+			byt := []byte(data)
+			var dat map[string]interface{}
+			json.Unmarshal(byt, &dat)
+
+			num, _ := strconv.ParseFloat(fmt.Sprintf("%v", dat["id"]), 64)
+			vendorID := strings.Split(fmt.Sprintf("%f", num), ".")
+			// vendorID := strconv.FormatInt(num, 10)
+
+			subInfo := addDataSubInfo("kakao", vendorID[0])
+			subJSON, _ := json.Marshal(subInfo)
+
+			fmt.Fprintf(w, "{\"data\" : %s, \"sub\" : %s}", string(data), string(subJSON))
 			return
 		}
 
