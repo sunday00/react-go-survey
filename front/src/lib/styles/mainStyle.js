@@ -32,6 +32,11 @@ export const useSurveyStyle = makeStyles((theme) => ({
     // font-family: 'Noto Sans KR', sans-serif;
     // font-family: 'Teko', sans-serif;
   },
+  buttonWrap: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: theme.spacing(2),
+  },
   button: {
     marginTop: theme.spacing(2),
   },
@@ -59,6 +64,13 @@ export const CssTextField = withStyles((theme) => ({
       '&.Mui-focused fieldset': {
         borderColor: theme.palette.primary.contrastText,
       },
+      '&.Mui-error .MuiOutlinedInput-notchedOutline': {
+        borderColor: 'tomato',
+        borderWidth: '2px',
+      },
+    },
+    '& .MuiFormHelperText-root.Mui-error': {
+      color: 'orange',
     },
   },
 }))(TextField);

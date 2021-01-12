@@ -1,38 +1,30 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useHistory } from 'react-router';
+import React, { useState, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+// import { useHistory } from 'react-router';
+import { Link } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
+
 import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 
-import Moment from 'moment';
-
 import { useSurveyStyle, CssTextField } from '../../lib/styles/mainStyle';
 import { setMain as setMainSetting } from '../../modules/survey';
 
-const SurveyCreate = () => {
+const BackButton = React.forwardRef((props, ref) => {
+  return <Link ref={ref} {...props} />;
+});
+
+const RespondentSetting = () => {
   const classes = useSurveyStyle();
   const dispatch = useDispatch();
-  const history = useHistory();
-
-  const storedMain = useSelector((state) => state.survey.main);
+  // const history = useHistory();
 
   const [main, setMain] = useState({
     title: '',
     description: '',
-    start: Moment().format('YYYY-MM-DD'),
-    end: Moment().add(3, 'd').format('YYYY-MM-DD'),
   });
-
-  useEffect(() => {
-    if (storedMain.title !== '') {
-      setMain(storedMain);
-    } else if (window.localStorage.getItem('sv_cr_tp')) {
-      setMain(JSON.parse(window.localStorage.getItem('sv_cr_tp')));
-    }
-  }, [storedMain]);
 
   const [errors, setErrors] = useState({
     title: [false, ''],
@@ -57,6 +49,7 @@ const SurveyCreate = () => {
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
+    console.log('submit');
     const newErrors = { ...errors };
     Object.keys(main)
       .reverse()
@@ -67,20 +60,6 @@ const SurveyCreate = () => {
         } else newErrors[k] = [false, ''];
       });
 
-    if (Moment(main.start).isAfter(main.end)) {
-      newErrors.start = [true, 'should before end'];
-      newErrors.end = [true, 'should after start'];
-    }
-
-    if (
-      Moment(main.start).isBefore(Moment().format('YYYY-MM-DD')) ||
-      Moment(main.end).isBefore()
-    ) {
-      newErrors.start = [true, "we don't have time machine"];
-      newErrors.end = [true, "we don't have time machine"];
-      console.log(Moment(main.start), Moment(main.end).isBefore());
-    }
-
     setErrors({ ...newErrors });
 
     if (Object.keys(newErrors).find((k) => newErrors[k][0] === true)) {
@@ -89,15 +68,17 @@ const SurveyCreate = () => {
 
     window.localStorage.setItem('sv_cr_tp', JSON.stringify(main));
     dispatch(setMainSetting(main));
-    history.push('/survey/create/respondent-setting');
   };
+
+  //TODO:: make form for limit answerer
+  // ex:: for male? for over 20 age? for nitroeye ? anything...
 
   return (
     <Container component="main" maxWidth="xs" className={classes.root}>
       <CssBaseline />
       <div className={classes.paper}>
         <Typography component="h1" variant="h5" className={classes.title}>
-          기본설정
+          대상자 선정
         </Typography>
         <form noValidate onSubmit={handleOnSubmit}>
           <CssTextField
@@ -167,15 +148,28 @@ const SurveyCreate = () => {
             />
           </div>
 
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="secondary"
-            className={classes.button}
-          >
-            Next
-          </Button>
+          <div className={'MuiFormControl-marginNormal ' + classes.buttonWrap}>
+            <Button
+              type="button"
+              fullWidth
+              variant="contained"
+              color="secondary"
+              className={classes.button}
+              component={BackButton}
+              to="/survey/create/main-setting"
+            >
+              Back
+            </Button>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="secondary"
+              className={classes.button}
+            >
+              Next
+            </Button>
+          </div>
         </form>
       </div>
       {/* <Box mt={8}></Box> */}
@@ -183,4 +177,4 @@ const SurveyCreate = () => {
   );
 };
 
-export default SurveyCreate;
+export default RespondentSetting;
