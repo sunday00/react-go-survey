@@ -14,24 +14,12 @@ const styles = {
   },
 };
 
-const tagifyConfig = {
-  blacklist: [],
-  maxTags: 3,
-  backspace: 'edit',
-  placeholder: 'Interested',
-  editTags: 1,
-  dropdown: {
-    enabled: 0,
-  },
-  whitelist: ['coding', 'development', 'sports'],
-};
-
-const ReactTagify = ({ classes, initialValues, handleChange }) => {
+const ReactTagify = ({ classes, initialValues, handleChange, settings }) => {
   return (
     <Tags
       onChange={handleChange}
       className={classes.input}
-      settings={tagifyConfig}
+      settings={settings}
       value={initialValues}
     />
   );

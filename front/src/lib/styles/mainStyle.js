@@ -18,6 +18,19 @@ export const useSurveyStyle = makeStyles((theme) => ({
     backgroundColor: theme.palette.primary.main,
     padding: theme.spacing(4),
     alignSelf: 'center',
+    '& .MuiFormControl-root': {
+      marginTop: theme.spacing(2),
+      '& .ReactTagify-input-20': {
+        marginTop: '1px',
+      },
+      '& .tagify.tagify--focus': {
+        borderColor: '#fff',
+        borderWidth: '2px',
+      },
+    },
+    '& .MuiFormControl-marginNormal .MuiFormControl-root': {
+      marginTop: 0,
+    },
   },
   paper: {
     padding: theme.spacing(2),

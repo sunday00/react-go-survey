@@ -12,7 +12,7 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 
 import Copyright from './Copyright';
-import ReactTagify from './ReactTagify';
+import ReactTagify from '../common/ReactTagify';
 
 import { setUserTags, setUserSubInfo, setSigned } from '../../modules/auth';
 
@@ -22,6 +22,18 @@ const AuthCallBackForm = ({ classes, photo }) => {
   const auth = useSelector((state) => state.auth);
 
   const initialTags = useRef([]);
+
+  const tagifyConfig = useRef({
+    blacklist: [],
+    maxTags: 3,
+    backspace: 'edit',
+    placeholder: 'Interested',
+    editTags: 1,
+    dropdown: {
+      enabled: 0,
+    },
+    whitelist: ['coding', 'development', 'sports'],
+  });
 
   const handleTagsChange = (e) => {
     if (e.target.value === '') return;
@@ -91,6 +103,7 @@ const AuthCallBackForm = ({ classes, photo }) => {
           <ReactTagify
             initialValues={initialTags.current}
             handleChange={handleTagsChange}
+            settings={tagifyConfig.current}
           />
           <Button
             type="submit"

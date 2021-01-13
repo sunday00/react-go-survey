@@ -4,13 +4,18 @@ import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
-
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
 import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 
 import { useSurveyStyle, CssTextField } from '../../lib/styles/mainStyle';
 import { setMain as setMainSetting } from '../../modules/survey';
+import ReactTagify from '../common/ReactTagify';
 
 const BackButton = React.forwardRef((props, ref) => {
   return <Link ref={ref} {...props} />;
@@ -21,9 +26,8 @@ const RespondentSetting = () => {
   const dispatch = useDispatch();
   // const history = useHistory();
 
-  const [main, setMain] = useState({
-    title: '',
-    description: '',
+  const [respondSetting, setRespondSetting] = useState({
+    gender: 'female',
   });
 
   const [errors, setErrors] = useState({
@@ -33,6 +37,20 @@ const RespondentSetting = () => {
     end: [false, ''],
   });
 
+  const tagifyConfig = useRef({
+    blacklist: [],
+    maxTags: 3,
+    backspace: 'edit',
+    placeholder: 'jobs',
+    editTags: 1,
+    dropdown: {
+      enabled: 0,
+    },
+    whitelist: ['student', 'development', 'sports'],
+  });
+
+  const initialTags = useRef([]);
+
   const refs = {
     title: useRef(),
     description: useRef(),
@@ -41,33 +59,32 @@ const RespondentSetting = () => {
   };
 
   const handleChange = (e, field) => {
-    setMain({
-      ...main,
-      [field]: e.target.value,
+    setRespondSetting({
+      ...respondSetting,
     });
   };
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
-    console.log('submit');
-    const newErrors = { ...errors };
-    Object.keys(main)
-      .reverse()
-      .forEach((k) => {
-        if (main[k] === '') {
-          newErrors[k] = [true, 'required'];
-          refs[k].current.querySelector('.MuiOutlinedInput-input').focus();
-        } else newErrors[k] = [false, ''];
-      });
+    // console.log('submit');
+    // const newErrors = { ...errors };
+    // Object.keys(main)
+    //   .reverse()
+    //   .forEach((k) => {
+    //     if (main[k] === '') {
+    //       newErrors[k] = [true, 'required'];
+    //       refs[k].current.querySelector('.MuiOutlinedInput-input').focus();
+    //     } else newErrors[k] = [false, ''];
+    //   });
 
-    setErrors({ ...newErrors });
+    // setErrors({ ...newErrors });
 
-    if (Object.keys(newErrors).find((k) => newErrors[k][0] === true)) {
-      return;
-    }
+    // if (Object.keys(newErrors).find((k) => newErrors[k][0] === true)) {
+    //   return;
+    // }
 
-    window.localStorage.setItem('sv_cr_tp', JSON.stringify(main));
-    dispatch(setMainSetting(main));
+    // window.localStorage.setItem('sv_cr_tp', JSON.stringify(main));
+    // dispatch(setMainSetting(main));
   };
 
   //TODO:: make form for limit answerer
@@ -76,77 +93,65 @@ const RespondentSetting = () => {
   return (
     <Container component="main" maxWidth="xs" className={classes.root}>
       <CssBaseline />
-      <div className={classes.paper}>
+      <div>
         <Typography component="h1" variant="h5" className={classes.title}>
           대상자 선정
         </Typography>
         <form noValidate onSubmit={handleOnSubmit}>
-          <CssTextField
-            variant="outlined"
-            margin="normal"
-            required
-            error={errors.title[0]}
-            helperText={errors.title[1]}
-            fullWidth
-            name="title"
-            label="제목"
-            id="title"
-            autoFocus
-            value={main.title}
-            onChange={(e) => handleChange(e, 'title')}
-            ref={refs.title}
-          />
+          <FormControl component="fieldset" fullWidth>
+            <FormLabel component="legend" style={{ color: 'white' }}>
+              성별
+            </FormLabel>
+            <RadioGroup
+              aria-label="gender"
+              name="gender"
+              defaultValue={respondSetting.gender}
+              onChange={handleChange}
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-evenly',
+                border: '1px solid',
+                borderRadius: '4px',
+              }}
+            >
+              <FormControlLabel value="female" control={<Radio />} label="여" />
+              <FormControlLabel value="male" control={<Radio />} label="남" />
+              <FormControlLabel
+                value="notCare"
+                control={<Radio />}
+                label="무관"
+              />
+            </RadioGroup>
+          </FormControl>
+          <FormControl component="fieldset" fullWidth>
+            <FormLabel component="legend" style={{ color: 'white' }}>
+              직업
+            </FormLabel>
+            <ReactTagify
+              settings={tagifyConfig.current}
+              initialValues={initialTags.current}
+              // handleChange={}
+            />
+          </FormControl>
           <CssTextField
             variant="outlined"
             margin="normal"
             required
             error={errors.description[0]}
             helperText={errors.description[1]}
-            multiline
             fullWidth
             id="description"
-            label="설명"
+            label="직업"
             name="description"
-            rows="3"
-            value={main.description}
+            value={'main.description'}
             onChange={(e) => handleChange(e, 'description')}
             ref={refs.description}
           />
           <div
             className="MuiFormControl-marginNormal"
             style={{ display: 'flex', justifyContent: 'space-between' }}
-          >
-            <CssTextField
-              variant="outlined"
-              id="date"
-              label="start"
-              type="date"
-              required
-              error={errors.start[0]}
-              helperText={errors.start[1]}
-              value={main.start}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              onChange={(e) => handleChange(e, 'start')}
-              ref={refs.start}
-            />
-            <CssTextField
-              variant="outlined"
-              id="date"
-              label="end"
-              type="date"
-              required
-              error={errors.end[0]}
-              helperText={errors.end[1]}
-              value={main.end}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              onChange={(e) => handleChange(e, 'end')}
-              ref={refs.end}
-            />
-          </div>
+          ></div>
 
           <div className={'MuiFormControl-marginNormal ' + classes.buttonWrap}>
             <Button
