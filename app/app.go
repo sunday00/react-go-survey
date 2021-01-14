@@ -34,6 +34,8 @@ func MakeHandler() http.Handler {
 	r.HandleFunc("/auth/check", controllers.Auth.CheckSigned).Methods("POST").Name("auth.check")
 	r.HandleFunc("/auth/signout", controllers.Auth.SignOut).Methods("POST").Name("auth.out")
 
+	r.HandleFunc("/api/search/{thing}", controllers.Api.SearchHandler).Methods("GET").Name("search.jobs")
+
 	r.HandleFunc("/", controllers.IndexHandler).Methods("GET")
 
 	models.DB.Close()

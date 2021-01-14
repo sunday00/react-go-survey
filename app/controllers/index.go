@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"survey/app/controllers/api"
 	"survey/app/controllers/auth"
 
 	"github.com/gorilla/mux"
@@ -19,8 +20,17 @@ type authController interface {
 
 var Auth authController
 
+type apiInstance struct{}
+
+type apiControllers interface {
+	SearchHandler(w http.ResponseWriter, r *http.Request)
+}
+
+var Api apiControllers
+
 func init() {
 	Auth = &authInstance{}
+	Api = &apiInstance{}
 }
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
@@ -54,4 +64,13 @@ func (a *authInstance) SignHandler(w http.ResponseWriter, r *http.Request) {
 
 func (a *authInstance) SignOut(w http.ResponseWriter, r *http.Request) {
 	auth.SignOut(w, r)
+}
+
+func (a *apiInstance) SearchHandler(w http.ResponseWriter, r *http.Request) {
+	thing := mux.Vars(r)["thing"]
+	// action := mux.Vars(r)["action"]
+
+	if thing == "jobs" {
+		api.GetAllJobs(w, r)
+	}
 }

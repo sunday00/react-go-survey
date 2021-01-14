@@ -155,3 +155,29 @@ func (u *UserModel) FindByVendorWithTags(vendor, vendorID string) *UserModel {
 
 	return user
 }
+
+func (u *UserModel) GetAllJobs() []string {
+	Conn()
+
+	jobs := []string{}
+
+	rows, err := DB.Query(`
+		SELECT job FROM users ORDER BY job LIMIT 20
+	`)
+
+	if err != nil {
+		console.PrintColoredLn(err, console.Panic)
+	}
+
+	for rows.Next() {
+		var job string
+		err := rows.Scan(&job)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		jobs = append(jobs, job)
+	}
+
+	return jobs
+}

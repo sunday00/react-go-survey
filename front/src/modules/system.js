@@ -1,25 +1,36 @@
-const PUSH_ERROR_MESSAGE = 'system/PUSH_ERROR_MESSAGE';
+import { createAction, handleActions } from 'redux-actions';
+import { call, put, takeLatest } from 'redux-saga/effects';
+import * as api from '../lib/api/search';
 
-export const pushErrorMessage = (msg) => ({
-  type: PUSH_ERROR_MESSAGE,
-  msg,
-});
+const GET_JOBS = 'system/GET_JOBS';
+const GET_JOBS_DONE = 'system/GET_JOBS_DONE';
 
-const initialState = [];
+export const getJobs = createAction(GET_JOBS);
 
-const system = (state = initialState, action) => {
-  switch (action.type) {
-    case PUSH_ERROR_MESSAGE:
-      return [
-        ...state,
-        {
-          msgType: 'error',
-          msg: action.msg,
-        },
-      ];
-    default:
-      return state;
-  }
+function* getJobsSaga(action) {
+  const jobs = yield call(api.getAllJobs);
+  yield put({
+    type: GET_JOBS_DONE,
+    payload: jobs.data,
+  });
+}
+
+export function* systemSaga() {
+  yield takeLatest(GET_JOBS, getJobsSaga);
+}
+
+const initialState = {
+  jobs: [],
 };
+
+const system = handleActions(
+  {
+    [GET_JOBS_DONE]: (state, action) => ({
+      ...state,
+      jobs: action.payload,
+    }),
+  },
+  initialState,
+);
 
 export default system;

@@ -14,13 +14,20 @@ const styles = {
   },
 };
 
-const ReactTagify = ({ classes, initialValues, handleChange, settings }) => {
+const ReactTagify = ({
+  classes,
+  initialValues,
+  handleChange,
+  settings,
+  whitelist,
+}) => {
   return (
     <Tags
       onChange={handleChange}
       className={classes.input}
       settings={settings}
       value={initialValues}
+      whitelist={whitelist}
     />
   );
 };

@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState, useRef, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 // import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
 
@@ -15,6 +15,7 @@ import Container from '@material-ui/core/Container';
 
 import { useSurveyStyle, CssTextField } from '../../lib/styles/mainStyle';
 import { setMain as setMainSetting } from '../../modules/survey';
+import { getJobs } from '../../modules/system';
 import ReactTagify from '../common/ReactTagify';
 
 const BackButton = React.forwardRef((props, ref) => {
@@ -24,20 +25,16 @@ const BackButton = React.forwardRef((props, ref) => {
 const RespondentSetting = () => {
   const classes = useSurveyStyle();
   const dispatch = useDispatch();
+  const { jobs } = useSelector((state) => state.system);
   // const history = useHistory();
 
   const [respondSetting, setRespondSetting] = useState({
     gender: 'female',
   });
 
-  const [errors, setErrors] = useState({
-    title: [false, ''],
-    description: [false, ''],
-    start: [false, ''],
-    end: [false, ''],
-  });
+  const [whitelist, setWhitelist] = useState([]);
 
-  const tagifyConfig = useRef({
+  const tagifyConfig = {
     blacklist: [],
     maxTags: 3,
     backspace: 'edit',
@@ -46,17 +43,16 @@ const RespondentSetting = () => {
     dropdown: {
       enabled: 0,
     },
-    whitelist: ['student', 'development', 'sports'],
-  });
-
-  const initialTags = useRef([]);
-
-  const refs = {
-    title: useRef(),
-    description: useRef(),
-    start: useRef(),
-    end: useRef(),
+    whitelist: [],
   };
+
+  useEffect(() => {
+    dispatch(getJobs());
+  }, [dispatch]);
+
+  useEffect(() => {
+    setWhitelist(jobs);
+  }, [jobs]);
 
   const handleChange = (e, field) => {
     setRespondSetting({
@@ -129,24 +125,24 @@ const RespondentSetting = () => {
               직업
             </FormLabel>
             <ReactTagify
-              settings={tagifyConfig.current}
-              initialValues={initialTags.current}
+              settings={tagifyConfig}
               // handleChange={}
+              whitelist={whitelist}
             />
           </FormControl>
           <CssTextField
             variant="outlined"
             margin="normal"
             required
-            error={errors.description[0]}
-            helperText={errors.description[1]}
+            // error={errors.description[0]}
+            // helperText={errors.description[1]}
             fullWidth
             id="description"
             label="직업"
             name="description"
             value={'main.description'}
             onChange={(e) => handleChange(e, 'description')}
-            ref={refs.description}
+            // ref={refs.description}
           />
           <div
             className="MuiFormControl-marginNormal"
