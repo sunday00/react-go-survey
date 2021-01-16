@@ -18,12 +18,14 @@ const ReactTagify = ({
   classes,
   initialValues,
   handleChange,
+  handleKeydown,
   settings,
   whitelist,
 }) => {
   return (
     <Tags
       onChange={handleChange}
+      onKeydown={handleKeydown}
       className={classes.input}
       settings={settings}
       value={initialValues}

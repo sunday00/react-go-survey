@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -53,6 +53,13 @@ const RespondentSetting = () => {
   useEffect(() => {
     setWhitelist(jobs);
   }, [jobs]);
+
+  const changJobs = useCallback(
+    (e) => {
+      dispatch(getJobs(e.detail.originalEvent.currentTarget.textContent));
+    },
+    [dispatch],
+  );
 
   const handleChange = (e, field) => {
     setRespondSetting({
@@ -127,6 +134,7 @@ const RespondentSetting = () => {
             <ReactTagify
               settings={tagifyConfig}
               // handleChange={}
+              handleKeydown={changJobs}
               whitelist={whitelist}
             />
           </FormControl>

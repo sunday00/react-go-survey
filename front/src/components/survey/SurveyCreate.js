@@ -53,6 +53,10 @@ const SurveyCreate = () => {
       ...main,
       [field]: e.target.value,
     });
+    setErrors({
+      ...errors,
+      [field]: [],
+    });
   };
 
   const handleOnSubmit = (e) => {
@@ -78,7 +82,6 @@ const SurveyCreate = () => {
     ) {
       newErrors.start = [true, "we don't have time machine"];
       newErrors.end = [true, "we don't have time machine"];
-      console.log(Moment(main.start), Moment(main.end).isBefore());
     }
 
     setErrors({ ...newErrors });

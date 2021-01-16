@@ -162,8 +162,34 @@ func (u *UserModel) GetAllJobs() []string {
 	jobs := []string{}
 
 	rows, err := DB.Query(`
-		SELECT job FROM users ORDER BY job LIMIT 20
+		SELECT DISTINCT job FROM users ORDER BY job LIMIT 20
 	`)
+
+	if err != nil {
+		console.PrintColoredLn(err, console.Panic)
+	}
+
+	for rows.Next() {
+		var job string
+		err := rows.Scan(&job)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		jobs = append(jobs, job)
+	}
+
+	return jobs
+}
+
+func (u *UserModel) GetAllJobsContainsKeyword(keyword string) []string {
+	Conn()
+
+	jobs := []string{}
+
+	rows, err := DB.Query(`
+		SELECT DISTINCT job FROM users WHERE job LIKE ? ORDER BY job LIMIT 20
+	`, "%"+keyword+"%")
 
 	if err != nil {
 		console.PrintColoredLn(err, console.Panic)
