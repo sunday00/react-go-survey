@@ -14,6 +14,18 @@ const styles = {
   },
 };
 
+const defaultTagifyConfig = {
+  blacklist: [],
+  maxTags: 3,
+  backspace: 'edit',
+  placeholder: 'tags',
+  editTags: 1,
+  dropdown: {
+    enabled: 0,
+  },
+  whitelist: [],
+};
+
 const ReactTagify = ({
   classes,
   initialValues,
@@ -22,12 +34,17 @@ const ReactTagify = ({
   settings,
   whitelist,
 }) => {
+  const tagifyConfig = {
+    ...defaultTagifyConfig,
+    ...settings,
+  };
+
   return (
     <Tags
       onChange={handleChange}
       onKeydown={handleKeydown}
       className={classes.input}
-      settings={settings}
+      settings={tagifyConfig}
       value={initialValues}
       whitelist={whitelist}
     />

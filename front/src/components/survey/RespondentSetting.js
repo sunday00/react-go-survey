@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 // import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
 
+import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -17,6 +18,7 @@ import { useSurveyStyle, CssTextField } from '../../lib/styles/mainStyle';
 import { setMain as setMainSetting } from '../../modules/survey';
 import { getJobs } from '../../modules/system';
 import ReactTagify from '../common/ReactTagify';
+import SelectBox from '../common/SelectBox';
 
 const BackButton = React.forwardRef((props, ref) => {
   return <Link ref={ref} {...props} />;
@@ -32,26 +34,15 @@ const RespondentSetting = () => {
     gender: 'female',
   });
 
-  const [whitelist, setWhitelist] = useState([]);
-
-  const tagifyConfig = {
-    blacklist: [],
-    maxTags: 3,
-    backspace: 'edit',
-    placeholder: 'jobs',
-    editTags: 1,
-    dropdown: {
-      enabled: 0,
-    },
-    whitelist: [],
-  };
+  const [jobWhitelist, setJobWhitelist] = useState([]);
+  const [subAgeSelectDisplay, setSubAgeSelectDisplay] = useState(false);
 
   useEffect(() => {
     dispatch(getJobs());
   }, [dispatch]);
 
   useEffect(() => {
-    setWhitelist(jobs);
+    setJobWhitelist(jobs);
   }, [jobs]);
 
   const changJobs = useCallback(
@@ -60,6 +51,11 @@ const RespondentSetting = () => {
     },
     [dispatch],
   );
+
+  const handleMainAgesChange = (e) => {
+    if (e.currentTarget.value === 'custom') setSubAgeSelectDisplay(true);
+    else setSubAgeSelectDisplay(false);
+  };
 
   const handleChange = (e, field) => {
     setRespondSetting({
@@ -132,21 +128,55 @@ const RespondentSetting = () => {
               직업
             </FormLabel>
             <ReactTagify
-              settings={tagifyConfig}
+              settings={{ placeholder: 'jobs' }}
               // handleChange={}
               handleKeydown={changJobs}
-              whitelist={whitelist}
+              whitelist={jobWhitelist}
+            />
+          </FormControl>
+          <FormControl component="fieldset" fullWidth>
+            <FormLabel component="legend" style={{ color: 'white' }}>
+              연령대
+            </FormLabel>
+            <Grid container spacing={1}>
+              <SelectBox
+                optionsSet="ages"
+                onChange={(e) => handleMainAgesChange(e)}
+              ></SelectBox>
+              <SelectBox
+                optionsSet="ages"
+                optionsSetExclude="custom"
+                defaultDisplay={subAgeSelectDisplay}
+              ></SelectBox>
+              {subAgeSelectDisplay && (
+                <span style={{ lineHeight: '2.6rem' }}> ~ </span>
+              )}
+              <SelectBox
+                optionsSet="ages"
+                optionsSetExclude="custom"
+                defaultDisplay={subAgeSelectDisplay}
+              ></SelectBox>
+            </Grid>
+          </FormControl>
+          <FormControl component="fieldset" fullWidth>
+            <FormLabel component="legend" style={{ color: 'white' }}>
+              메인 그룹
+            </FormLabel>
+            <ReactTagify
+              settings={{ placeholder: 'group' }}
+              // handleChange={}
+              handleKeydown={changJobs}
+              whitelist={jobWhitelist}
             />
           </FormControl>
           <CssTextField
             variant="outlined"
             margin="normal"
-            required
             // error={errors.description[0]}
             // helperText={errors.description[1]}
             fullWidth
             id="description"
-            label="직업"
+            label="관심사"
             name="description"
             value={'main.description'}
             onChange={(e) => handleChange(e, 'description')}
