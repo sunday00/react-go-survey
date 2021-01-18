@@ -1,6 +1,8 @@
 package models
 
 import (
+	"log"
+
 	"github.com/sunday00/go-console"
 )
 
@@ -22,7 +24,7 @@ func NewTag() *TagModel {
 
 // Save tags
 func (t *TagModel) Save() int64 {
-	Conn()
+
 	pstmt, err := DB.Prepare(`
 		INSERT INTO tags (
 			title
@@ -57,4 +59,54 @@ func (t *TagModel) FindByTitle() int64 {
 	}
 
 	return id
+}
+
+func (t *TagModel) GetAllTags() []string {
+
+	tags := []string{}
+
+	rows, err := DB.Query(`
+		SELECT title FROM tags ORDER BY title LIMIT 20
+	`)
+
+	if err != nil {
+		console.PrintColoredLn(err, console.Panic)
+	}
+
+	for rows.Next() {
+		var title string
+		err := rows.Scan(&title)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		tags = append(tags, title)
+	}
+
+	return tags
+}
+
+func (t *TagModel) GetAllTagsContainsKeyword(keyword string) []string {
+
+	tags := []string{}
+
+	rows, err := DB.Query(`
+		SELECT title FROM tags WHERE title LIKE ? ORDER BY title LIMIT 20
+	`, "%"+keyword+"%")
+
+	if err != nil {
+		console.PrintColoredLn(err, console.Panic)
+	}
+
+	for rows.Next() {
+		var title string
+		err := rows.Scan(&title)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		tags = append(tags, title)
+	}
+
+	return tags
 }

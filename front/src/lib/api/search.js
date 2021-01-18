@@ -1,5 +1,9 @@
 import client from './client';
 
+export const getInitialTags = (params) => {
+  return client.get('/api/search/initialTags');
+};
+
 export const getAllJobs = (params) => {
   if (params) {
     return client.get('/api/search/jobs', {
@@ -20,4 +24,26 @@ export const getAllGroups = (params) => {
     });
   }
   return client.get('/api/search/groups');
+};
+
+export const getAllSubGroups = (params) => {
+  if (params) {
+    return client.get('/api/search/subGroups', {
+      params: {
+        params: params,
+      },
+    });
+  }
+  return client.get('/api/search/subGroups');
+};
+
+export const getAllInterests = (params) => {
+  if (params) {
+    return client.get('/api/search/interests', {
+      params: {
+        params: params,
+      },
+    });
+  }
+  return client.get('/api/search/interests');
 };

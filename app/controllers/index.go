@@ -70,7 +70,23 @@ func (a *apiInstance) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	thing := mux.Vars(r)["thing"]
 	// action := mux.Vars(r)["action"]
 
+	if thing == "initialTags" {
+		api.GetInitialTags(w, r)
+	}
+
 	if thing == "jobs" {
 		api.GetAllJobs(w, r)
+	}
+
+	if thing == "groups" {
+		api.GetAllGroups(w, r)
+	}
+
+	if thing == "subGroups" {
+		api.GetAllSubGroups(w, r)
+	}
+
+	if thing == "interests" {
+		api.GetAllInterests(w, r)
 	}
 }

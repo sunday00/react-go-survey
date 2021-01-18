@@ -62,7 +62,6 @@ func NewUser() *UserModel {
 
 // Save user and returns db id
 func (u *UserModel) Save() int64 {
-	Conn()
 	pstmt, err := DB.Prepare(`
 		INSERT INTO users (
 			vendorId, vendor, job, groupName, subGroup, createdAt
@@ -76,6 +75,7 @@ func (u *UserModel) Save() int64 {
 	}
 
 	result, err := pstmt.Exec(u.VendorID, u.Vendor, u.Job, u.Group, u.SubGroup)
+
 	if err != nil {
 		console.PrintColoredLn(err, console.Danger)
 	}
@@ -107,7 +107,6 @@ func (u *UserModel) Save() int64 {
 
 // FindByVendor returns one user by vendor, vendorId. Not DB id
 func (u *UserModel) FindByVendor(vendor, vendorID string) *UserModel {
-	Conn()
 
 	user := &UserModel{}
 
@@ -125,7 +124,6 @@ func (u *UserModel) FindByVendor(vendor, vendorID string) *UserModel {
 // FindByVendorWithTags returns one user by vendor, vendorId. Not DB id
 // returns with tags
 func (u *UserModel) FindByVendorWithTags(vendor, vendorID string) *UserModel {
-	Conn()
 
 	user := &UserModel{}
 
@@ -157,7 +155,6 @@ func (u *UserModel) FindByVendorWithTags(vendor, vendorID string) *UserModel {
 }
 
 func (u *UserModel) GetAllJobs() []string {
-	Conn()
 
 	jobs := []string{}
 
@@ -183,7 +180,6 @@ func (u *UserModel) GetAllJobs() []string {
 }
 
 func (u *UserModel) GetAllJobsContainsKeyword(keyword string) []string {
-	Conn()
 
 	jobs := []string{}
 
@@ -206,4 +202,104 @@ func (u *UserModel) GetAllJobsContainsKeyword(keyword string) []string {
 	}
 
 	return jobs
+}
+
+func (u *UserModel) GetAllGroups() []string {
+
+	groups := []string{}
+
+	rows, err := DB.Query(`
+		SELECT DISTINCT groupName FROM users WHERE groupName IS NOT NULL ORDER BY groupName LIMIT 20
+	`)
+
+	if err != nil {
+		console.PrintColoredLn(err, console.Panic)
+	}
+
+	for rows.Next() {
+		var groupName string
+		err := rows.Scan(&groupName)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		groups = append(groups, groupName)
+	}
+
+	return groups
+}
+
+func (u *UserModel) GetAllGroupsContainsKeyword(keyword string) []string {
+
+	groups := []string{}
+
+	rows, err := DB.Query(`
+	SELECT DISTINCT groupName FROM users WHERE groupName LIKE ? ORDER BY groupName LIMIT 20
+	`, "%"+keyword+"%")
+
+	if err != nil {
+		console.PrintColoredLn(err, console.Panic)
+	}
+
+	for rows.Next() {
+		var groupName string
+		err := rows.Scan(&groupName)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		groups = append(groups, groupName)
+	}
+
+	return groups
+}
+
+func (u *UserModel) GetAllSubGroups() []string {
+
+	subGroups := []string{}
+
+	rows, err := DB.Query(`
+		SELECT DISTINCT subGroup FROM users WHERE subGroup IS NOT NULL ORDER BY subGroup LIMIT 20
+	`)
+
+	if err != nil {
+		console.PrintColoredLn(err, console.Panic)
+	}
+
+	for rows.Next() {
+		var subGroup string
+		err := rows.Scan(&subGroup)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		subGroups = append(subGroups, subGroup)
+	}
+
+	return subGroups
+}
+
+func (u *UserModel) GetAllSubGroupsContainsKeyword(keyword string) []string {
+
+	subGroups := []string{}
+
+	rows, err := DB.Query(`
+	SELECT DISTINCT subGroup FROM users WHERE subGroup LIKE ? ORDER BY subGroup LIMIT 20
+	`, "%"+keyword+"%")
+
+	if err != nil {
+		console.PrintColoredLn(err, console.Panic)
+	}
+
+	for rows.Next() {
+		var subGroup string
+		err := rows.Scan(&subGroup)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		subGroups = append(subGroups, subGroup)
+	}
+
+	return subGroups
 }

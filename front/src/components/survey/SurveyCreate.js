@@ -27,7 +27,7 @@ const SurveyCreate = () => {
   });
 
   useEffect(() => {
-    if (storedMain.title !== '') {
+    if (storedMain && storedMain.title !== '') {
       setMain(storedMain);
     } else if (window.localStorage.getItem('sv_cr_tp')) {
       setMain(JSON.parse(window.localStorage.getItem('sv_cr_tp')));

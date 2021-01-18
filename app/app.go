@@ -3,7 +3,6 @@ package app
 import (
 	"net/http"
 	"survey/app/controllers"
-	"survey/app/models"
 
 	"github.com/gorilla/mux"
 	"github.com/unrolled/render"
@@ -37,8 +36,6 @@ func MakeHandler() http.Handler {
 	r.HandleFunc("/api/search/{thing}", controllers.Api.SearchHandler).Methods("GET").Name("search.jobs")
 
 	r.HandleFunc("/", controllers.IndexHandler).Methods("GET")
-
-	models.DB.Close()
 
 	return n
 }

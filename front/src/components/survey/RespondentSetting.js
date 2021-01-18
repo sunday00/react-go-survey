@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -14,9 +14,15 @@ import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 
-import { useSurveyStyle, CssTextField } from '../../lib/styles/mainStyle';
-import { setMain as setMainSetting } from '../../modules/survey';
-import { getJobs } from '../../modules/system';
+import { useSurveyStyle } from '../../lib/styles/mainStyle';
+import { setSub as setSubSetting } from '../../modules/survey';
+import {
+  getGroups,
+  getJobs,
+  getSubGroups,
+  getInterested,
+  getInitialTags,
+} from '../../modules/system';
 import ReactTagify from '../common/ReactTagify';
 import SelectBox from '../common/SelectBox';
 
@@ -27,27 +33,70 @@ const BackButton = React.forwardRef((props, ref) => {
 const RespondentSetting = () => {
   const classes = useSurveyStyle();
   const dispatch = useDispatch();
-  const { jobs } = useSelector((state) => state.system);
-  // const history = useHistory();
 
-  const [respondSetting, setRespondSetting] = useState({
-    gender: 'female',
+  const { jobs, groups, subGroups, interested } = useSelector(
+    (state) => state.system,
+  );
+  const storedSub = useSelector((state) => state.survey.sub);
+
+  // const history = useHistory();
+  const [sub, setSub] = useState({
+    gender: 'notCare',
+    jobs: [],
+    groups: [],
+    subGroups: [],
+    interested: [],
   });
 
   const [jobWhitelist, setJobWhitelist] = useState([]);
+  const [groupWhitelist, setGroupWhitelist] = useState([]);
+  const [subGroupWhitelist, setSubGroupWhitelist] = useState([]);
+  const [interestedWhitelist, setInterestedWhitelist] = useState([]);
   const [subAgeSelectDisplay, setSubAgeSelectDisplay] = useState(false);
 
   useEffect(() => {
-    dispatch(getJobs());
+    dispatch(getInitialTags());
   }, [dispatch]);
 
   useEffect(() => {
     setJobWhitelist(jobs);
-  }, [jobs]);
+    setGroupWhitelist(groups);
+    setSubGroupWhitelist(subGroups);
+    setInterestedWhitelist(interested);
+  }, [jobs, groups, subGroups, interested]);
+
+  useEffect(() => {
+    if (storedSub && storedSub.gender) {
+      setSub(storedSub);
+    } else if (window.localStorage.getItem('sv_cr_sp')) {
+      setSub(JSON.parse(window.localStorage.getItem('sv_cr_sp')));
+    }
+  }, [sub]);
 
   const changJobs = useCallback(
     (e) => {
       dispatch(getJobs(e.detail.originalEvent.currentTarget.textContent));
+    },
+    [dispatch],
+  );
+
+  const changGroups = useCallback(
+    (e) => {
+      dispatch(getGroups(e.detail.originalEvent.currentTarget.textContent));
+    },
+    [dispatch],
+  );
+
+  const changSubGroups = useCallback(
+    (e) => {
+      dispatch(getSubGroups(e.detail.originalEvent.currentTarget.textContent));
+    },
+    [dispatch],
+  );
+
+  const changeInterested = useCallback(
+    (e) => {
+      dispatch(getInterested(e.detail.originalEvent.currentTarget.textContent));
     },
     [dispatch],
   );
@@ -58,32 +107,17 @@ const RespondentSetting = () => {
   };
 
   const handleChange = (e, field) => {
-    setRespondSetting({
-      ...respondSetting,
+    setSub({
+      ...sub,
+      [field]: e.target.value,
     });
   };
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
-    // console.log('submit');
-    // const newErrors = { ...errors };
-    // Object.keys(main)
-    //   .reverse()
-    //   .forEach((k) => {
-    //     if (main[k] === '') {
-    //       newErrors[k] = [true, 'required'];
-    //       refs[k].current.querySelector('.MuiOutlinedInput-input').focus();
-    //     } else newErrors[k] = [false, ''];
-    //   });
 
-    // setErrors({ ...newErrors });
-
-    // if (Object.keys(newErrors).find((k) => newErrors[k][0] === true)) {
-    //   return;
-    // }
-
-    // window.localStorage.setItem('sv_cr_tp', JSON.stringify(main));
-    // dispatch(setMainSetting(main));
+    window.localStorage.setItem('sv_cr_tp', JSON.stringify(sub));
+    dispatch(setSubSetting(sub));
   };
 
   //TODO:: make form for limit answerer
@@ -104,7 +138,7 @@ const RespondentSetting = () => {
             <RadioGroup
               aria-label="gender"
               name="gender"
-              defaultValue={respondSetting.gender}
+              defaultValue={sub.gender}
               onChange={handleChange}
               style={{
                 display: 'flex',
@@ -114,13 +148,13 @@ const RespondentSetting = () => {
                 borderRadius: '4px',
               }}
             >
-              <FormControlLabel value="female" control={<Radio />} label="여" />
-              <FormControlLabel value="male" control={<Radio />} label="남" />
               <FormControlLabel
                 value="notCare"
                 control={<Radio />}
                 label="무관"
               />
+              <FormControlLabel value="female" control={<Radio />} label="여" />
+              <FormControlLabel value="male" control={<Radio />} label="남" />
             </RadioGroup>
           </FormControl>
           <FormControl component="fieldset" fullWidth>
@@ -129,7 +163,7 @@ const RespondentSetting = () => {
             </FormLabel>
             <ReactTagify
               settings={{ placeholder: 'jobs' }}
-              // handleChange={}
+              handleChange={(e) => handleChange(e, 'jobs')}
               handleKeydown={changJobs}
               whitelist={jobWhitelist}
             />
@@ -141,10 +175,11 @@ const RespondentSetting = () => {
             <Grid container spacing={1}>
               <SelectBox
                 optionsSet="ages"
-                onChange={(e) => handleMainAgesChange(e)}
+                onChange={(e) => handleChange(e, 'ages')}
               ></SelectBox>
               <SelectBox
                 optionsSet="ages"
+                onChange={(e) => handleChange(e, 'ages.1')}
                 optionsSetExclude="custom"
                 defaultDisplay={subAgeSelectDisplay}
               ></SelectBox>
@@ -153,6 +188,7 @@ const RespondentSetting = () => {
               )}
               <SelectBox
                 optionsSet="ages"
+                onChange={(e) => handleChange(e, 'ages.2')}
                 optionsSetExclude="custom"
                 defaultDisplay={subAgeSelectDisplay}
               ></SelectBox>
@@ -164,28 +200,33 @@ const RespondentSetting = () => {
             </FormLabel>
             <ReactTagify
               settings={{ placeholder: 'group' }}
-              // handleChange={}
-              handleKeydown={changJobs}
-              whitelist={jobWhitelist}
+              handleChange={(e) => handleChange(e, 'group')}
+              handleKeydown={changGroups}
+              whitelist={groupWhitelist}
             />
           </FormControl>
-          <CssTextField
-            variant="outlined"
-            margin="normal"
-            // error={errors.description[0]}
-            // helperText={errors.description[1]}
-            fullWidth
-            id="description"
-            label="관심사"
-            name="description"
-            value={'main.description'}
-            onChange={(e) => handleChange(e, 'description')}
-            // ref={refs.description}
-          />
-          <div
-            className="MuiFormControl-marginNormal"
-            style={{ display: 'flex', justifyContent: 'space-between' }}
-          ></div>
+          <FormControl component="fieldset" fullWidth>
+            <FormLabel component="legend" style={{ color: 'white' }}>
+              서브 그룹
+            </FormLabel>
+            <ReactTagify
+              settings={{ placeholder: 'subGroup' }}
+              handleChange={(e) => handleChange(e, 'subGroup')}
+              handleKeydown={changSubGroups}
+              whitelist={subGroupWhitelist}
+            />
+          </FormControl>
+          <FormControl component="fieldset" fullWidth>
+            <FormLabel component="legend" style={{ color: 'white' }}>
+              관심사
+            </FormLabel>
+            <ReactTagify
+              settings={{ placeholder: 'interested' }}
+              handleChange={(e) => handleChange(e, 'interested')}
+              handleKeydown={changeInterested}
+              whitelist={interestedWhitelist}
+            />
+          </FormControl>
 
           <div className={'MuiFormControl-marginNormal ' + classes.buttonWrap}>
             <Button

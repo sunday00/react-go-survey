@@ -40,3 +40,7 @@ func Conn() *sql.DB {
 	DB = db
 	return db
 }
+
+func Close() {
+	DB.Close()
+}

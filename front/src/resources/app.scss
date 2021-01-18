@@ -1,4 +1,40 @@
-@import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gugi&family=Jua&family=Nixie+One&family=Noto+Sans+KR&family=Teko:wght@500&display=swap');
+@font-face {
+  font-family: 'Black Han Sans';
+  src: url("./fonts/Black_Han_Sans/BlackHanSans-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Gugi';
+  src: url("./fonts/Gugi/Gugi-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Jua';
+  src: url("./fonts/Jua/Jua-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Nixie One';
+  src: url("./fonts/Nixie_One/NixieOne-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Noto Sans KR';
+  font-weight: 100;
+  src: url("./fonts/Noto_Sans_KR/NotoSansKR-Thin.otf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Noto Sans KR';
+  font-weight: 400;
+  src: url("./fonts/Noto_Sans_KR/NotoSansKR-Regular.otf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Noto Sans KR';
+  font-weight: 700;
+  src: url("./fonts/Noto_Sans_KR/NotoSansKR-Bold.otf") format("truetype");
+}
 
 html, body {
   margin: 0;
@@ -9,4 +45,3 @@ a {
   color: inherit;
   text-decoration: none;
 }
-
