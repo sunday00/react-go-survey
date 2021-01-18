@@ -31,6 +31,7 @@ const BackButton = React.forwardRef((props, ref) => {
 });
 
 const RespondentSetting = () => {
+  //TODO: re declare settings values and organize handler
   const classes = useSurveyStyle();
   const dispatch = useDispatch();
 
