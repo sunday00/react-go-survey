@@ -28,11 +28,11 @@ const defaultTagifyConfig = {
 
 const ReactTagify = ({
   classes,
-  initialValues,
   handleChange,
   handleKeydown,
   settings,
   whitelist,
+  tagifyRef,
 }) => {
   const tagifyConfig = {
     ...defaultTagifyConfig,
@@ -45,8 +45,8 @@ const ReactTagify = ({
       onKeydown={handleKeydown}
       className={classes.input}
       settings={tagifyConfig}
-      value={initialValues}
       whitelist={whitelist}
+      tagifyRef={tagifyRef}
     />
   );
 };

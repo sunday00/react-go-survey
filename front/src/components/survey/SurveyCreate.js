@@ -19,20 +19,13 @@ const SurveyCreate = () => {
 
   const storedMain = useSelector((state) => state.survey.main);
 
-  const [main, setMain] = useState({
-    title: '',
-    description: '',
-    start: Moment().format('YYYY-MM-DD'),
-    end: Moment().add(3, 'd').format('YYYY-MM-DD'),
-  });
-
   useEffect(() => {
-    if (storedMain && storedMain.title !== '') {
-      setMain(storedMain);
-    } else if (window.localStorage.getItem('sv_cr_tp')) {
-      setMain(JSON.parse(window.localStorage.getItem('sv_cr_tp')));
+    if (!storedMain.title && window.localStorage.getItem('sv_cr_tp')) {
+      dispatch(
+        setMainSetting(JSON.parse(window.localStorage.getItem('sv_cr_tp'))),
+      );
     }
-  }, [storedMain]);
+  }, [storedMain, dispatch]);
 
   const [errors, setErrors] = useState({
     title: [false, ''],
@@ -49,10 +42,13 @@ const SurveyCreate = () => {
   };
 
   const handleChange = (e, field) => {
-    setMain({
-      ...main,
-      [field]: e.target.value,
-    });
+    dispatch(
+      setMainSetting({
+        ...storedMain,
+        [field]: e.target.value,
+      }),
+    );
+
     setErrors({
       ...errors,
       [field]: [],
@@ -62,23 +58,23 @@ const SurveyCreate = () => {
   const handleOnSubmit = (e) => {
     e.preventDefault();
     const newErrors = { ...errors };
-    Object.keys(main)
+    Object.keys(storedMain)
       .reverse()
       .forEach((k) => {
-        if (main[k] === '') {
+        if (storedMain[k] === '') {
           newErrors[k] = [true, 'required'];
           refs[k].current.querySelector('.MuiOutlinedInput-input').focus();
         } else newErrors[k] = [false, ''];
       });
 
-    if (Moment(main.start).isAfter(main.end)) {
+    if (Moment(storedMain.start).isAfter(storedMain.end)) {
       newErrors.start = [true, 'should before end'];
       newErrors.end = [true, 'should after start'];
     }
 
     if (
-      Moment(main.start).isBefore(Moment().format('YYYY-MM-DD')) ||
-      Moment(main.end).isBefore()
+      Moment(storedMain.start).isBefore(Moment().format('YYYY-MM-DD')) ||
+      Moment(storedMain.end).isBefore()
     ) {
       newErrors.start = [true, "we don't have time machine"];
       newErrors.end = [true, "we don't have time machine"];
@@ -90,8 +86,7 @@ const SurveyCreate = () => {
       return;
     }
 
-    window.localStorage.setItem('sv_cr_tp', JSON.stringify(main));
-    dispatch(setMainSetting(main));
+    window.localStorage.setItem('sv_cr_tp', JSON.stringify(storedMain));
     history.push('/survey/create/respondent-setting');
   };
 
@@ -114,7 +109,7 @@ const SurveyCreate = () => {
             label="제목"
             id="title"
             autoFocus
-            value={main.title}
+            value={storedMain.title}
             onChange={(e) => handleChange(e, 'title')}
             ref={refs.title}
           />
@@ -130,7 +125,7 @@ const SurveyCreate = () => {
             label="설명"
             name="description"
             rows="3"
-            value={main.description}
+            value={storedMain.description}
             onChange={(e) => handleChange(e, 'description')}
             ref={refs.description}
           />
@@ -146,7 +141,7 @@ const SurveyCreate = () => {
               required
               error={errors.start[0]}
               helperText={errors.start[1]}
-              value={main.start}
+              value={storedMain.start || ''}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -161,7 +156,7 @@ const SurveyCreate = () => {
               required
               error={errors.end[0]}
               helperText={errors.end[1]}
-              value={main.end}
+              value={storedMain.end || ''}
               InputLabelProps={{
                 shrink: true,
               }}

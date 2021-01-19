@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/sunday00/go-console"
+
 	// sql driver
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
@@ -38,9 +40,11 @@ func Conn() *sql.DB {
 	}
 
 	DB = db
+	console.PrintColoredLn("DB connected", console.Success)
 	return db
 }
 
 func Close() {
-	DB.Close()
+	console.PrintColoredLn("DB Closed", console.Warning)
+	defer DB.Close()
 }

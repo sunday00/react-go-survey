@@ -19,9 +19,13 @@ export function* rootSaga() {
 }
 
 const sagaMiddleware = createSagaMiddleware();
+const composeEnhancers = composeWithDevTools({
+  trace: true,
+  traceLimit: 100,
+});
 const store = createStore(
   rootReducer,
-  composeWithDevTools(applyMiddleware(sagaMiddleware)),
+  composeEnhancers(applyMiddleware(sagaMiddleware)),
 );
 
 sagaMiddleware.run(rootSaga);

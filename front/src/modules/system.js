@@ -80,7 +80,7 @@ function* getInterestedSaga(action) {
 }
 
 export function* systemSaga() {
-  yield throttle(500, GET_INITIAL_TAGS, getInitialTagsSaga);
+  yield takeLatest(GET_INITIAL_TAGS, getInitialTagsSaga);
   yield throttle(500, GET_JOBS, getJobsSaga);
   yield throttle(500, GET_GROUPS, getGroupsSaga);
   yield throttle(500, GET_SUB_GROUPS, getSubGroupsSaga);

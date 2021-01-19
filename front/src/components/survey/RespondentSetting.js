@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -15,7 +15,9 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 
 import { useSurveyStyle } from '../../lib/styles/mainStyle';
+import { setMain as setMainSetting } from '../../modules/survey';
 import { setSub as setSubSetting } from '../../modules/survey';
+
 import {
   getGroups,
   getJobs,
@@ -31,23 +33,19 @@ const BackButton = React.forwardRef((props, ref) => {
 });
 
 const RespondentSetting = () => {
-  //TODO: re declare settings values and organize handler
   const classes = useSurveyStyle();
   const dispatch = useDispatch();
+  const tagsRefs = {
+    jobs: useRef([]),
+    groups: useRef([]),
+    subGroups: useRef([]),
+    interested: useRef([]),
+  };
 
   const { jobs, groups, subGroups, interested } = useSelector(
     (state) => state.system,
   );
-  const storedSub = useSelector((state) => state.survey.sub);
-
-  // const history = useHistory();
-  const [sub, setSub] = useState({
-    gender: 'notCare',
-    jobs: [],
-    groups: [],
-    subGroups: [],
-    interested: [],
-  });
+  const sub = useSelector((state) => state.survey.sub);
 
   const [jobWhitelist, setJobWhitelist] = useState([]);
   const [groupWhitelist, setGroupWhitelist] = useState([]);
@@ -67,12 +65,26 @@ const RespondentSetting = () => {
   }, [jobs, groups, subGroups, interested]);
 
   useEffect(() => {
-    if (storedSub && storedSub.gender) {
-      setSub(storedSub);
-    } else if (window.localStorage.getItem('sv_cr_sp')) {
-      setSub(JSON.parse(window.localStorage.getItem('sv_cr_sp')));
+    const mainSetting = window.localStorage.getItem('sv_cr_tp');
+    if (mainSetting) {
+      dispatch(setMainSetting(JSON.parse(mainSetting)));
     }
-  }, [sub]);
+
+    const subSetting = window.localStorage.getItem('sv_cr_sp');
+    if (subSetting) {
+      tagsRefs.jobs.current.addTags(JSON.parse(subSetting).jobs);
+      tagsRefs.groups.current.addTags(JSON.parse(subSetting).groups);
+      tagsRefs.subGroups.current.addTags(JSON.parse(subSetting).subGroups);
+      tagsRefs.interested.current.addTags(JSON.parse(subSetting).interested);
+      dispatch(setSubSetting(JSON.parse(subSetting)));
+    }
+  }, [
+    dispatch,
+    tagsRefs.jobs,
+    tagsRefs.groups,
+    tagsRefs.subGroups,
+    tagsRefs.interested,
+  ]);
 
   const changJobs = useCallback(
     (e) => {
@@ -103,26 +115,48 @@ const RespondentSetting = () => {
   );
 
   const handleMainAgesChange = (e) => {
-    if (e.currentTarget.value === 'custom') setSubAgeSelectDisplay(true);
-    else setSubAgeSelectDisplay(false);
+    if (e.currentTarget.value === 'custom') {
+      setSubAgeSelectDisplay(true);
+      dispatch(
+        setSubSetting({
+          ...sub,
+          age: 'custom',
+        }),
+      );
+    } else {
+      setSubAgeSelectDisplay(false);
+      sub.subAgeMin && delete sub.subAgeMin;
+      sub.subAgeMax && delete sub.subAgeMax;
+      dispatch(
+        setSubSetting({
+          ...sub,
+          age: e.target.value,
+        }),
+      );
+    }
   };
 
-  const handleChange = (e, field) => {
-    setSub({
-      ...sub,
-      [field]: e.target.value,
-    });
+  const handleChange = (e, field, isTag = false) => {
+    if (isTag) {
+      const val = tagsRefs[field].current.value.map((v) => v.value);
+      dispatch(setSubSetting(val, field));
+    } else {
+      dispatch(
+        setSubSetting({
+          ...sub,
+          [field]: e.target.value,
+        }),
+      );
+    }
   };
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
 
-    window.localStorage.setItem('sv_cr_tp', JSON.stringify(sub));
-    dispatch(setSubSetting(sub));
+    window.localStorage.setItem('sv_cr_sp', JSON.stringify(sub));
+    // TODO:: go to next :: finally create questions!!
+    // history.push('/survey/create/respondent-setting');
   };
-
-  //TODO:: make form for limit answerer
-  // ex:: for male? for over 20 age? for nitroeye ? anything...
 
   return (
     <Container component="main" maxWidth="xs" className={classes.root}>
@@ -139,8 +173,8 @@ const RespondentSetting = () => {
             <RadioGroup
               aria-label="gender"
               name="gender"
-              defaultValue={sub.gender}
-              onChange={handleChange}
+              value={sub.gender}
+              onChange={(e) => handleChange(e, 'gender')}
               style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -164,9 +198,10 @@ const RespondentSetting = () => {
             </FormLabel>
             <ReactTagify
               settings={{ placeholder: 'jobs' }}
-              handleChange={(e) => handleChange(e, 'jobs')}
+              handleChange={(e) => handleChange(e, 'jobs', true)}
               handleKeydown={changJobs}
               whitelist={jobWhitelist}
+              tagifyRef={tagsRefs.jobs}
             />
           </FormControl>
           <FormControl component="fieldset" fullWidth>
@@ -176,11 +211,12 @@ const RespondentSetting = () => {
             <Grid container spacing={1}>
               <SelectBox
                 optionsSet="ages"
-                onChange={(e) => handleChange(e, 'ages')}
+                onChange={(e) => handleMainAgesChange(e)}
+                value={sub.age}
               ></SelectBox>
               <SelectBox
                 optionsSet="ages"
-                onChange={(e) => handleChange(e, 'ages.1')}
+                onChange={(e) => handleChange(e, 'subAgeMin')}
                 optionsSetExclude="custom"
                 defaultDisplay={subAgeSelectDisplay}
               ></SelectBox>
@@ -189,7 +225,7 @@ const RespondentSetting = () => {
               )}
               <SelectBox
                 optionsSet="ages"
-                onChange={(e) => handleChange(e, 'ages.2')}
+                onChange={(e) => handleChange(e, 'subAgeMax')}
                 optionsSetExclude="custom"
                 defaultDisplay={subAgeSelectDisplay}
               ></SelectBox>
@@ -200,10 +236,11 @@ const RespondentSetting = () => {
               메인 그룹
             </FormLabel>
             <ReactTagify
-              settings={{ placeholder: 'group' }}
-              handleChange={(e) => handleChange(e, 'group')}
+              settings={{ placeholder: 'groups' }}
+              handleChange={(e) => handleChange(e, 'groups', true)}
               handleKeydown={changGroups}
               whitelist={groupWhitelist}
+              tagifyRef={tagsRefs.groups}
             />
           </FormControl>
           <FormControl component="fieldset" fullWidth>
@@ -211,10 +248,11 @@ const RespondentSetting = () => {
               서브 그룹
             </FormLabel>
             <ReactTagify
-              settings={{ placeholder: 'subGroup' }}
-              handleChange={(e) => handleChange(e, 'subGroup')}
+              settings={{ placeholder: 'subGroups' }}
+              handleChange={(e) => handleChange(e, 'subGroups', true)}
               handleKeydown={changSubGroups}
               whitelist={subGroupWhitelist}
+              tagifyRef={tagsRefs.subGroups}
             />
           </FormControl>
           <FormControl component="fieldset" fullWidth>
@@ -223,9 +261,10 @@ const RespondentSetting = () => {
             </FormLabel>
             <ReactTagify
               settings={{ placeholder: 'interested' }}
-              handleChange={(e) => handleChange(e, 'interested')}
+              handleChange={(e) => handleChange(e, 'interested', true)}
               handleKeydown={changeInterested}
               whitelist={interestedWhitelist}
+              tagifyRef={tagsRefs.interested}
             />
           </FormControl>
 

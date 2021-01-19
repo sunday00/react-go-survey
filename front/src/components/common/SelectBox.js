@@ -56,6 +56,7 @@ const SelectBox = ({
   classes,
   optionsSet,
   optionsSetExclude,
+  value,
   onChange,
 }) => {
   const options = useCallback(
@@ -74,7 +75,7 @@ const SelectBox = ({
   return (
     defaultDisplay && (
       <Grid item className={classes.root}>
-        <select className={classes.input} onChange={onChange}>
+        <select className={classes.input} onChange={onChange} value={value}>
           {options()}
         </select>
       </Grid>
