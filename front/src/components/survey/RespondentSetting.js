@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-// import { useHistory } from 'react-router';
+import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
 
+import Container from '@material-ui/core/Container';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Radio from '@material-ui/core/Radio';
@@ -11,8 +13,6 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import Typography from '@material-ui/core/Typography';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Container from '@material-ui/core/Container';
 
 import { useSurveyStyle } from '../../lib/styles/mainStyle';
 import { setMain as setMainSetting } from '../../modules/survey';
@@ -35,6 +35,8 @@ const BackButton = React.forwardRef((props, ref) => {
 const RespondentSetting = () => {
   const classes = useSurveyStyle();
   const dispatch = useDispatch();
+  const history = useHistory();
+
   const tagsRefs = {
     jobs: useRef([]),
     groups: useRef([]),
@@ -154,8 +156,8 @@ const RespondentSetting = () => {
     e.preventDefault();
 
     window.localStorage.setItem('sv_cr_sp', JSON.stringify(sub));
-    // TODO:: go to next :: finally create questions!!
-    // history.push('/survey/create/respondent-setting');
+
+    history.push('/survey/create/question/1');
   };
 
   return (
@@ -197,7 +199,7 @@ const RespondentSetting = () => {
               직업
             </FormLabel>
             <ReactTagify
-              settings={{ placeholder: 'jobs' }}
+              settings={{ placeholder: 'jobs: 학생, 회사원 ...' }}
               handleChange={(e) => handleChange(e, 'jobs', true)}
               handleKeydown={changJobs}
               whitelist={jobWhitelist}
@@ -236,7 +238,9 @@ const RespondentSetting = () => {
               메인 그룹
             </FormLabel>
             <ReactTagify
-              settings={{ placeholder: 'groups' }}
+              settings={{
+                placeholder: 'groups: OO무역, AA전자, 가나고등학교...',
+              }}
               handleChange={(e) => handleChange(e, 'groups', true)}
               handleKeydown={changGroups}
               whitelist={groupWhitelist}
@@ -248,7 +252,7 @@ const RespondentSetting = () => {
               서브 그룹
             </FormLabel>
             <ReactTagify
-              settings={{ placeholder: 'subGroups' }}
+              settings={{ placeholder: 'subGroups: 영업부, 1반, 언론학과...' }}
               handleChange={(e) => handleChange(e, 'subGroups', true)}
               handleKeydown={changSubGroups}
               whitelist={subGroupWhitelist}
@@ -260,7 +264,7 @@ const RespondentSetting = () => {
               관심사
             </FormLabel>
             <ReactTagify
-              settings={{ placeholder: 'interested' }}
+              settings={{ placeholder: 'interested: 게임, 영화...' }}
               handleChange={(e) => handleChange(e, 'interested', true)}
               handleKeydown={changeInterested}
               whitelist={interestedWhitelist}

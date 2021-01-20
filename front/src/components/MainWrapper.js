@@ -2,9 +2,12 @@ import React from 'react';
 import { mainStyle } from '../lib/styles/mainStyle';
 import { Route } from 'react-router-dom';
 import Home from './Home';
+
+import Container from '@material-ui/core/Container';
+
 import SurveyCreate from './survey/SurveyCreate';
 import RespondentSetting from './survey/RespondentSetting';
-import Container from '@material-ui/core/Container';
+import QuestionContainer from './survey/QuestionContainer';
 
 const MainWrapper = () => {
   const classes = mainStyle();
@@ -18,6 +21,10 @@ const MainWrapper = () => {
       <Route
         component={RespondentSetting}
         path="/survey/create/respondent-setting"
+      ></Route>
+      <Route
+        component={QuestionContainer}
+        path="/survey/create/question/:questionNo"
       ></Route>
     </Container>
   );

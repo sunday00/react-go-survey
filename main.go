@@ -4,15 +4,17 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/joho/godotenv"
-
 	app "survey/app"
+	"survey/app/models"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	println("Server is now started")
-
 	godotenv.Load()
+	models.Conn()
+
 	time.LoadLocation("Asia/Seoul")
 
 	h := app.MakeHandler()
@@ -22,4 +24,5 @@ func main() {
 		panic(err)
 	}
 
+	models.Close()
 }
