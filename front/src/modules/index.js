@@ -23,10 +23,7 @@ const composeEnhancers = composeWithDevTools({
   trace: true,
   traceLimit: 100,
 });
-const store = createStore(
-  rootReducer,
-  composeEnhancers(applyMiddleware(sagaMiddleware)),
-);
+const store = createStore(rootReducer, composeEnhancers(applyMiddleware(sagaMiddleware)));
 
 sagaMiddleware.run(rootSaga);
 

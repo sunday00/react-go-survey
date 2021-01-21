@@ -2,11 +2,15 @@ import { createAction, handleActions } from 'redux-actions';
 
 const SET_MAIN = 'survey/SET_MAIN';
 const SET_SUB = 'survey/SET_SUB';
+const PUSH_QUEST = 'survey/PUSH_QUEST';
+const EDIT_QUEST = 'survey/EDIT_QUEST';
 
 export const setMain = createAction(SET_MAIN, (main) => main);
 export const setSub = createAction(SET_SUB, (sub, part = 'whole') => {
   return part === 'whole' ? sub : { [part]: [...sub] };
 });
+export const pushQuest = createAction(PUSH_QUEST, (quest) => quest);
+export const editQuest = createAction(EDIT_QUEST, (quest, idx) => ({ quest, idx }));
 
 const initialState = {
   main: {
@@ -25,6 +29,7 @@ const initialState = {
     subAgeMin: '',
     subAgeMax: '',
   },
+  questions: [],
 };
 
 const survey = handleActions(
@@ -39,6 +44,14 @@ const survey = handleActions(
         ...state.sub,
         ...sub,
       },
+    }),
+    [PUSH_QUEST]: (state, { payload: quest }) => ({
+      ...state,
+      questions: [...state.questions, quest],
+    }),
+    [EDIT_QUEST]: (state, { payload: quest, idx }) => ({
+      ...state,
+      questions: state.questions.splice(idx, 1, quest),
     }),
   },
   initialState,
