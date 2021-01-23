@@ -16,6 +16,7 @@ import { useSurveyStyle } from '../../lib/styles/mainStyle';
 
 import { pushQuest, editQuest } from '../../modules/survey';
 import QuestionEssay from './QuestionEssay';
+import QuestionChoice from './QuestionChoice';
 
 const BackButton = React.forwardRef((props, ref) => {
   return <Link ref={ref} {...props} />;
@@ -45,7 +46,7 @@ const QuestionContainer = (props) => {
     // TODO:: get qst from local storage
 
     if (quest) return quest;
-    else dispatch(pushQuest({ no: questionNo, type: 'essay', q: '', options: {} }));
+    else dispatch(pushQuest({ no: questionNo, type: 'choice', q: '', options: {} }));
   }, [dispatch, questionNo, quest]);
 
   const Questions = useCallback(() => {
@@ -65,8 +66,8 @@ const QuestionContainer = (props) => {
               형태
             </FormLabel>
             <RadioGroup
-              aria-label="주관식"
-              name="gender"
+              aria-label="유형"
+              name="type"
               value={quest.type}
               onChange={(e) => handleChange(e, 'type', quest.no)}
               style={{
@@ -77,16 +78,24 @@ const QuestionContainer = (props) => {
                 borderRadius: '4px',
               }}
             >
-              <FormControlLabel value="essay" control={<Radio />} label="주관식" />
               <FormControlLabel value="choice" control={<Radio />} label="객관식" />
+              <FormControlLabel value="essay" control={<Radio />} label="주관식" />
             </RadioGroup>
           </FormControl>
-          {quest.type === 'essay' && (
-            <QuestionEssay
-              options={quest.options}
+          {quest.type === 'choice' && (
+            <QuestionChoice
               handleChange={handleChange}
               quest={quest}
               error={errors.q}
+              classes={classes}
+            ></QuestionChoice>
+          )}
+          {quest.type === 'essay' && (
+            <QuestionEssay
+              handleChange={handleChange}
+              quest={quest}
+              error={errors.q}
+              classes={classes}
             ></QuestionEssay>
           )}
           <div className={'MuiFormControl-marginNormal ' + classes.buttonWrap}>
@@ -109,6 +118,11 @@ const QuestionContainer = (props) => {
               className={classes.button}
             >
               Next
+            </Button>
+          </div>
+          <div className={'MuiFormControl-marginNormal ' + classes.buttonWrap}>
+            <Button type="submit" fullWidth variant="contained" className={classes.button}>
+              COMPLETE
             </Button>
           </div>
         </form>

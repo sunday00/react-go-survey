@@ -2,7 +2,7 @@ import React from 'react';
 
 import { CssTextField } from '../../lib/styles/mainStyle';
 
-const QuestionEssay = ({ quest, options, handleChange, error }) => {
+const QuestionEssay = ({ quest, handleChange, classes, error }) => {
   return (
     <div>
       <CssTextField

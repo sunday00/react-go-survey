@@ -53,6 +53,12 @@ export const useSurveyStyle = makeStyles((theme) => ({
   button: {
     marginTop: theme.spacing(2),
   },
+  functionalButton: {
+    marginTop: theme.spacing(2),
+    border: '1px solid',
+    borderColor: theme.palette.gray[50],
+    color: theme.palette.gray[50],
+  },
 }));
 
 export const CssTextField = withStyles((theme) => ({

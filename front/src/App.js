@@ -2,11 +2,7 @@ import React from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 
-import {
-  createMuiTheme,
-  ThemeProvider,
-  makeStyles,
-} from '@material-ui/core/styles';
+import { createMuiTheme, ThemeProvider, makeStyles } from '@material-ui/core/styles';
 import { Container } from '@material-ui/core';
 import pink from '@material-ui/core/colors/pink';
 import indigo from '@material-ui/core/colors/indigo';
@@ -63,19 +59,11 @@ function App() {
               {
                 //auth
                 <>
-                  <Route
-                    render={() => <ChooseVendor mode="register" />}
-                    path="/register"
-                  />
-                  <Route
-                    render={() => <ChooseVendor mode="signin" />}
-                    path="/signin"
-                  />
+                  <Route render={() => <ChooseVendor mode="register" />} path="/register" />
+                  <Route render={() => <ChooseVendor mode="signin" />} path="/signin" />
                   <Route
                     path="/auth/google/callback/register"
-                    render={() => (
-                      <AuthGoogleCallBackContainer vendor="google" />
-                    )}
+                    render={() => <AuthGoogleCallBackContainer vendor="google" />}
                   />
                   <Route
                     path="/auth/kakao/callback/register"

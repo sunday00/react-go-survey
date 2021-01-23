@@ -21,9 +21,7 @@ const SurveyCreate = () => {
 
   useEffect(() => {
     if (!storedMain.title && window.localStorage.getItem('sv_cr_tp')) {
-      dispatch(
-        setMainSetting(JSON.parse(window.localStorage.getItem('sv_cr_tp'))),
-      );
+      dispatch(setMainSetting(JSON.parse(window.localStorage.getItem('sv_cr_tp'))));
     }
   }, [storedMain, dispatch]);
 
@@ -163,6 +161,7 @@ const SurveyCreate = () => {
               onChange={(e) => handleChange(e, 'end')}
               ref={refs.end}
             />
+            {/* TODO:: 결과를 바로 보여줄건지, 특정일에 알람을 보내 확인하게 할 건지 선택하는 라디오 */}
           </div>
 
           <Button
