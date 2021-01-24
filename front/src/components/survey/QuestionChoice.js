@@ -1,10 +1,72 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import { CssTextField } from '../../lib/styles/mainStyle';
 
+const Selectable = ({ handleChange, handleOptionChange, classes, quest, option }) => {
+  return (
+    <div
+      className="MuiFormControl-marginNormal"
+      style={{ display: 'flex', justifyContent: 'space-between' }}
+    >
+      <CssTextField
+        variant="outlined"
+        required
+        margin="normal"
+        error={false}
+        helperText={''}
+        name="op"
+        label="선택지: ex) 네 / 아니오"
+        id="op"
+        value={option.value}
+        InputLabelProps={{
+          shrink: true,
+        }}
+        onChange={(e) => handleChange(e, 'op', quest.no)}
+        style={{ width: '70%' }}
+        // ref={refs.title}
+      />
+      <CssTextField
+        variant="outlined"
+        type="number"
+        margin="normal"
+        error={false}
+        helperText={''}
+        name="skip"
+        label="~번으로"
+        id="skip"
+        value={option.skip}
+        InputLabelProps={{
+          shrink: true,
+        }}
+        onChange={(e) => handleOptionChange(e, 'skip', option.optionId)}
+        style={{ width: '18%' }}
+        // ref={refs.title}
+      />
+      <IconButton aria-label="delete" className={classes.deleteButton}>
+        <DeleteIcon />
+      </IconButton>
+    </div>
+  );
+};
+
 const QuestionChoice = ({ quest, handleChange, classes, error }) => {
+  const [options, setOptions] = useState([
+    { optionId: 1, value: '네', skip: '' },
+    { optionId: 2, value: '아니오', skip: '' },
+  ]);
+
+  const handleOptionChange = (e, field, optionId) => {
+    const op = options.find((o) => o.optionId === optionId);
+    const idx = options.indexOf(op);
+    const newOptions = [...options];
+    newOptions.splice(idx, 1, { ...op, [field]: e.target.value });
+    setOptions(newOptions);
+  };
+
   return (
     <div>
       <CssTextField
@@ -39,32 +101,19 @@ const QuestionChoice = ({ quest, handleChange, classes, error }) => {
         onChange={(e) => handleChange(e, 'len', quest.no)}
         // ref={refs.title}
       />
-      <CssTextField
-        variant="outlined"
-        margin="normal"
-        error={false}
-        helperText={''}
-        fullWidth
-        name="op"
-        label="선택지: ex) 네"
-        id="op"
-        value={''}
-        onChange={(e) => handleChange(e, 'op', quest.no)}
-        // ref={refs.title}
-      />
-      <CssTextField
-        variant="outlined"
-        margin="normal"
-        error={false}
-        helperText={''}
-        fullWidth
-        name="op"
-        label="선택지: ex) 아니오"
-        id="op"
-        value={''}
-        onChange={(e) => handleChange(e, 'op', quest.no)}
-        // ref={refs.title}
-      />
+
+      {options &&
+        options.map((o) => (
+          <Selectable
+            key={o.optionId}
+            classes={classes}
+            handleChange={handleChange}
+            handleOptionChange={handleOptionChange}
+            quest={quest}
+            option={o}
+          />
+        ))}
+
       <div className={'MuiFormControl-marginNormal ' + classes.buttonWrap}>
         <Button
           type="button"

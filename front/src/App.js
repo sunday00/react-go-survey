@@ -22,6 +22,7 @@ import AuthKakaoCallBackContainer from './components/auth/AuthKakaoCallBackConta
 import AuthGoogleSigninCallBack from './components/auth/AuthGoogleSigninCallBack';
 import AuthKakaoSigninCallBack from './components/auth/AuthKakaoSigninCallBack';
 import MainWrapper from './components/MainWrapper';
+import { red } from '@material-ui/core/colors';
 
 library.add(fas, fab, far);
 
@@ -33,6 +34,9 @@ const theme = createMuiTheme({
     },
     secondary: {
       main: pink[300],
+    },
+    danger: {
+      main: red[600],
     },
     gray: grey,
   },

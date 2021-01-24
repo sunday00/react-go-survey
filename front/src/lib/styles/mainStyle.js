@@ -59,6 +59,17 @@ export const useSurveyStyle = makeStyles((theme) => ({
     borderColor: theme.palette.gray[50],
     color: theme.palette.gray[50],
   },
+  deleteButton: {
+    '&': {
+      color: theme.palette.danger.main,
+      padding: 0,
+    },
+    '&:hover': {
+      backgroundColor: `rgba(200, 0, 0, 0.3)`,
+      borderRadius: 0,
+      height: '3.6rem',
+    },
+  },
 }));
 
 export const CssTextField = withStyles((theme) => ({
