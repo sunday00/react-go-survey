@@ -70,6 +70,15 @@ export const useSurveyStyle = makeStyles((theme) => ({
       height: '3.6rem',
     },
   },
+  completeButton: {
+    '&': {
+      backgroundColor: theme.palette.confirm.main,
+      color: theme.palette.grey[50],
+    },
+    '&:hover': {
+      backgroundColor: theme.palette.confirm.dark,
+    },
+  },
 }));
 
 export const CssTextField = withStyles((theme) => ({

@@ -4,25 +4,20 @@ import { Provider } from 'react-redux';
 
 import { createMuiTheme, ThemeProvider, makeStyles } from '@material-ui/core/styles';
 import { Container } from '@material-ui/core';
-import pink from '@material-ui/core/colors/pink';
-import indigo from '@material-ui/core/colors/indigo';
-import grey from '@material-ui/core/colors/grey';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
+import { pink, indigo, grey, blue, red } from '@material-ui/core/colors';
 
 import store from './modules/index';
-
 import Header from './components/common/Header';
-
 import ChooseVendor from './components/auth/ChooseVendor';
 import AuthGoogleCallBackContainer from './components/auth/AuthGoogleCallBackContainer';
 import AuthKakaoCallBackContainer from './components/auth/AuthKakaoCallBackContainer';
 import AuthGoogleSigninCallBack from './components/auth/AuthGoogleSigninCallBack';
 import AuthKakaoSigninCallBack from './components/auth/AuthKakaoSigninCallBack';
 import MainWrapper from './components/MainWrapper';
-import { red } from '@material-ui/core/colors';
 
 library.add(fas, fab, far);
 
@@ -39,6 +34,11 @@ const theme = createMuiTheme({
       main: red[600],
     },
     gray: grey,
+    confirm: {
+      light: blue[100],
+      main: blue[300],
+      dark: blue[500],
+    },
   },
 });
 

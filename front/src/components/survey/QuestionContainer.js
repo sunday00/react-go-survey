@@ -40,7 +40,9 @@ const QuestionContainer = (props) => {
     return questions.find((q) => q.no === questionNo);
   }, [questions, questionNo]);
 
-  const handleOnSubmit = (e) => {};
+  const handleOnSubmit = (e) => {
+    e.preventDefault();
+  };
 
   useEffect(() => {
     // TODO:: get qst from local storage
@@ -121,7 +123,7 @@ const QuestionContainer = (props) => {
             </Button>
           </div>
           <div className={'MuiFormControl-marginNormal ' + classes.buttonWrap}>
-            <Button type="submit" fullWidth variant="contained" className={classes.button}>
+            <Button type="submit" fullWidth variant="contained" className={classes.completeButton}>
               COMPLETE
             </Button>
           </div>
