@@ -63,6 +63,7 @@ const QuestionContainer = (props) => {
 
       if (e.nativeEvent.submitter.dataset.submitter === 'next') {
         if (quest.type === 'choice') {
+          //TODO:: validate quest.q is not null (required)
           const optionsState = optionsRef.current.getOptions().filter((o) => o.value !== '');
           handleChange({ target: { value: optionsState } }, 'options', quest.no);
         }
@@ -70,6 +71,10 @@ const QuestionContainer = (props) => {
         window.localStorage.setItem(`sv_cr_q${quest.no}`, JSON.stringify(quest));
         history.push(`/survey/create/question/${quest.no + 1}`);
       }
+
+      // submitter is complete
+      // TODO:: clear local storage
+      // send api to store new survey
     };
 
     return (
@@ -124,7 +129,11 @@ const QuestionContainer = (props) => {
               color="secondary"
               className={classes.button}
               component={BackButton}
-              to="/survey/create/respondent-setting"
+              to={
+                quest.no === 1
+                  ? '/survey/create/respondent-setting'
+                  : `/survey/create/question/${quest.no - 1}`
+              }
             >
               Back
             </Button>
@@ -153,7 +162,7 @@ const QuestionContainer = (props) => {
         </form>
       )
     );
-  }, [dispatch, quest, classes, errors]);
+  }, [dispatch, history, quest, classes, errors]);
 
   return (
     <Container component="main" maxWidth="xs" className={classes.root}>
