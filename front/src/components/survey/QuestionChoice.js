@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
 
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
@@ -58,7 +58,7 @@ const Selectable = ({ idx, removeOption, handleOptionChange, classes, quest, opt
   );
 };
 
-const QuestionChoice = ({ quest, handleChange, classes, error }) => {
+const QuestionChoice = React.forwardRef(({ quest, handleChange, classes, error }, ref) => {
   const [options, setOptions] = useState([
     { optionId: 1, value: '네', skip: '' },
     { optionId: 2, value: '아니오', skip: '' },
@@ -70,6 +70,14 @@ const QuestionChoice = ({ quest, handleChange, classes, error }) => {
     el.min = 1;
     el.max = options.length;
   }, [options]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      getOptions: () => options,
+    }),
+    [options],
+  );
 
   const appendOptions = () => {
     const max = options.map((o) => o.optionId).reduce((a, b) => Math.max(a, b));
@@ -154,6 +162,6 @@ const QuestionChoice = ({ quest, handleChange, classes, error }) => {
       </div>
     </div>
   );
-};
+});
 
 export default QuestionChoice;

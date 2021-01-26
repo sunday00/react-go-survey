@@ -1,6 +1,7 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router';
 
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -24,6 +25,7 @@ const BackButton = React.forwardRef((props, ref) => {
 
 const QuestionContainer = (props) => {
   const classes = useSurveyStyle();
+  const history = useHistory();
 
   const questions = useSelector((state) => state.survey.questions);
   const dispatch = useDispatch();
@@ -40,14 +42,13 @@ const QuestionContainer = (props) => {
     return questions.find((q) => q.no === questionNo);
   }, [questions, questionNo]);
 
-  const handleOnSubmit = (e) => {
-    e.preventDefault();
-  };
+  const optionsRef = useRef();
 
   useEffect(() => {
-    // TODO:: get qst from local storage
+    const storedQuest = window.localStorage.getItem(`sv_cr_q${questionNo}`);
 
     if (quest) return quest;
+    else if (storedQuest) dispatch(pushQuest(JSON.parse(storedQuest)));
     else dispatch(pushQuest({ no: questionNo, type: 'choice', q: '', options: {} }));
   }, [dispatch, questionNo, quest]);
 
@@ -55,6 +56,20 @@ const QuestionContainer = (props) => {
     const handleChange = (e, field, idx) => {
       quest[field] = e.target.value;
       dispatch(editQuest(quest, idx));
+    };
+
+    const handleOnSubmit = (e) => {
+      e.preventDefault();
+
+      if (e.nativeEvent.submitter.dataset.submitter === 'next') {
+        if (quest.type === 'choice') {
+          const optionsState = optionsRef.current.getOptions().filter((o) => o.value !== '');
+          handleChange({ target: { value: optionsState } }, 'options', quest.no);
+        }
+
+        window.localStorage.setItem(`sv_cr_q${quest.no}`, JSON.stringify(quest));
+        history.push(`/survey/create/question/${quest.no + 1}`);
+      }
     };
 
     return (
@@ -90,6 +105,7 @@ const QuestionContainer = (props) => {
               quest={quest}
               error={errors.q}
               classes={classes}
+              ref={optionsRef}
             ></QuestionChoice>
           )}
           {quest.type === 'essay' && (
@@ -118,12 +134,19 @@ const QuestionContainer = (props) => {
               variant="contained"
               color="secondary"
               className={classes.button}
+              data-submitter="next"
             >
               Next
             </Button>
           </div>
           <div className={'MuiFormControl-marginNormal ' + classes.buttonWrap}>
-            <Button type="submit" fullWidth variant="contained" className={classes.completeButton}>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              className={classes.completeButton}
+              data-submitter="complete"
+            >
               COMPLETE
             </Button>
           </div>

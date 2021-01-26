@@ -49,10 +49,17 @@ const survey = handleActions(
       ...state,
       questions: [...state.questions, quest],
     }),
-    [EDIT_QUEST]: (state, { payload: quest, idx }) => ({
-      ...state,
-      questions: state.questions.splice(idx, 1, quest),
-    }),
+    // [EDIT_QUEST]: (state, { payload: quest, idx }) => ({
+    //   ...state,
+    //   questions: state.questions.splice(idx, 1, quest),
+    // }),
+    [EDIT_QUEST]: (state, { payload: quest, idx }) => {
+      const newQuestions = state.questions.map((q) => (q.no === idx ? quest : q));
+      return {
+        ...state,
+        questions: [...newQuestions],
+      };
+    },
   },
   initialState,
 );
