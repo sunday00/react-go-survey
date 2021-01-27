@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router';
+import axios from 'axios';
 
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -16,6 +17,9 @@ import Button from '@material-ui/core/Button';
 import { useSurveyStyle } from '../../lib/styles/mainStyle';
 
 import { pushQuest, editQuest } from '../../modules/survey';
+import { setMain as setMainSetting } from '../../modules/survey';
+import { setSub as setSubSetting } from '../../modules/survey';
+
 import QuestionEssay from './QuestionEssay';
 import QuestionChoice from './QuestionChoice';
 
@@ -28,6 +32,7 @@ const QuestionContainer = (props) => {
   const history = useHistory();
 
   const questions = useSelector((state) => state.survey.questions);
+  const survey = useSelector((state) => state.survey);
   const dispatch = useDispatch();
 
   const questionNo = Number.parseInt(props.match.params.questionNo);
@@ -40,6 +45,18 @@ const QuestionContainer = (props) => {
   }, [questions, questionNo]);
 
   const optionsRef = useRef();
+
+  useEffect(() => {
+    const mainSetting = window.localStorage.getItem('sv_cr_tp');
+    if (mainSetting) {
+      dispatch(setMainSetting(JSON.parse(mainSetting)));
+    }
+
+    const subSetting = window.localStorage.getItem('sv_cr_sp');
+    if (subSetting) {
+      dispatch(setSubSetting(JSON.parse(subSetting)));
+    }
+  }, [dispatch]);
 
   useEffect(() => {
     const storedQuest = window.localStorage.getItem(`sv_cr_q${questionNo}`);
@@ -88,6 +105,11 @@ const QuestionContainer = (props) => {
       }
 
       // submitter is complete
+      axios.post('/survey/store', survey).then((res) => {
+        if (res.data) {
+          console.log(res.data);
+        }
+      });
       // TODO:: clear local storage
       // send api to store new survey
     };
@@ -177,7 +199,7 @@ const QuestionContainer = (props) => {
         </form>
       )
     );
-  }, [dispatch, history, quest, classes, errors]);
+  }, [dispatch, history, survey, quest, classes, errors]);
 
   return (
     <Container component="main" maxWidth="xs" className={classes.root}>

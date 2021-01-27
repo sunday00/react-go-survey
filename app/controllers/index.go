@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"survey/app/controllers/api"
 	"survey/app/controllers/auth"
+	"survey/app/controllers/survey"
 
 	"github.com/gorilla/mux"
 )
@@ -28,9 +29,18 @@ type apiControllers interface {
 
 var Api apiControllers
 
+type surveyInstance struct{}
+
+type surveyControllers interface {
+	StoreSurvey(w http.ResponseWriter, r *http.Request)
+}
+
+var Survey surveyControllers
+
 func init() {
 	Auth = &authInstance{}
 	Api = &apiInstance{}
+	Survey = &surveyInstance{}
 }
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
@@ -89,4 +99,8 @@ func (a *apiInstance) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	if thing == "interests" {
 		api.GetAllInterests(w, r)
 	}
+}
+
+func (s *surveyInstance) StoreSurvey(w http.ResponseWriter, r *http.Request) {
+	survey.StoreSurvey(w, r)
 }
