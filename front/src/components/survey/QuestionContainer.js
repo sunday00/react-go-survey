@@ -33,9 +33,6 @@ const QuestionContainer = (props) => {
   const questionNo = Number.parseInt(props.match.params.questionNo);
   const [errors, setErrors] = useState({
     q: [false, ''],
-    description: [false, ''],
-    start: [false, ''],
-    end: [false, ''],
   });
 
   const quest = useMemo(() => {
@@ -47,13 +44,21 @@ const QuestionContainer = (props) => {
   useEffect(() => {
     const storedQuest = window.localStorage.getItem(`sv_cr_q${questionNo}`);
 
+    for (let i = 1; i < questionNo; i++) {
+      const foreQuest = window.localStorage.getItem(`sv_cr_q${i}`);
+      if (!questions.find((q) => q.no === i)) dispatch(pushQuest(JSON.parse(foreQuest)));
+    }
+
     if (quest) return quest;
     else if (storedQuest) dispatch(pushQuest(JSON.parse(storedQuest)));
     else dispatch(pushQuest({ no: questionNo, type: 'choice', q: '', options: {} }));
-  }, [dispatch, questionNo, quest]);
+  }, [dispatch, questions, questionNo, quest]);
 
   const Questions = useCallback(() => {
     const handleChange = (e, field, idx) => {
+      setErrors({
+        q: [false, null],
+      });
       quest[field] = e.target.value;
       dispatch(editQuest(quest, idx));
     };
@@ -61,15 +66,25 @@ const QuestionContainer = (props) => {
     const handleOnSubmit = (e) => {
       e.preventDefault();
 
+      if (e.target.querySelector('#q').value === '') {
+        setErrors({
+          q: [true, '무엇을 질문하는지는 필수 값입니다.'],
+        });
+        return false;
+      }
+
       if (e.nativeEvent.submitter.dataset.submitter === 'next') {
+        const clonedQuest = { ...quest };
+
         if (quest.type === 'choice') {
           //TODO:: validate quest.q is not null (required)
           const optionsState = optionsRef.current.getOptions().filter((o) => o.value !== '');
           handleChange({ target: { value: optionsState } }, 'options', quest.no);
+          clonedQuest.options = [...optionsState];
         }
 
-        window.localStorage.setItem(`sv_cr_q${quest.no}`, JSON.stringify(quest));
-        history.push(`/survey/create/question/${quest.no + 1}`);
+        window.localStorage.setItem(`sv_cr_q${clonedQuest.no}`, JSON.stringify(clonedQuest));
+        history.push(`/survey/create/question/${clonedQuest.no + 1}`);
       }
 
       // submitter is complete

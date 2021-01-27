@@ -59,6 +59,8 @@ const Selectable = ({ idx, removeOption, handleOptionChange, classes, quest, opt
 };
 
 const QuestionChoice = React.forwardRef(({ quest, handleChange, classes, error }, ref) => {
+  const no = quest.no;
+
   const [options, setOptions] = useState([
     { optionId: 1, value: '네', skip: '' },
     { optionId: 2, value: '아니오', skip: '' },
@@ -70,6 +72,10 @@ const QuestionChoice = React.forwardRef(({ quest, handleChange, classes, error }
     el.min = 1;
     el.max = options.length;
   }, [options]);
+
+  useEffect(() => {
+    if (quest.options.length && quest.no === no) setOptions(quest.options);
+  }, [quest.options, quest.no, no]);
 
   useImperativeHandle(
     ref,
