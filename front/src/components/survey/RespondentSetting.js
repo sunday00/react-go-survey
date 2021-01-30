@@ -44,9 +44,7 @@ const RespondentSetting = () => {
     interested: useRef([]),
   };
 
-  const { jobs, groups, subGroups, interested } = useSelector(
-    (state) => state.system,
-  );
+  const { jobs, groups, subGroups, interested } = useSelector((state) => state.system);
   const sub = useSelector((state) => state.survey.sub);
 
   const [jobWhitelist, setJobWhitelist] = useState([]);
@@ -80,13 +78,7 @@ const RespondentSetting = () => {
       tagsRefs.interested.current.addTags(JSON.parse(subSetting).interested);
       dispatch(setSubSetting(JSON.parse(subSetting)));
     }
-  }, [
-    dispatch,
-    tagsRefs.jobs,
-    tagsRefs.groups,
-    tagsRefs.subGroups,
-    tagsRefs.interested,
-  ]);
+  }, [dispatch, tagsRefs.jobs, tagsRefs.groups, tagsRefs.subGroups, tagsRefs.interested]);
 
   const changJobs = useCallback(
     (e) => {
@@ -117,12 +109,12 @@ const RespondentSetting = () => {
   );
 
   const handleMainAgesChange = (e) => {
-    if (e.currentTarget.value === 'custom') {
+    if (e.currentTarget.value === '999') {
       setSubAgeSelectDisplay(true);
       dispatch(
         setSubSetting({
           ...sub,
-          age: 'custom',
+          age: '999',
         }),
       );
     } else {
@@ -185,11 +177,7 @@ const RespondentSetting = () => {
                 borderRadius: '4px',
               }}
             >
-              <FormControlLabel
-                value="notCare"
-                control={<Radio />}
-                label="무관"
-              />
+              <FormControlLabel value="notCare" control={<Radio />} label="무관" />
               <FormControlLabel value="female" control={<Radio />} label="여" />
               <FormControlLabel value="male" control={<Radio />} label="남" />
             </RadioGroup>
@@ -219,16 +207,14 @@ const RespondentSetting = () => {
               <SelectBox
                 optionsSet="ages"
                 onChange={(e) => handleChange(e, 'subAgeMin')}
-                optionsSetExclude="custom"
+                optionsSetExclude={999}
                 defaultDisplay={subAgeSelectDisplay}
               ></SelectBox>
-              {subAgeSelectDisplay && (
-                <span style={{ lineHeight: '2.6rem' }}> ~ </span>
-              )}
+              {subAgeSelectDisplay && <span style={{ lineHeight: '2.6rem' }}> ~ </span>}
               <SelectBox
                 optionsSet="ages"
                 onChange={(e) => handleChange(e, 'subAgeMax')}
-                optionsSetExclude="custom"
+                optionsSetExclude={999}
                 defaultDisplay={subAgeSelectDisplay}
               ></SelectBox>
             </Grid>

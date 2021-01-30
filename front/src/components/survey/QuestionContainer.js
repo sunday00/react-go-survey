@@ -102,6 +102,8 @@ const QuestionContainer = (props) => {
 
         window.localStorage.setItem(`sv_cr_q${clonedQuest.no}`, JSON.stringify(clonedQuest));
         history.push(`/survey/create/question/${clonedQuest.no + 1}`);
+
+        return;
       }
 
       // submitter is complete

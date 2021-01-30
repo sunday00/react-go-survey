@@ -47,7 +47,7 @@ const OptionsSets = {
     { value: 80, text: '80~89' },
     { value: 90, text: '90~99' },
     { value: 100, text: '100 or over' },
-    { value: 'custom', text: '여러 세대' },
+    { value: 999, text: '여러 세대' },
   ],
 };
 
