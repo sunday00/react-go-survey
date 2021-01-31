@@ -76,7 +76,7 @@ const QuestionContainer = (props) => {
       setErrors({
         q: [false, null],
       });
-      quest[field] = e.target.value;
+      quest[field] = field === 'len' ? Number.parseInt(e.target.value) : e.target.value;
       dispatch(editQuest(quest, idx));
     };
 

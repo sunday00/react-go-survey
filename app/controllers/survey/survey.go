@@ -69,11 +69,15 @@ func StoreSurvey(w http.ResponseWriter, r *http.Request) {
 		survey.SubAgeMax = survey.Age
 	}
 
-	//TODO:: NOW FAINALLY SAVE MAINLY QUESTIONS
-
 	mainId := survey.Save()
 
 	console.PrintColoredLn(mainId, console.Info)
+
+	//TODO:: NOW FAINALLY SAVE MAINLY QUESTIONS
+	questionBody := make(map[string][]interface{})
+	json.Unmarshal(data, &questionBody)
+	questions := models.NewQuestion()
+	questions.BulkSave(mainId, questionBody["questions"])
 
 	// var interestsSlice []string
 	// params := r.FormValue("params")

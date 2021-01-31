@@ -57,6 +57,7 @@ func init() {
 	if err != nil {
 		console.PrintColoredLn(err, console.Panic)
 	}
+
 }
 
 // NewSurvey returns SurveyModel instance
