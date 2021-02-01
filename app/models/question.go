@@ -6,17 +6,14 @@ import (
 	"github.com/sunday00/go-console"
 )
 
-type Option struct {
-}
-
 // SurveyModel is model for Survey
 type QuestionModel struct {
-	MainId int      `json:"mainId"`
-	ID     int      `json:"no"`
-	Title  string   `json:"q"`
-	Type   string   `json:"type"`
-	Len    int      `json:"len"`
-	Option []Option `json:"options"`
+	MainId  int           `json:"mainId"`
+	ID      int           `json:"no"`
+	Title   string        `json:"q"`
+	Type    string        `json:"type"`
+	Len     int           `json:"len"`
+	Options []OptionModel `json:"options"`
 }
 
 func init() {
@@ -27,7 +24,6 @@ func init() {
 			title						VARCHAR(100) NOT NULL ,
 			type 						VARCHAR(10),
 			len							INT,
-
 			FOREIGN KEY (mainId)
 				REFERENCES survey(id)
 				ON DELETE CASCADE
@@ -106,6 +102,10 @@ func (s *QuestionModel) BulkSave(mainId int64, questions []interface{}) {
 		quest := &QuestionModel{}
 		json.Unmarshal(tmpByte, quest)
 
+		if quest.Title == "" {
+			continue
+		}
+
 		result, err := pstmt.Exec(
 			mainId, quest.Title, quest.Type, quest.Len,
 		)
@@ -122,9 +122,10 @@ func (s *QuestionModel) BulkSave(mainId int64, questions []interface{}) {
 			console.PrintColoredLn(err, console.Danger)
 		}
 
-		//TODO: save options
-
-		console.PrintColoredLn(id, console.Info)
+		var optionBody map[string][]interface{}
+		json.Unmarshal(tmpByte, &optionBody)
+		options := NewOptions()
+		options.BulkSave(mainId, id, optionBody["options"])
 	}
 
 }

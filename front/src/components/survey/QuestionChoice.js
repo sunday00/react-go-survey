@@ -1,10 +1,12 @@
 import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import { CssTextField } from '../../lib/styles/mainStyle';
+import { replaceOptions } from '../../modules/survey';
 
 const Selectable = ({ idx, removeOption, handleOptionChange, classes, quest, option }) => {
   return (
@@ -59,6 +61,7 @@ const Selectable = ({ idx, removeOption, handleOptionChange, classes, quest, opt
 };
 
 const QuestionChoice = React.forwardRef(({ quest, handleChange, classes, error }, ref) => {
+  const dispatch = useDispatch();
   const no = quest.no;
 
   const [options, setOptions] = useState([
@@ -103,8 +106,13 @@ const QuestionChoice = React.forwardRef(({ quest, handleChange, classes, error }
     const op = options.find((o) => o.optionId === optionId);
     const idx = options.indexOf(op);
     const newOptions = [...options];
-    newOptions.splice(idx, 1, { ...op, [field]: e.target.value });
+    newOptions.splice(idx, 1, {
+      ...op,
+      [field]:
+        field === 'skip' && e.target.value ? Number.parseInt(e.target.value) : e.target.value,
+    });
     setOptions(newOptions);
+    dispatch(replaceOptions(newOptions, no));
   };
 
   return (

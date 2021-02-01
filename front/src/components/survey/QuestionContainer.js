@@ -41,6 +41,7 @@ const QuestionContainer = (props) => {
   });
 
   const quest = useMemo(() => {
+    setErrors({ q: [false, ''] });
     return questions.find((q) => q.no === questionNo);
   }, [questions, questionNo]);
 
@@ -108,12 +109,11 @@ const QuestionContainer = (props) => {
 
       // submitter is complete
       axios.post('/survey/store', survey).then((res) => {
-        if (res.data) {
-          console.log(res.data);
+        if (res.data && res.data.success === 1) {
+          window.localStorage.clear();
+          history.push('/');
         }
       });
-      // TODO:: clear local storage
-      // send api to store new survey
     };
 
     return (

@@ -8,8 +8,6 @@ import (
 	"survey/app/libs"
 	"survey/app/models"
 	"time"
-
-	"github.com/sunday00/go-console"
 )
 
 type mainInfo struct {
@@ -71,24 +69,11 @@ func StoreSurvey(w http.ResponseWriter, r *http.Request) {
 
 	mainId := survey.Save()
 
-	console.PrintColoredLn(mainId, console.Info)
-
-	//TODO:: NOW FAINALLY SAVE MAINLY QUESTIONS
 	questionBody := make(map[string][]interface{})
 	json.Unmarshal(data, &questionBody)
 	questions := models.NewQuestion()
 	questions.BulkSave(mainId, questionBody["questions"])
 
-	// var interestsSlice []string
-	// params := r.FormValue("params")
-	// if params != "" {
-	// 	interestsSlice = tagModel.GetAllTagsContainsKeyword(params)
-	// } else {
-	// 	interestsSlice = tagModel.GetAllTags()
-	// }
-
-	// interests, _ := json.Marshal(interestsSlice)
-
-	fmt.Fprint(w, string("OK"))
+	fmt.Fprintf(w, "{\"success\" : 1, \"id\" : %64d}", mainId)
 
 }
