@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"strings"
 	"time"
 
@@ -110,4 +111,25 @@ func (s *SurveyModel) Save() int64 {
 	}
 
 	return id
+}
+
+// FindById returns one full survey for answer
+func (s *SurveyModel) FindById(id int64) {
+	type TMP struct {
+		jobs []uint8
+	}
+
+	tmp := TMP{}
+
+	err := DB.QueryRow(`
+		SELECT id, title, description, startAt, endAt, jobs FROM survey WHERE id = ?
+	`, id).Scan(&s.ID, &s.Title, &s.Description, &s.StartAt, &s.EndAt, &tmp.jobs)
+
+	// stmp := fmt.Sprintf(string(tmp.jobs))
+	json.Unmarshal(tmp.jobs, &s.Jobs)
+
+	if err != nil {
+		console.PrintColoredLn(err, console.Panic)
+	}
+
 }

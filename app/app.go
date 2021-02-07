@@ -35,7 +35,8 @@ func MakeHandler() http.Handler {
 
 	r.HandleFunc("/api/search/{thing}", controllers.Api.SearchHandler).Methods("GET").Name("search.jobs")
 
-	r.HandleFunc("/survey/store", controllers.Survey.StoreSurvey).Methods("POST").Name("auth.out")
+	r.HandleFunc("/survey/store", controllers.Survey.StoreSurvey).Methods("POST").Name("survey.store")
+	r.HandleFunc("/survey/read/{survey}", controllers.Survey.ReadSurvey).Methods("GET").Name("survey.read")
 
 	r.HandleFunc("/", controllers.IndexHandler).Methods("GET")
 

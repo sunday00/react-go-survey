@@ -47,3 +47,7 @@ export const getAllInterests = (params) => {
   }
   return client.get('/api/search/interests');
 };
+
+export const getOneSurvey = (params) => {
+  return client.get(`/survey/read/${params}`);
+};

@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"survey/app/libs"
 	"survey/app/models"
 	"time"
+
+	"github.com/gorilla/mux"
 )
 
 type mainInfo struct {
@@ -76,4 +79,13 @@ func StoreSurvey(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintf(w, "{\"success\" : 1, \"id\" : %64d}", mainId)
 
+}
+
+func ReadSurvey(w http.ResponseWriter, r *http.Request) {
+	surveyNo, _ := strconv.ParseInt(mux.Vars(r)["survey"], 10, 64)
+
+	survey := models.NewSurvey()
+	survey.FindById(surveyNo)
+
+	fmt.Fprintf(w, "{\"success\" : 1, \"id\" : %v}", survey)
 }

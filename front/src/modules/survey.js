@@ -1,10 +1,13 @@
 import { createAction, handleActions } from 'redux-actions';
+import { call, put, takeLatest } from 'redux-saga/effects';
+import * as api from '../lib/api/search';
 
 const SET_MAIN = 'survey/SET_MAIN';
 const SET_SUB = 'survey/SET_SUB';
 const PUSH_QUEST = 'survey/PUSH_QUEST';
 const EDIT_QUEST = 'survey/EDIT_QUEST';
 const REPLACE_OPTIONS = 'survey/REPLACE_OPTIONS';
+const READ_SURVEY = 'survey/READ_SURVEY';
 
 export const setMain = createAction(SET_MAIN, (main) => main);
 export const setSub = createAction(SET_SUB, (sub, part = 'whole') => {
@@ -18,6 +21,20 @@ export const replaceOptions = createAction(REPLACE_OPTIONS, (options, questionId
   options,
   questionId,
 }));
+
+export const read = createAction(READ_SURVEY, (survey) => survey);
+
+function* readSurveySaga(action) {
+  const survey = yield call(api.getOneSurvey, action.payload);
+  yield put({
+    type: READ_SURVEY,
+    payload: survey.data,
+  });
+}
+
+export function* surveySaga() {
+  yield takeLatest(READ_SURVEY, readSurveySaga);
+}
 
 const initialState = {
   main: {

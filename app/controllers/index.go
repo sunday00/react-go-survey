@@ -33,6 +33,7 @@ type surveyInstance struct{}
 
 type surveyControllers interface {
 	StoreSurvey(w http.ResponseWriter, r *http.Request)
+	ReadSurvey(w http.ResponseWriter, r *http.Request)
 }
 
 var Survey surveyControllers
@@ -103,4 +104,8 @@ func (a *apiInstance) SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *surveyInstance) StoreSurvey(w http.ResponseWriter, r *http.Request) {
 	survey.StoreSurvey(w, r)
+}
+
+func (s *surveyInstance) ReadSurvey(w http.ResponseWriter, r *http.Request) {
+	survey.ReadSurvey(w, r)
 }

@@ -6,7 +6,7 @@ import { all } from 'redux-saga/effects';
 
 import auth from './auth';
 import system, { systemSaga } from './system';
-import survey from './survey';
+import survey, { surveySaga } from './survey';
 
 const rootReducer = combineReducers({
   auth,
@@ -15,7 +15,7 @@ const rootReducer = combineReducers({
 });
 
 export function* rootSaga() {
-  yield all([systemSaga()]);
+  yield all([systemSaga(), surveySaga()]);
 }
 
 const sagaMiddleware = createSagaMiddleware();
