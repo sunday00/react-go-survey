@@ -25,6 +25,8 @@ type SurveyModel struct {
 	SubAgeMin  int      `json:"subAgeMin"`
 	SubAgeMax  int      `json:"subAgeMax"`
 
+	Questions []*QuestionModel `json:"surveys"`
+
 	CreatedBy *UserModel `json:"user"`
 	CreatedAt time.Time  `json:"created_at"`
 }
@@ -116,17 +118,34 @@ func (s *SurveyModel) Save() int64 {
 // FindById returns one full survey for answer
 func (s *SurveyModel) FindById(id int64) {
 	type TMP struct {
-		jobs []uint8
+		jobs       []uint8
+		groups     []uint8
+		subGroups  []uint8
+		interested []uint8
 	}
 
 	tmp := TMP{}
 
 	err := DB.QueryRow(`
-		SELECT id, title, description, startAt, endAt, jobs FROM survey WHERE id = ?
-	`, id).Scan(&s.ID, &s.Title, &s.Description, &s.StartAt, &s.EndAt, &tmp.jobs)
+		SELECT 
+			id, title, description, startAt, endAt,
+			jobs, mainGroups, subGroups, interested, 
+			age, subAgeMin, subAgeMax
+		FROM survey WHERE id = ?
+	`, id).Scan(
+		&s.ID, &s.Title, &s.Description, &s.StartAt, &s.EndAt,
+		&tmp.jobs, &tmp.groups, &tmp.subGroups, &tmp.interested,
+		&s.Age, &s.SubAgeMin, &s.SubAgeMax,
+	)
 
 	// stmp := fmt.Sprintf(string(tmp.jobs))
 	json.Unmarshal(tmp.jobs, &s.Jobs)
+	json.Unmarshal(tmp.groups, &s.Groups)
+	json.Unmarshal(tmp.subGroups, &s.SubGroups)
+
+	QustionModel := NewQuestion()
+	questions := QustionModel.FindBySurveyId(id)
+	s.Questions = questions
 
 	if err != nil {
 		console.PrintColoredLn(err, console.Panic)

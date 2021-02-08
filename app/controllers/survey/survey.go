@@ -8,36 +8,35 @@ import (
 	"strconv"
 	"survey/app/libs"
 	"survey/app/models"
-	"time"
 
 	"github.com/gorilla/mux"
 )
 
-type mainInfo struct {
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	StartAt     time.Time `json:"start"`
-	EndAt       time.Time `json:"end"`
-}
+// type mainInfo struct {
+// 	Title       string    `json:"title"`
+// 	Description string    `json:"description"`
+// 	StartAt     time.Time `json:"start"`
+// 	EndAt       time.Time `json:"end"`
+// }
 
-type subInfo struct {
-	Gender     string   `json:"gender"`
-	Jobs       []string `json:"jobs"`
-	Groups     []string `json:"groups"`
-	SubGroups  []string `json:"subGroups"`
-	Interested []string `json:"interested"`
-	Age        int      `json:"age"`
-	SubAgeMin  int      `json:"subAgeMin"`
-	SubAgeMax  int      `json:"subAgeMax"`
-}
+// type subInfo struct {
+// 	Gender     string   `json:"gender"`
+// 	Jobs       []string `json:"jobs"`
+// 	Groups     []string `json:"groups"`
+// 	SubGroups  []string `json:"subGroups"`
+// 	Interested []string `json:"interested"`
+// 	Age        int      `json:"age"`
+// 	SubAgeMin  int      `json:"subAgeMin"`
+// 	SubAgeMax  int      `json:"subAgeMax"`
+// }
 
-// ReqUserInfo struct object from request
-type ReqSurveyInfo struct {
-	ID          int64
-	MainSetting mainInfo
-	SubSetting  subInfo
-	// Surveys				 [int]survey
-}
+// // ReqUserInfo struct object from request
+// type ReqSurveyInfo struct {
+// 	ID          int64
+// 	MainSetting mainInfo
+// 	SubSetting  subInfo
+// 	// Surveys				 [int]survey
+// }
 
 func StoreSurvey(w http.ResponseWriter, r *http.Request) {
 	survey := models.NewSurvey()
@@ -87,5 +86,7 @@ func ReadSurvey(w http.ResponseWriter, r *http.Request) {
 	survey := models.NewSurvey()
 	survey.FindById(surveyNo)
 
-	fmt.Fprintf(w, "{\"success\" : 1, \"id\" : %v}", survey)
+	jsonResult, _ := json.Marshal(survey)
+
+	fmt.Fprintf(w, "{\"success\" : 1, \"id\" : %v}", string(jsonResult))
 }
