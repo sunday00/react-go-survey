@@ -9,12 +9,12 @@ import (
 
 // SurveyModel is model for Survey
 type QuestionModel struct {
-	MainId  int           `json:"mainId"`
-	ID      int           `json:"no"`
-	Title   string        `json:"q"`
-	Type    string        `json:"type"`
-	Len     int           `json:"len"`
-	Options []OptionModel `json:"options"`
+	MainId  int64          `json:"mainId"`
+	ID      int64          `json:"no"`
+	Title   string         `json:"q"`
+	Type    string         `json:"type"`
+	Len     int            `json:"len"`
+	Options []*OptionModel `json:"options"`
 }
 
 func init() {
@@ -140,14 +140,27 @@ func (q *QuestionModel) FindBySurveyId(id int64) []*QuestionModel {
 
 	var Questions []*QuestionModel
 
+	// dev for in syntax
+	optionModel := NewOptions()
+	options := optionModel.FindBySurveyId(id)
+
 	for rows.Next() {
-		err := rows.Scan(&q.ID, &q.Title, &q.Type, &q.Len)
+		Question := &QuestionModel{}
+		err := rows.Scan(&Question.ID, &Question.Title, &Question.Type, &Question.Len)
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		Questions = append(Questions, q)
+		// optionModel := NewOptions()
+		// Question.Options = optionModel.FindByQuestionId(Question.ID)
+		for _, option := range options {
+			if option.QuestionId == int(Question.ID) {
+				Question.Options = append(Question.Options, option)
+			}
+		}
+
+		Questions = append(Questions, Question)
 	}
 
 	if err != nil {

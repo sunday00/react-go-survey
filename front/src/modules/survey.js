@@ -8,6 +8,7 @@ const PUSH_QUEST = 'survey/PUSH_QUEST';
 const EDIT_QUEST = 'survey/EDIT_QUEST';
 const REPLACE_OPTIONS = 'survey/REPLACE_OPTIONS';
 const READ_SURVEY = 'survey/READ_SURVEY';
+const READ_SURVEY_DONE = 'survey/READ_SURVEY_DONE';
 
 export const setMain = createAction(SET_MAIN, (main) => main);
 export const setSub = createAction(SET_SUB, (sub, part = 'whole') => {
@@ -27,8 +28,8 @@ export const read = createAction(READ_SURVEY, (survey) => survey);
 function* readSurveySaga(action) {
   const survey = yield call(api.getOneSurvey, action.payload);
   yield put({
-    type: READ_SURVEY,
-    payload: survey.data,
+    type: READ_SURVEY_DONE,
+    payload: survey.data.result,
   });
 }
 
@@ -94,6 +95,27 @@ const survey = handleActions(
       return {
         ...state,
         questions: [...newQuestions],
+      };
+    },
+    [READ_SURVEY_DONE]: (state, { payload }) => {
+      return {
+        main: {
+          title: payload.title,
+          description: payload.description,
+          start: payload.start,
+          end: payload.end,
+        },
+        sub: {
+          gender: payload.gender,
+          jobs: payload.jobs,
+          groups: payload.groups,
+          subGroups: payload.subGroups,
+          interested: payload.interested,
+          age: payload.age,
+          subAgeMin: payload.subAgeMin,
+          subAgeMax: payload.subAgeMax,
+        },
+        questions: payload.surveys,
       };
     },
   },

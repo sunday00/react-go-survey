@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"log"
 
 	"github.com/sunday00/go-console"
 )
@@ -113,5 +114,60 @@ func (o *OptionModel) BulkSave(mainId int64, questionId int64, options []interfa
 		}
 
 	}
+
+}
+
+func (o *OptionModel) FindByQuestionId(id int64) []*OptionModel {
+	rows, err := DB.Query(`
+		SELECT 
+			id, value, skip
+		FROM options WHERE questionId = ?
+	`, id)
+
+	var Options []*OptionModel
+
+	for rows.Next() {
+		option := &OptionModel{}
+		err := rows.Scan(&option.ID, &option.Value, &option.Skip)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Options = append(Options, option)
+	}
+
+	if err != nil {
+		console.PrintColoredLn(err, console.Panic)
+	}
+
+	return Options
+}
+
+func (o *OptionModel) FindBySurveyId(id int64) []*OptionModel {
+	rows, err := DB.Query(`
+		SELECT 
+			id, questionId, value, skip
+		FROM options WHERE mainId = ?
+	`, id)
+
+	var Options []*OptionModel
+
+	for rows.Next() {
+		option := &OptionModel{}
+		err := rows.Scan(&option.ID, &option.QuestionId, &option.Value, &option.Skip)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Options = append(Options, option)
+	}
+
+	if err != nil {
+		console.PrintColoredLn(err, console.Panic)
+	}
+
+	return Options
 
 }

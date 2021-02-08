@@ -8,7 +8,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { CssTextField } from '../../lib/styles/mainStyle';
 import { replaceOptions } from '../../modules/survey';
 
-const Selectable = ({ idx, removeOption, handleOptionChange, classes, quest, option }) => {
+const Selectable = ({ idx, removeOption, handleOptionChange, classes, quest, option, error }) => {
   return (
     <div
       className="MuiFormControl-marginNormal"
@@ -35,11 +35,11 @@ const Selectable = ({ idx, removeOption, handleOptionChange, classes, quest, opt
         variant="outlined"
         type="number"
         margin="normal"
-        error={false}
-        helperText={''}
+        error={error && error[0] === option.optionId - 1}
+        helperText={error && error[0] === option.optionId - 1 && error[1]}
         name="skip"
         label="~번으로"
-        id="skip"
+        id={`skip${option.optionId}`}
         value={option.skip}
         InputLabelProps={{
           shrink: true,
@@ -121,8 +121,8 @@ const QuestionChoice = React.forwardRef(({ quest, handleChange, classes, error }
         variant="outlined"
         margin="normal"
         required
-        error={error[0]}
-        helperText={error[1]}
+        error={error.q[0]}
+        helperText={error.q[1]}
         multiline
         fullWidth
         id="q"
@@ -149,18 +149,21 @@ const QuestionChoice = React.forwardRef(({ quest, handleChange, classes, error }
       />
 
       {options &&
-        options.map((o, i) => (
-          <Selectable
-            key={o.optionId}
-            idx={i}
-            classes={classes}
-            handleChange={handleChange}
-            handleOptionChange={handleOptionChange}
-            removeOption={removeOption}
-            quest={quest}
-            option={o}
-          />
-        ))}
+        options.map((o, i) => {
+          return (
+            <Selectable
+              key={o.optionId}
+              idx={i}
+              classes={classes}
+              handleChange={handleChange}
+              handleOptionChange={handleOptionChange}
+              removeOption={removeOption}
+              quest={quest}
+              option={o}
+              error={error.o}
+            />
+          );
+        })}
 
       <div className={'MuiFormControl-marginNormal ' + classes.buttonWrap}>
         <Button

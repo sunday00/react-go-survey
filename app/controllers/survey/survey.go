@@ -88,5 +88,5 @@ func ReadSurvey(w http.ResponseWriter, r *http.Request) {
 
 	jsonResult, _ := json.Marshal(survey)
 
-	fmt.Fprintf(w, "{\"success\" : 1, \"id\" : %v}", string(jsonResult))
+	fmt.Fprintf(w, "{\"success\" : 1, \"result\" : %v}", string(jsonResult))
 }

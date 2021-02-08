@@ -38,6 +38,7 @@ const QuestionContainer = (props) => {
   const questionNo = Number.parseInt(props.match.params.questionNo);
   const [errors, setErrors] = useState({
     q: [false, ''],
+    o: [false, ''],
   });
 
   const quest = useMemo(() => {
@@ -76,6 +77,7 @@ const QuestionContainer = (props) => {
     const handleChange = (e, field, idx) => {
       setErrors({
         q: [false, null],
+        o: [null, null],
       });
       quest[field] = field === 'len' ? Number.parseInt(e.target.value) : e.target.value;
       dispatch(editQuest(quest, idx));
@@ -86,16 +88,31 @@ const QuestionContainer = (props) => {
 
       if (e.target.querySelector('#q').value === '') {
         setErrors({
+          ...errors,
           q: [true, '무엇을 질문하는지는 필수 값입니다.'],
         });
         return false;
       }
 
+      //TODO:: options skip value should check loop.
+      // if skip value less then question id, err.
+      let optionErr;
+      quest.type === 'choice' &&
+        quest.options.forEach((o, i) => {
+          if (o.skip && o.skip <= quest.no) {
+            setErrors({
+              ...errors,
+              o: [i, '뒤로 건너뛸 수는 없습니다.'],
+            });
+            optionErr = true;
+          }
+        });
+      if (optionErr) return false;
+
       if (e.nativeEvent.submitter.dataset.submitter === 'next') {
         const clonedQuest = { ...quest };
 
         if (quest.type === 'choice') {
-          //TODO:: validate quest.q is not null (required)
           const optionsState = optionsRef.current.getOptions().filter((o) => o.value !== '');
           handleChange({ target: { value: optionsState } }, 'options', quest.no);
           clonedQuest.options = [...optionsState];
@@ -147,7 +164,7 @@ const QuestionContainer = (props) => {
             <QuestionChoice
               handleChange={handleChange}
               quest={quest}
-              error={errors.q}
+              error={errors}
               classes={classes}
               ref={optionsRef}
             ></QuestionChoice>

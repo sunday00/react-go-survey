@@ -128,12 +128,12 @@ func (s *SurveyModel) FindById(id int64) {
 
 	err := DB.QueryRow(`
 		SELECT 
-			id, title, description, startAt, endAt,
+			id, title, description, startAt, endAt, gender,
 			jobs, mainGroups, subGroups, interested, 
 			age, subAgeMin, subAgeMax
 		FROM survey WHERE id = ?
 	`, id).Scan(
-		&s.ID, &s.Title, &s.Description, &s.StartAt, &s.EndAt,
+		&s.ID, &s.Title, &s.Description, &s.StartAt, &s.EndAt, &s.Gender,
 		&tmp.jobs, &tmp.groups, &tmp.subGroups, &tmp.interested,
 		&s.Age, &s.SubAgeMin, &s.SubAgeMax,
 	)

@@ -9,7 +9,7 @@ const ReadContainer = ({ match }) => {
 
   useEffect(() => {
     if (!survey.main.title) dispatch(read(surveyNo));
-  }, [dispatch, surveyNo, survey]);
+  }, [dispatch, survey.main.title, surveyNo]);
 
   return <div>read</div>;
 };
