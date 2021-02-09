@@ -16,6 +16,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
+var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
+
 func SetSimpleCookie(name, value string, w http.ResponseWriter) {
 	time.LoadLocation("Asia/Seoul")
 	expiration := time.Now().Add(24 * time.Hour)
@@ -49,12 +51,12 @@ func GenerateCsrfCookie(w http.ResponseWriter) string {
 
 func SetSimpleSession(name string, value interface{}, w http.ResponseWriter, r *http.Request) {
 	godotenv.Load()
-	var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
 
 	session, _ := store.New(r, name)
 	session.Options = &sessions.Options{
 		Path:     "/",
 		HttpOnly: true,
+		MaxAge:   30 * 60,
 	}
 
 	tmpMap := make(map[string]interface{})
@@ -76,8 +78,6 @@ func GetSimpleSession(name string, r *http.Request) map[string]interface{} {
 	godotenv.Load()
 
 	nameSplit := strings.Split(name, ".")
-
-	var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
 	session, _ := store.Get(r, nameSplit[0])
 
 	v := []byte(fmt.Sprintf("%v", session.Values[nameSplit[1]]))

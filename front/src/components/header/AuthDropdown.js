@@ -10,12 +10,7 @@ import List from '@material-ui/core/List';
 
 import { makeStyles } from '@material-ui/core';
 
-import {
-  setSigned,
-  setUserProfile,
-  setUserPhoto,
-  setUserSubInfo,
-} from '../../modules/auth';
+import { setSigned, setUserProfile, setUserPhoto, setUserSubInfo } from '../../modules/auth';
 import { useOpenToggle } from '../../lib/hooks/useOpenToggle';
 import BeforSignButtons from './BeforSignButtons';
 import AfterSignButtons from './AfterSignButtons';
@@ -64,6 +59,20 @@ const AuthDropdown = () => {
         dispatch(setUserProfile(res.data.User));
         dispatch(setUserPhoto(res.data.Photo));
         dispatch(setUserSubInfo(res.data.SubInfo));
+      } else {
+        dispatch(setSigned(false));
+        dispatch(
+          setUserProfile({
+            vendorId: '',
+            vendor: '',
+            email: '',
+            name: '',
+            gender: '',
+            ageRange: '',
+          }),
+        );
+        dispatch(setUserPhoto(''));
+        dispatch(setUserSubInfo({ job: '', group: '', subGroup: '', interested: [] }));
       }
     });
   }, [dispatch]);
@@ -99,24 +108,9 @@ const AuthDropdown = () => {
       </Button>
 
       {open && (
-        <List
-          component="nav"
-          aria-label="account relative"
-          className={classes.list}
-          ref={ref}
-        >
-          {!isSigned && (
-            <BeforSignButtons
-              classesProp={classes}
-              handleOnClick={handleOnClick}
-            />
-          )}
-          {isSigned && (
-            <AfterSignButtons
-              classesProp={classes}
-              handleOnClick={handleOnClick}
-            />
-          )}
+        <List component="nav" aria-label="account relative" className={classes.list} ref={ref}>
+          {!isSigned && <BeforSignButtons classesProp={classes} handleOnClick={handleOnClick} />}
+          {isSigned && <AfterSignButtons classesProp={classes} handleOnClick={handleOnClick} />}
         </List>
       )}
     </>

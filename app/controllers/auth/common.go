@@ -37,10 +37,10 @@ type subInfo struct {
 
 // ReqUserInfo struct object from request
 type ReqUserInfo struct {
-	ID      int64
-	User    mainInfo
-	Photo   string
-	SubInfo subInfo
+	ID      int64    `json:"ID"`
+	User    mainInfo `json:"User"`
+	Photo   string   `json:"Photo"`
+	SubInfo subInfo  `json:"SubInfo"`
 }
 
 // ResponseJWTAndSessionProcess save session, responce JWT, store user
@@ -54,10 +54,24 @@ func ResponseJWTAndSessionProcess(mode string, w http.ResponseWriter, r *http.Re
 		saveProcess(reqUserInfo)
 	}
 
+	if mode == "refresh" {
+		sess := libs.GetBulkSession("user", r)
+		m := []byte(sess)
+		err := json.Unmarshal(m, reqUserInfo)
+
+		if err != nil {
+			console.PrintColoredLn(err, console.Panic)
+		}
+	}
+
 	token, _ := GenerateJwtToken(reqUserInfo.ID, reqUserInfo.User.Vendor, reqUserInfo.User.VendorID)
 
 	libs.SetCookieWithExpireHour("jwt", token, 30, w)
 	SetUserSessions(reqUserInfo, w, r)
+
+	if mode == "refresh" {
+		return
+	}
 
 	response := fmt.Sprintf("{\"access_key\" : \"%s\", \"success\": 1}", token)
 	// json.NewEncoder(w).Encode(response)
@@ -126,7 +140,21 @@ func CheckSigned(w http.ResponseWriter, r *http.Request) {
 		libs.ResponseError(w)
 	}
 
-	fmt.Fprint(w, libs.GetBulkSession("user", r))
+	var claimMap map[string]int64
+	jt, _ := json.Marshal(t.Claims)
+	json.Unmarshal(jt, &claimMap)
+	exp := claimMap["exp"]
+	now := time.Now().Unix()
+
+	sess := libs.GetBulkSession("user", r)
+
+	console.PrintColoredF("remained time: %v\n", console.White, (exp-now)/60)
+	if (exp-now)/60 <= 5 {
+		//TODO:: this is 야매 refresh
+		ResponseJWTAndSessionProcess("refresh", w, r)
+	}
+
+	fmt.Fprint(w, sess)
 
 }
 
