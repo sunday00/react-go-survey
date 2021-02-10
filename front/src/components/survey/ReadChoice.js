@@ -1,30 +1,18 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
 import { useSurveyStyle } from '../../lib/styles/mainStyle';
 
-const BackButton = React.forwardRef((props, ref) => {
-  return <Link ref={ref} {...props} />;
-});
-
-const ReadMain = ({ title, description, onNext }) => {
+const ReadChoice = ({ question, onPrev, onNext }) => {
   const classes = useSurveyStyle();
 
-  //TODO:: make buttons : go back to list / start
   return (
     <div>
       <Typography component="h1" variant="h3" className={classes.title}>
-        {title}
+        {question.q}
       </Typography>
-      <Typography component="p" variant="h5" className={classes.subTitle}>
-        {description}
-      </Typography>
-
-      <hr />
-
       <div className={'MuiFormControl-marginNormal ' + classes.buttonWrap}>
         <Button
           type="button"
@@ -32,10 +20,9 @@ const ReadMain = ({ title, description, onNext }) => {
           variant="contained"
           color="secondary"
           className={classes.button}
-          component={BackButton}
-          to="/"
+          onClick={onPrev}
         >
-          취소
+          뒤로
         </Button>
         <Button
           type="button"
@@ -46,11 +33,11 @@ const ReadMain = ({ title, description, onNext }) => {
           data-submitter="next"
           onClick={onNext}
         >
-          시작
+          다음
         </Button>
       </div>
     </div>
   );
 };
 
-export default ReadMain;
+export default ReadChoice;
