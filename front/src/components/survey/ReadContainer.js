@@ -25,8 +25,12 @@ const ReadContainer = ({ match }) => {
   }, [dispatch, survey.main.title, surveyNo]);
 
   const Question = useCallback(() => {
-    const handleNext = () => {
+    const handleSubmit = (e) => {
+      e.preventDefault();
+
       setPage(page + 1);
+      if (e.target.answer) console.log(e.target.answer.value);
+      // TODO:: set answer value
     };
 
     const handlePrev = () => {
@@ -38,13 +42,13 @@ const ReadContainer = ({ match }) => {
         <ReadMain
           title={survey.main.title}
           description={survey.main.description}
-          onNext={handleNext}
+          onNext={handleSubmit}
         />
       );
     }
     const q = survey.questions[page - 1];
     return q.type === 'choice' ? (
-      <ReadChoice question={q} onNext={handleNext} onPrev={handlePrev} />
+      <ReadChoice question={q} onSubmit={handleSubmit} onPrev={handlePrev} />
     ) : (
       ''
     );
