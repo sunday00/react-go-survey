@@ -18,6 +18,7 @@ const ReadContainer = ({ match }) => {
   const survey = useSelector((state) => state.survey);
 
   const [page, setPage] = useState(0);
+  const [answers, setAnswers] = useState([]);
 
   useEffect(() => {
     if (!survey.main.title) dispatch(read(surveyNo));
@@ -28,8 +29,28 @@ const ReadContainer = ({ match }) => {
     const handleSubmit = (e) => {
       e.preventDefault();
 
-      setPage(page + 1);
-      if (e.target.answer) console.log(e.target.answer.value);
+      let goTo = page + 1;
+
+      if (e.target.answer) {
+        const ans = { k: e.target.answerNo.value, v: e.target.answer.value };
+
+        const newAnswers = [...answers];
+        newAnswers[page - 1] = ans;
+        setAnswers(newAnswers);
+        console.log(newAnswers);
+
+        const skip =
+          survey.questions.length < e.target.skip.value
+            ? survey.questions.length
+            : e.target.skip.value;
+
+        if (skip > goTo) {
+          console.log(skip);
+          goTo = skip;
+        }
+      }
+
+      setPage(goTo);
       // TODO:: set answer value
     };
 
@@ -52,7 +73,7 @@ const ReadContainer = ({ match }) => {
     ) : (
       ''
     );
-  }, [page, survey.main.description, survey.main.title, survey.questions]);
+  }, [page, survey.main.description, survey.main.title, survey.questions, answers]);
 
   return (
     <Container component="main" maxWidth="xs" className={classes.root}>

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
@@ -11,19 +11,26 @@ import Radio from '@material-ui/core/Radio';
 import { useSurveyStyle } from '../../lib/styles/mainStyle';
 
 const RadioSelect = ({ question }) => {
+  const [skip, setSkip] = useState('');
+
+  const handleChange = (e) => {
+    setSkip(question.options.find((o) => o.value === e.target.value).skip);
+  };
+
   const options = useCallback(() => {
     return question.options.map((o) => (
       <FormControlLabel key={o.optionId} value={o.value} control={<Radio />} label={o.value} />
     ));
-  });
+  }, [question.options]);
 
   return (
     <FormControl component="fieldset" fullWidth>
+      <input type="hidden" name="answerNo" value={question.no} />
+      <input type="hidden" name="skip" value={skip} />
       <RadioGroup
         aria-label={question.q}
         name="answer"
-        // value={quest.type}
-        // onChange={(e) => handleChange(e, 'type', quest.no)}
+        onChange={handleChange}
         style={{
           display: 'flex',
           flexDirection: 'column',
