@@ -20,6 +20,7 @@ const ReadContainer = ({ match }) => {
   const survey = useSelector((state) => state.survey);
 
   const [page, setPage] = useState(0);
+  const [prev, setPrev] = useState(0);
   const [answers, setAnswers] = useState([]);
 
   useEffect(() => {
@@ -64,12 +65,13 @@ const ReadContainer = ({ match }) => {
         }
       }
 
+      setPrev(page);
       setPage(goTo);
       // TODO:: set answer value
     };
 
     const handlePrev = () => {
-      setPage(page - 1);
+      setPage(prev);
     };
 
     const handleComplete = (e) => {
@@ -99,7 +101,7 @@ const ReadContainer = ({ match }) => {
     ) : (
       <ReadEssay question={q} onSubmit={handleSubmit} onPrev={handlePrev} />
     );
-  }, [page, survey.main.description, survey.main.title, survey.questions, answers]);
+  }, [page, prev, survey.main.description, survey.main.title, survey.questions, answers]);
 
   return (
     <Container component="main" maxWidth="xs" className={classes.root}>
