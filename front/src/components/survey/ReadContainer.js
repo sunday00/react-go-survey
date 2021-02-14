@@ -28,18 +28,30 @@ const ReadContainer = ({ match }) => {
   }, [dispatch, survey.main.title, surveyNo]);
 
   const Question = useCallback(() => {
+    const q = survey.questions[page - 1];
+
     const handleSubmit = (e) => {
       e.preventDefault();
 
       let goTo = page + 1;
 
       if (e.target.answer) {
-        const ans = { k: e.target.answerNo.value, v: e.target.answer.value };
+        let v;
+
+        if (q.len >= 2) {
+          v = [];
+          e.target.answer.forEach((a) => {
+            if (a.checked) v.push(a.value);
+          });
+        } else {
+          v = e.target.answer.value;
+        }
+
+        const ans = { k: e.target.answerNo.value, v };
 
         const newAnswers = [...answers];
         newAnswers[page - 1] = ans;
         setAnswers(newAnswers);
-        console.log(newAnswers);
 
         const skip =
           survey.questions.length < e.target.skip.value
@@ -82,7 +94,6 @@ const ReadContainer = ({ match }) => {
       );
     }
 
-    const q = survey.questions[page - 1];
     return q.type === 'choice' ? (
       <ReadChoice question={q} onSubmit={handleSubmit} onPrev={handlePrev} />
     ) : (
