@@ -1,14 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { read } from '../../modules/survey';
-import ReadMain from './ReadMain';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
 import { useSurveyStyle } from '../../lib/styles/mainStyle';
+import { read } from '../../modules/survey';
+import ReadMain from './ReadMain';
 import ReadChoice from './ReadChoice';
+import ReadEssay from './ReadEssay';
+import ReadComplete from './ReadComplete';
 
 const ReadContainer = ({ match }) => {
   const surveyNo = match.params.surveyNo;
@@ -41,7 +43,7 @@ const ReadContainer = ({ match }) => {
 
         const skip =
           survey.questions.length < e.target.skip.value
-            ? survey.questions.length
+            ? survey.questions.length + 1
             : e.target.skip.value;
 
         if (skip > goTo) {
@@ -58,6 +60,12 @@ const ReadContainer = ({ match }) => {
       setPage(page - 1);
     };
 
+    const handleComplete = (e) => {
+      e.preventDefault();
+
+      console.log('submit to backend');
+    };
+
     if (survey.main.title && page === 0) {
       return (
         <ReadMain
@@ -67,11 +75,18 @@ const ReadContainer = ({ match }) => {
         />
       );
     }
+
+    if (survey.main.title && page === survey.questions.length + 1) {
+      return (
+        <ReadComplete title={survey.main.title} onPrev={handlePrev} onComplete={handleComplete} />
+      );
+    }
+
     const q = survey.questions[page - 1];
     return q.type === 'choice' ? (
       <ReadChoice question={q} onSubmit={handleSubmit} onPrev={handlePrev} />
     ) : (
-      ''
+      <ReadEssay question={q} onSubmit={handleSubmit} onPrev={handlePrev} />
     );
   }, [page, survey.main.description, survey.main.title, survey.questions, answers]);
 
