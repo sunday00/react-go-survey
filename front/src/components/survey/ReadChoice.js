@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
@@ -9,18 +9,30 @@ import { Radio, Checkbox } from '@material-ui/core';
 
 import { useSurveyStyle } from '../../lib/styles/mainStyle';
 
-const RadioSelect = ({ question }) => {
+const RadioSelect = ({ question, already }) => {
   const [skip, setSkip] = useState('');
 
-  const handleChange = (e) => {
-    setSkip(question.options.find((o) => o.value === e.target.value).skip);
-  };
+  const handleChange = useCallback(
+    (e) => {
+      setSkip(question.options.find((o) => o.optionId === Number.parseInt(e.target.value)).skip);
+    },
+    [question.options],
+  );
 
   const options = useCallback(() => {
     return question.options.map((o) => (
-      <FormControlLabel key={o.optionId} value={o.value} control={<Radio />} label={o.value} />
+      <FormControlLabel
+        key={o.optionId}
+        value={o.optionId + ''}
+        control={<Radio />}
+        label={o.value}
+      />
     ));
   }, [question.options]);
+
+  useEffect(() => {
+    already && handleChange({ target: { value: already.v[0] } });
+  }, [already, handleChange]);
 
   return (
     <FormControl component="fieldset" fullWidth>
@@ -30,6 +42,7 @@ const RadioSelect = ({ question }) => {
         aria-label={question.q}
         name="answer"
         onChange={handleChange}
+        defaultValue={already && already.v[0]}
         style={{
           display: 'flex',
           flexDirection: 'column',
@@ -42,32 +55,48 @@ const RadioSelect = ({ question }) => {
   );
 };
 
-const CheckSelect = ({ question }) => {
+const CheckSelect = ({ question, already }) => {
   const [skip, setSkip] = useState('');
 
   const checkList = useRef();
 
-  const options = useCallback(() => {
-    const handleChange = (e) => {
+  const handleChangeCallback = useCallback(
+    (e) => {
       let skipCandidates = [];
       checkList.current.querySelectorAll('[name="answer"]:checked').forEach((c) => {
-        const selectedSkip = question.options.find((o) => o.value === c.value).skip;
+        const selectedSkip = question.options.find((o) => o.optionId === Number.parseInt(c.value))
+          .skip;
         skipCandidates.push(selectedSkip);
       });
 
       if (skipCandidates.length) setSkip(Math.min(...skipCandidates));
       else setSkip('');
-    };
+    },
+    [checkList, question.options],
+  );
+
+  useEffect(() => {
+    handleChangeCallback('');
+  });
+
+  const options = useCallback(() => {
+    const handleChange = handleChangeCallback;
 
     return question.options.map((o) => (
       <FormControlLabel
         key={o.optionId}
-        control={<Checkbox name="answer" value={o.value} />}
+        control={
+          <Checkbox
+            name="answer"
+            value={o.optionId + ''}
+            defaultChecked={already && already.v.indexOf(`${o.optionId}`) >= 0}
+          />
+        }
         label={o.value}
         onChange={handleChange}
       />
     ));
-  }, [question.options]);
+  }, [question.options, already, handleChangeCallback]);
 
   return (
     <div component="fieldset">
@@ -88,7 +117,7 @@ const CheckSelect = ({ question }) => {
   );
 };
 
-const ReadChoice = ({ question, onPrev, onSubmit }) => {
+const ReadChoice = ({ question, onPrev, onSubmit, already }) => {
   const classes = useSurveyStyle();
 
   return (
@@ -97,8 +126,8 @@ const ReadChoice = ({ question, onPrev, onSubmit }) => {
         {question.q}
       </Typography>
 
-      {question.len <= 1 && <RadioSelect question={question} />}
-      {question.len >= 2 && <CheckSelect question={question} />}
+      {question.len <= 1 && <RadioSelect question={question} already={already} />}
+      {question.len >= 2 && <CheckSelect question={question} already={already} />}
 
       <hr />
 

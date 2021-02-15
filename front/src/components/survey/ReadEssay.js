@@ -7,7 +7,7 @@ import FormControl from '@material-ui/core/FormControl';
 
 import { useSurveyStyle, CssTextField } from '../../lib/styles/mainStyle';
 
-const TextArea = ({ question }) => {
+const TextArea = ({ question, already }) => {
   return (
     <FormControl component="fieldset" fullWidth>
       <input type="hidden" name="answerNo" value={question.no} />
@@ -25,12 +25,13 @@ const TextArea = ({ question }) => {
         label="대답"
         name="answer"
         rows="3"
+        defaultValue={already && already.v[0]}
       />
     </FormControl>
   );
 };
 
-const ReadEssay = ({ question, onPrev, onSubmit }) => {
+const ReadEssay = ({ question, onPrev, onSubmit, already }) => {
   const classes = useSurveyStyle();
 
   return (
@@ -39,7 +40,7 @@ const ReadEssay = ({ question, onPrev, onSubmit }) => {
         {question.q}
       </Typography>
 
-      <TextArea question={question} />
+      <TextArea question={question} already={already} />
 
       <hr />
 

@@ -20,7 +20,7 @@ const ReadContainer = ({ match }) => {
   const survey = useSelector((state) => state.survey);
 
   const [page, setPage] = useState(0);
-  const [prev, setPrev] = useState(0);
+  const [prev, setPrev] = useState([]);
   const [answers, setAnswers] = useState([]);
 
   useEffect(() => {
@@ -30,6 +30,7 @@ const ReadContainer = ({ match }) => {
 
   const Question = useCallback(() => {
     const q = survey.questions[page - 1];
+    const already = q && answers.find((a) => Number.parseInt(a.k) === q.no);
 
     const handleSubmit = (e) => {
       e.preventDefault();
@@ -37,15 +38,14 @@ const ReadContainer = ({ match }) => {
       let goTo = page + 1;
 
       if (e.target.answer) {
-        let v;
+        let v = [];
 
-        if (q.len >= 2) {
-          v = [];
+        if (q.type === 'choice') {
           e.target.answer.forEach((a) => {
             if (a.checked) v.push(a.value);
           });
         } else {
-          v = e.target.answer.value;
+          v.push(e.target.answer.value);
         }
 
         const ans = { k: e.target.answerNo.value, v };
@@ -60,24 +60,26 @@ const ReadContainer = ({ match }) => {
             : e.target.skip.value;
 
         if (skip > goTo) {
-          console.log(skip);
           goTo = skip;
         }
       }
 
-      setPrev(page);
+      setPrev([...prev, page]);
       setPage(goTo);
       // TODO:: set answer value
     };
 
     const handlePrev = () => {
-      setPage(prev);
+      const currentPrevList = [...prev];
+      const currentPrev = currentPrevList.pop();
+      setPage(currentPrev);
+      setPrev(currentPrevList);
     };
 
     const handleComplete = (e) => {
       e.preventDefault();
 
-      console.log('submit to backend');
+      console.log('submit to backend', answers);
     };
 
     if (survey.main.title && page === 0) {
@@ -97,9 +99,9 @@ const ReadContainer = ({ match }) => {
     }
 
     return q.type === 'choice' ? (
-      <ReadChoice question={q} onSubmit={handleSubmit} onPrev={handlePrev} />
+      <ReadChoice question={q} onSubmit={handleSubmit} onPrev={handlePrev} already={already} />
     ) : (
-      <ReadEssay question={q} onSubmit={handleSubmit} onPrev={handlePrev} />
+      <ReadEssay question={q} onSubmit={handleSubmit} onPrev={handlePrev} already={already} />
     );
   }, [page, prev, survey.main.description, survey.main.title, survey.questions, answers]);
 
