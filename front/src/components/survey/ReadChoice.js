@@ -71,8 +71,18 @@ const CheckSelect = ({ question, already }) => {
 
       if (skipCandidates.length) setSkip(Math.min(...skipCandidates));
       else setSkip('');
+
+      if (question.len <= checkList.current.querySelectorAll('[name="answer"]:checked').length) {
+        [...checkList.current.querySelectorAll('[name="answer"]')]
+          .filter((c) => c.checked === false)
+          .forEach((c) => (c.disabled = true));
+      } else {
+        [...checkList.current.querySelectorAll('[name="answer"]')].forEach(
+          (c) => (c.disabled = false),
+        );
+      }
     },
-    [checkList, question.options],
+    [checkList, question.options, question.len],
   );
 
   useEffect(() => {
@@ -124,6 +134,7 @@ const ReadChoice = ({ question, onPrev, onSubmit, already }) => {
     <form noValidate onSubmit={onSubmit}>
       <Typography component="h1" variant="h3" className={classes.title}>
         {question.q}
+        {question.len >= 2 && <span style={{ fontSize: '2rem' }}>({question.len}개)</span>}
       </Typography>
 
       {question.len <= 1 && <RadioSelect question={question} already={already} />}

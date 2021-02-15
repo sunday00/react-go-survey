@@ -48,7 +48,7 @@ const ReadContainer = ({ match }) => {
           v.push(e.target.answer.value);
         }
 
-        const ans = { k: e.target.answerNo.value, v };
+        const ans = { k: e.target.answerNo.value, t: q.type, v };
 
         const newAnswers = [...answers];
         newAnswers[page - 1] = ans;
