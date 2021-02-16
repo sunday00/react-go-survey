@@ -10,33 +10,8 @@ import (
 	"survey/app/models"
 
 	"github.com/gorilla/mux"
+	"github.com/sunday00/go-console"
 )
-
-// type mainInfo struct {
-// 	Title       string    `json:"title"`
-// 	Description string    `json:"description"`
-// 	StartAt     time.Time `json:"start"`
-// 	EndAt       time.Time `json:"end"`
-// }
-
-// type subInfo struct {
-// 	Gender     string   `json:"gender"`
-// 	Jobs       []string `json:"jobs"`
-// 	Groups     []string `json:"groups"`
-// 	SubGroups  []string `json:"subGroups"`
-// 	Interested []string `json:"interested"`
-// 	Age        int      `json:"age"`
-// 	SubAgeMin  int      `json:"subAgeMin"`
-// 	SubAgeMax  int      `json:"subAgeMax"`
-// }
-
-// // ReqUserInfo struct object from request
-// type ReqSurveyInfo struct {
-// 	ID          int64
-// 	MainSetting mainInfo
-// 	SubSetting  subInfo
-// 	// Surveys				 [int]survey
-// }
 
 func StoreSurvey(w http.ResponseWriter, r *http.Request) {
 	survey := models.NewSurvey()
@@ -89,4 +64,29 @@ func ReadSurvey(w http.ResponseWriter, r *http.Request) {
 	jsonResult, _ := json.Marshal(survey)
 
 	fmt.Fprintf(w, "{\"success\" : 1, \"result\" : %v}", string(jsonResult))
+}
+
+func StoreAnswer(w http.ResponseWriter, r *http.Request) {
+	type TMP struct {
+		SurveyNo int64         `json:"surveyNo"`
+		Answers  []interface{} `json:"answers"`
+	}
+
+	tmp := TMP{}
+
+	data, _ := ioutil.ReadAll(r.Body)
+	err := json.Unmarshal(data, &tmp)
+
+	if err != nil {
+		console.PrintColoredLn(err, console.Panic)
+	}
+
+	var userID int64
+	userID, _ = strconv.ParseInt(libs.GetSimpleSession("user.ID", r)["str"].(string), 10, 64)
+
+	answer := models.NewAnswer()
+
+	answer.BulkSave(tmp.SurveyNo, tmp.Answers, userID)
+
+	fmt.Fprint(w, "{\"success\" : 1}")
 }

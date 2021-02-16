@@ -111,7 +111,6 @@ func GenerateJwtToken(id int64, vendor, vendorID string) (string, error) {
 // SetUserSessions make session for reuse user info during user logged
 func SetUserSessions(user *ReqUserInfo, w http.ResponseWriter, r *http.Request) {
 	libs.SetSimpleSession("user", user, w, r)
-
 }
 
 // CheckSigned constantly check user logged via jwt and session

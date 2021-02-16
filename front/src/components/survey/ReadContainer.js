@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import axios from 'axios';
+import { useHistory } from 'react-router';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
@@ -18,6 +20,7 @@ const ReadContainer = ({ match }) => {
   const classes = useSurveyStyle();
   const dispatch = useDispatch();
   const survey = useSelector((state) => state.survey);
+  const history = useHistory();
 
   const [page, setPage] = useState(0);
   const [prev, setPrev] = useState([]);
@@ -66,7 +69,6 @@ const ReadContainer = ({ match }) => {
 
       setPrev([...prev, page]);
       setPage(goTo);
-      // TODO:: set answer value
     };
 
     const handlePrev = () => {
@@ -79,7 +81,18 @@ const ReadContainer = ({ match }) => {
     const handleComplete = (e) => {
       e.preventDefault();
 
-      console.log('submit to backend', answers);
+      axios
+        .post(`/survey/answer/${surveyNo}`, {
+          surveyNo: Number.parseInt(surveyNo),
+          answers,
+        })
+        .then((res) => {
+          console.info('readContainer.js 91 : TODO:: check user duplicate, show result ');
+
+          if (res.data.success === 1) {
+            history.push('/');
+          }
+        });
     };
 
     if (survey.main.title && page === 0) {
@@ -103,7 +116,16 @@ const ReadContainer = ({ match }) => {
     ) : (
       <ReadEssay question={q} onSubmit={handleSubmit} onPrev={handlePrev} already={already} />
     );
-  }, [page, prev, survey.main.description, survey.main.title, survey.questions, answers]);
+  }, [
+    page,
+    prev,
+    surveyNo,
+    history,
+    survey.main.description,
+    survey.main.title,
+    survey.questions,
+    answers,
+  ]);
 
   return (
     <Container component="main" maxWidth="xs" className={classes.root}>
