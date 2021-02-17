@@ -32,6 +32,11 @@ type ResultSet struct {
 	Answers []*Result
 }
 
+type Response struct {
+	Title   string       `json:"title"`
+	Results []*ResultSet `json:"results"`
+}
+
 func init() {
 	_, err := DB.Exec(`
 		CREATE TABLE IF NOT EXISTS answers (
@@ -188,7 +193,14 @@ func (a *AnswerModel) BulkSave(mainId int64, answers []interface{}, userId int64
 }
 
 // FindBySurveyId returns Answers array
-func (a *AnswerModel) FindBySurveyId(id int64) []*ResultSet {
+func (a *AnswerModel) FindBySurveyId(id int64) *Response {
+
+	response := &Response{}
+
+	survey := NewSurvey()
+	survey.FindById(id)
+
+	response.Title = survey.Title
 
 	var results []*ResultSet
 
@@ -258,6 +270,8 @@ func (a *AnswerModel) FindBySurveyId(id int64) []*ResultSet {
 		console.PrintColoredLn(err, console.Panic)
 	}
 
-	return results
+	response.Results = results
+
+	return response
 
 }

@@ -20,13 +20,15 @@ export function* resultSaga() {
 }
 
 const initialState = {
+  title: '',
   results: [],
 };
 
 const results = handleActions(
   {
     [READ_RESULT_DONE]: (state, { payload: results }) => ({
-      ...results,
+      title: results.title,
+      results: [...results.results],
     }),
   },
   initialState,

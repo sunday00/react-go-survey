@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import Typography from '@material-ui/core/Typography';
 
 import { useSurveyStyle } from '../../lib/styles/mainStyle';
 import { read } from '../../modules/result';
@@ -13,7 +14,7 @@ const ResultContainer = ({ match }) => {
   const surveyNo = match.params.surveyNo;
   const classes = useSurveyStyle();
 
-  const results = useSelector((state) => state.results);
+  const { title, results } = useSelector((state) => state.results);
 
   useEffect(() => {
     dispatch(read(surveyNo));
@@ -22,7 +23,14 @@ const ResultContainer = ({ match }) => {
   return (
     <Container component="main" maxWidth="xs" className={classes.root}>
       <CssBaseline />
-      <div className={classes.paper}>{!results && <CircularProgress color="secondary" />}</div>
+      <div className={classes.paper}>
+        {!results && <CircularProgress color="secondary" />}
+        {results && (
+          <Typography component="h1" variant="h3" className={classes.title}>
+            {title}
+          </Typography>
+        )}
+      </div>
     </Container>
   );
 };
