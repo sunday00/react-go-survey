@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"log"
 	"time"
 
 	"github.com/sunday00/go-console"
@@ -16,6 +17,19 @@ type AnswerModel struct {
 	Answers    []string  `json:"v"`
 	UserId     int64     `json:"userId"`
 	CreatedAt  time.Time `json:"createdAt"`
+}
+
+type Result struct {
+	Val    string
+	Cnt    int64
+	Answer string
+}
+
+type ResultSet struct {
+	ID      int64
+	Type    string
+	Title   string
+	Answers []*Result
 }
 
 func init() {
@@ -170,5 +184,80 @@ func (a *AnswerModel) BulkSave(mainId int64, answers []interface{}, userId int64
 			}
 		}
 	}
+
+}
+
+// FindBySurveyId returns Answers array
+func (a *AnswerModel) FindBySurveyId(id int64) []*ResultSet {
+
+	var results []*ResultSet
+
+	rows, err := DB.Query(`
+		SELECT q.id, q.type, q.title, 
+			CASE
+				WHEN o.val IS NULL THEN ''
+				ELSE o.val
+			END as val,
+
+			CASE
+				WHEN a.cnt IS NULL THEN 0
+				ELSE a.cnt
+			END as cnt,
+
+			CASE
+				WHEN e.answer IS NULL THEN ''
+				ELSE e.answer
+			END as answer
+		FROM questions q
+
+		LEFT JOIN (
+			SELECT questionId, id, value as val FROM options
+			WHERE mainId = ?
+		) o
+		
+		ON q.id = o.questionId
+		
+		LEFT JOIN (
+			SELECT questionId, answer, COUNT(answer) cnt FROM answers
+			GROUP BY questionId, answer
+		) a
+		
+		ON q.id = a.questionId AND o.id = a.answer
+		
+		LEFT JOIN essays e on q.id = e.questionId
+		
+		WHERE q.mainId = ?
+	`, id, id)
+
+	if err != nil {
+		console.PrintColoredLn(err, console.Panic)
+	}
+
+	for rows.Next() {
+		result := &Result{}
+		resultSet := &ResultSet{}
+
+		err := rows.Scan(&resultSet.ID, &resultSet.Type, &resultSet.Title, &result.Val, &result.Cnt, &result.Answer)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if len(results) == 0 || len(results) > 0 && results[len(results)-1].ID != resultSet.ID {
+			results = append(results, resultSet)
+		}
+
+		currentResultSet := results[len(results)-1]
+		if currentResultSet != nil && (len(currentResultSet.Answers) == 0 || currentResultSet.ID == resultSet.ID) {
+			currentResultSet.Answers = append(currentResultSet.Answers, result)
+		}
+
+	}
+
+	if err != nil {
+		console.PrintColoredLn(err, console.Panic)
+	}
+
+	return results
 
 }

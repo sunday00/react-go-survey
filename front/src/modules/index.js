@@ -7,15 +7,17 @@ import { all } from 'redux-saga/effects';
 import auth from './auth';
 import system, { systemSaga } from './system';
 import survey, { surveySaga } from './survey';
+import results, { resultSaga } from './result';
 
 const rootReducer = combineReducers({
   auth,
   system,
   survey,
+  results,
 });
 
 export function* rootSaga() {
-  yield all([systemSaga(), surveySaga()]);
+  yield all([systemSaga(), surveySaga(), resultSaga()]);
 }
 
 const sagaMiddleware = createSagaMiddleware();

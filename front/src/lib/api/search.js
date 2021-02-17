@@ -51,3 +51,7 @@ export const getAllInterests = (params) => {
 export const getOneSurvey = (params) => {
   return client.get(`/survey/read/${params}`);
 };
+
+export const getResult = (params) => {
+  return client.get(`/survey/result/${params}`);
+};

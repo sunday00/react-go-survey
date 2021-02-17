@@ -90,3 +90,14 @@ func StoreAnswer(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprint(w, "{\"success\" : 1}")
 }
+
+func ReadResults(w http.ResponseWriter, r *http.Request) {
+	surveyNo, _ := strconv.ParseInt(mux.Vars(r)["survey"], 10, 64)
+
+	answers := models.NewAnswer()
+
+	results := answers.FindBySurveyId(surveyNo)
+	m, _ := json.Marshal(results)
+
+	fmt.Fprintf(w, "{\"success\" : 1, \"results\": %s}", string(m))
+}
