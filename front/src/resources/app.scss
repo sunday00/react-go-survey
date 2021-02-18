@@ -45,3 +45,7 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+.pie g g circle + text {
+  fill: #fff !important
+}
