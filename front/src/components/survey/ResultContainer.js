@@ -7,6 +7,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
 
 import ResultChoice from './ResultChoice';
+import ResultEssay from './ResultEssay';
 import { useSurveyStyle } from '../../lib/styles/mainStyle';
 import { read } from '../../modules/result';
 
@@ -33,8 +34,12 @@ const ResultContainer = ({ match }) => {
         )}
 
         {results &&
-          results.map(
-            (r) => r.Type === 'choice' && <ResultChoice key={r.ID} r={r} classes={classes} />,
+          results.map((r) =>
+            r.Type === 'choice' ? (
+              <ResultChoice key={r.ID} r={r} classes={classes} />
+            ) : (
+              <ResultEssay key={r.ID} r={r} classes={classes} />
+            ),
           )}
       </div>
     </Container>

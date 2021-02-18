@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ResponsivePie } from '@nivo/pie';
 import Typography from '@material-ui/core/Typography';
 
