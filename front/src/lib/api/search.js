@@ -55,3 +55,7 @@ export const getOneSurvey = (params) => {
 export const getResult = (params) => {
   return client.get(`/survey/result/${params}`);
 };
+
+export const getMySurveys = () => {
+  return client.get(`/info/surveys`);
+};

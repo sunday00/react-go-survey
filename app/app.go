@@ -41,6 +41,8 @@ func MakeHandler() http.Handler {
 
 	r.HandleFunc("/survey/result/{survey}", controllers.Survey.ReadResults).Methods("GET").Name("survey.result")
 
+	r.HandleFunc("/info/surveys", controllers.Survey.GetMySurveys).Methods("GET").Name("survey.my")
+
 	r.HandleFunc("/", controllers.IndexHandler).Methods("GET")
 
 	return n

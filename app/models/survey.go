@@ -29,6 +29,8 @@ type SurveyModel struct {
 
 	CreatedBy *UserModel `json:"user"`
 	CreatedAt time.Time  `json:"created_at"`
+
+	Cnt int `json:"cnt"`
 }
 
 func init() {
@@ -151,4 +153,46 @@ func (s *SurveyModel) FindById(id int64) {
 		console.PrintColoredLn(err, console.Panic)
 	}
 
+}
+
+// FindListByUserId returns Whole surveys belongs to user
+func (s *SurveyModel) FindListByUserId(id int64) []SurveyModel {
+
+	var surveys []SurveyModel
+
+	rows, err := DB.Query(`
+	SELECT id, title, startAt, endAt, createdAt, COUNT(attend) cnt FROM (
+
+    SELECT  s.id, s.title, s.startAt, s.endAt, s.createdAt, COUNT(distinct a.userId) attend
+    FROM survey s
+
+    LEFT JOIN answers a
+    ON s.id = a.mainId
+
+    WHERE s.userId = ? AND a.userId IS NOT NULL
+
+    GROUP BY s.id, a.userId
+	) t
+
+	GROUP BY  id, attend
+	`, id)
+
+	for rows.Next() {
+		survey := SurveyModel{}
+
+		err = rows.Scan(&survey.ID, &survey.Title, &survey.StartAt, &survey.EndAt, &survey.CreatedAt, &survey.Cnt)
+
+		if err != nil {
+			console.PrintColoredLn(err, console.Panic)
+		}
+
+		surveys = append(surveys, survey)
+
+	}
+
+	if err != nil {
+		console.PrintColoredLn(err, console.Panic)
+	}
+
+	return surveys
 }

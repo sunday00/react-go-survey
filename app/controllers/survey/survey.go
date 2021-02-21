@@ -101,3 +101,12 @@ func ReadResults(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintf(w, "{\"success\" : 1, \"results\": %s}", string(m))
 }
+
+func GetMySurveys(w http.ResponseWriter, r *http.Request) {
+	var userID int64
+	userID, _ = strconv.ParseInt(libs.GetSimpleSession("user.ID", r)["str"].(string), 10, 64)
+	survey := models.NewSurvey()
+	surveys, _ := json.Marshal(survey.FindListByUserId(userID))
+
+	fmt.Fprintf(w, "{\"success\" : 1, \"surveys\": %s}", string(surveys))
+}

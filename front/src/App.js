@@ -85,6 +85,7 @@ function App() {
               }
               <Route render={() => <MainWrapper />} path="/" exact />
               <Route render={() => <MainWrapper />} path={['/survey/:mode']} />
+              <Route render={() => <MainWrapper />} path="/info" />
             </Container>
           </ThemeProvider>
         </BrowserRouter>

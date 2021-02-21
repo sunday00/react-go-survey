@@ -23,7 +23,7 @@ const ResultContainer = ({ match }) => {
   }, [dispatch, surveyNo]);
 
   return (
-    <Container component="main" maxWidth="xs" className={classes.root}>
+    <Container component="main" maxWidth="md" className={classes.root}>
       <CssBaseline />
       <div className={classes.paper}>
         {!results && <CircularProgress color="secondary" />}

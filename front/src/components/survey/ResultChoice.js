@@ -16,7 +16,7 @@ const ResultChoice = ({ r, classes }) => {
 
   return (
     <div>
-      <hr style={{ margin: '1rem' }} />
+      <hr style={{ margin: '1.5rem' }} />
       <Typography component="h1" variant="h4" className={classes.title}>
         {r.Title}
       </Typography>
@@ -25,7 +25,7 @@ const ResultChoice = ({ r, classes }) => {
           className="chart"
           data={data(r)}
           fit={false}
-          margin={{ top: 10, right: 80, bottom: 40, left: 80 }}
+          margin={{ top: 20, right: 80, bottom: 50, left: 80 }}
           innerRadius={0.05}
           colors={{ scheme: 'pastel1' }}
           borderWidth={1}

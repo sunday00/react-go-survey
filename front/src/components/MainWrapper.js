@@ -10,6 +10,7 @@ import RespondentSetting from './survey/RespondentSetting';
 import QuestionContainer from './survey/QuestionContainer';
 import ReadContainer from './survey/ReadContainer';
 import ResultContainer from './survey/ResultContainer';
+import InfoContainer from './survey/InfoContainer';
 
 const MainWrapper = () => {
   const classes = mainStyle();
@@ -21,6 +22,7 @@ const MainWrapper = () => {
       <Route component={QuestionContainer} path="/survey/create/question/:questionNo"></Route>
       <Route component={ReadContainer} path="/survey/read/:surveyNo"></Route>
       <Route component={ResultContainer} path="/survey/result/:surveyNo"></Route>
+      <Route component={InfoContainer} path="/info"></Route>
     </Container>
   );
 };
