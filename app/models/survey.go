@@ -201,19 +201,19 @@ func (s *SurveyModel) FindListAvailable(gender, job, mainGroup, subGroup string,
 
 	var surveys []SurveyModel
 
-	console.KeyValue("in:", "'"+strings.Join(interested, "','")+"'")
-
 	rows, err := DB.Query(`
-		SELECT id, title, startAt, endAt, createdAt, gender, jobs, mainGroups, subGroups, interested, age, subAgeMin, subAgeMax FROM survey
-		WHERE 
-		startAt > NOW() AND endAt < NOW()
-		AND gender = ? OR gender = 'notCare'
-		OR JSON_CONTAINS(jobs, ?, '$') OR JSON_LENGTH(jobs)=0
-		OR JSON_CONTAINS(mainGroups, ?, '$') OR JSON_LENGTH(mainGroups)=0
-		OR JSON_CONTAINS(subGroups, ?, '$') OR JSON_LENGTH(subGroups)=0
-		OR is_contains(JSON_ARRAY(?), id) OR JSON_LENGTH(interested)=0
-		OR age = ?
-		OR age=999 AND subAgeMin < ? AND subAgeMax > ?
+		SELECT * FROM (
+			SELECT id, title, startAt, endAt, createdAt, gender, jobs, mainGroups, subGroups, interested, age, subAgeMin, subAgeMax 
+			FROM survey
+			WHERE 
+			gender = ? OR gender = 'notCare'
+			OR JSON_CONTAINS(jobs, ?, '$') OR JSON_LENGTH(jobs)=0
+			OR JSON_CONTAINS(mainGroups, ?, '$') OR JSON_LENGTH(mainGroups)=0
+			OR JSON_CONTAINS(subGroups, ?, '$') OR JSON_LENGTH(subGroups)=0
+			OR is_contains(JSON_ARRAY(?), id) OR JSON_LENGTH(interested)=0
+			OR age = ?
+			OR age=999 AND subAgeMin < ? AND subAgeMax > ?
+		) t WHERE startAt < NOW() AND endAt > NOW()
 	`, gender, job, "\""+mainGroup+"\"", "\""+subGroup+"\"", "'"+strings.Join(interested, "','")+"'", ageRange, ageRange, ageRange)
 
 	for rows.Next() {
@@ -226,7 +226,6 @@ func (s *SurveyModel) FindListAvailable(gender, job, mainGroup, subGroup string,
 		}
 
 		tmp := TMP{}
-
 		survey := SurveyModel{}
 
 		err = rows.Scan(
@@ -238,6 +237,11 @@ func (s *SurveyModel) FindListAvailable(gender, job, mainGroup, subGroup string,
 		if err != nil {
 			console.PrintColoredLn(err, console.Panic)
 		}
+
+		json.Unmarshal(tmp.jobs, &survey.Jobs)
+		json.Unmarshal(tmp.groups, &survey.Groups)
+		json.Unmarshal(tmp.subGroups, &survey.SubGroups)
+		json.Unmarshal(tmp.interested, &survey.Interested)
 
 		surveys = append(surveys, survey)
 
