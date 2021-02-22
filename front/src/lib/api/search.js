@@ -59,3 +59,7 @@ export const getResult = (params) => {
 export const getMySurveys = () => {
   return client.get(`/info/surveys`);
 };
+
+export const getSurveys = () => {
+  return client.get(`/surveys/index`);
+};

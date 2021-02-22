@@ -37,6 +37,7 @@ type surveyControllers interface {
 	StoreAnswer(w http.ResponseWriter, r *http.Request)
 	ReadResults(w http.ResponseWriter, r *http.Request)
 	GetMySurveys(w http.ResponseWriter, r *http.Request)
+	GetAvailableSurveys(w http.ResponseWriter, r *http.Request)
 }
 
 var Survey surveyControllers
@@ -123,4 +124,8 @@ func (s *surveyInstance) ReadResults(w http.ResponseWriter, r *http.Request) {
 
 func (s *surveyInstance) GetMySurveys(w http.ResponseWriter, r *http.Request) {
 	survey.GetMySurveys(w, r)
+}
+
+func (s *surveyInstance) GetAvailableSurveys(w http.ResponseWriter, r *http.Request) {
+	survey.GetAvailableSurveys(w, r)
 }

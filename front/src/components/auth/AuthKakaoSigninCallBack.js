@@ -4,12 +4,7 @@ import axios from 'axios';
 import { useHistory } from 'react-router';
 
 import SimpleModal from '../common/SimpleModal';
-import {
-  setUserProfile,
-  setUserPhoto,
-  setUserSubInfo,
-  setSigned,
-} from '../../modules/auth';
+import { setUserProfile, setUserPhoto, setUserSubInfo, setSigned } from '../../modules/auth';
 
 const AuthKakaoSignCallBack = ({ vendor }) => {
   const dispatch = useDispatch();
@@ -45,7 +40,7 @@ const AuthKakaoSignCallBack = ({ vendor }) => {
             email: userInfo.kakao_account.email,
             name: userInfo.properties.nickname,
             gender: userInfo.kakao_account.gender,
-            ageRange: userInfo.kakao_account.age_range.split('~')[0],
+            ageRange: parseInt(userInfo.kakao_account.age_range.split('~')[0]),
           }),
         );
         dispatch(setUserPhoto(userInfo.properties.profile_image));
@@ -60,8 +55,7 @@ const AuthKakaoSignCallBack = ({ vendor }) => {
         if (err.response.status === 401 || err.response.status === 403) {
           const message = {
             msgType: 'error',
-            msg:
-              '쿠키가 만료되었거나 제거 되었습니다. 재발급을 위해 다시 시도하여 주세요.',
+            msg: '쿠키가 만료되었거나 제거 되었습니다. 재발급을 위해 다시 시도하여 주세요.',
           };
 
           const button = {
@@ -79,12 +73,7 @@ const AuthKakaoSignCallBack = ({ vendor }) => {
   }, [dispatch, setModal, history]);
 
   useEffect(() => {
-    if (
-      !auth.user.vendorId ||
-      !auth.subInfo.job ||
-      !auth.subInfo.group ||
-      !id
-    ) {
+    if (!auth.user.vendorId || !auth.subInfo.job || !auth.subInfo.group || !id) {
       return;
     }
 

@@ -62,7 +62,6 @@ func init() {
 	if err != nil {
 		console.PrintColoredLn(err, console.Panic)
 	}
-
 }
 
 // NewSurvey returns SurveyModel instance
@@ -181,6 +180,60 @@ func (s *SurveyModel) FindListByUserId(id int64) []SurveyModel {
 		survey := SurveyModel{}
 
 		err = rows.Scan(&survey.ID, &survey.Title, &survey.StartAt, &survey.EndAt, &survey.CreatedAt, &survey.Cnt)
+
+		if err != nil {
+			console.PrintColoredLn(err, console.Panic)
+		}
+
+		surveys = append(surveys, survey)
+
+	}
+
+	if err != nil {
+		console.PrintColoredLn(err, console.Panic)
+	}
+
+	return surveys
+}
+
+// FindListAvailable returns Whole surveys relative with user info
+func (s *SurveyModel) FindListAvailable(gender, job, mainGroup, subGroup string, ageRange int64, interested []string) []SurveyModel {
+
+	var surveys []SurveyModel
+
+	console.KeyValue("in:", "'"+strings.Join(interested, "','")+"'")
+
+	rows, err := DB.Query(`
+		SELECT id, title, startAt, endAt, createdAt, gender, jobs, mainGroups, subGroups, interested, age, subAgeMin, subAgeMax FROM survey
+		WHERE 
+		startAt > NOW() AND endAt < NOW()
+		AND gender = ? OR gender = 'notCare'
+		OR JSON_CONTAINS(jobs, ?, '$') OR JSON_LENGTH(jobs)=0
+		OR JSON_CONTAINS(mainGroups, ?, '$') OR JSON_LENGTH(mainGroups)=0
+		OR JSON_CONTAINS(subGroups, ?, '$') OR JSON_LENGTH(subGroups)=0
+		OR is_contains(JSON_ARRAY(?), id) OR JSON_LENGTH(interested)=0
+		OR age = ?
+		OR age=999 AND subAgeMin < ? AND subAgeMax > ?
+	`, gender, job, "\""+mainGroup+"\"", "\""+subGroup+"\"", "'"+strings.Join(interested, "','")+"'", ageRange, ageRange, ageRange)
+
+	for rows.Next() {
+
+		type TMP struct {
+			jobs       []uint8
+			groups     []uint8
+			subGroups  []uint8
+			interested []uint8
+		}
+
+		tmp := TMP{}
+
+		survey := SurveyModel{}
+
+		err = rows.Scan(
+			&survey.ID, &survey.Title, &survey.StartAt, &survey.EndAt, &survey.CreatedAt,
+			&survey.Gender, &tmp.jobs, &tmp.groups, &tmp.subGroups, &tmp.interested,
+			&survey.Age, &survey.SubAgeMin, &survey.SubAgeMax,
+		)
 
 		if err != nil {
 			console.PrintColoredLn(err, console.Panic)

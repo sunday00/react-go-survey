@@ -110,3 +110,16 @@ func GetMySurveys(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintf(w, "{\"success\" : 1, \"surveys\": %s}", string(surveys))
 }
+
+func GetAvailableSurveys(w http.ResponseWriter, r *http.Request) {
+	user := models.NewUser()
+	userSession := libs.GetSimpleSession("user.User", r)
+	// TODO:: if nil, not logged in, should returns "login please"
+
+	user = user.FindByVendorWithTags(userSession["vendor"].(string), userSession["vendorId"].(string))
+
+	survey := models.NewSurvey()
+	surveys, _ := json.Marshal(survey.FindListAvailable(userSession["gender"].(string), user.Job, user.Group, user.SubGroup, int64(userSession["ageRange"].(float64)), user.Interested))
+
+	fmt.Fprintf(w, "{\"success\" : 1, \"surveys\": %s}", string(surveys))
+}

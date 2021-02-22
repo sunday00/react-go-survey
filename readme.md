@@ -12,3 +12,7 @@
    - 각종 필터링
 
 1. 중복 답변 필터링
+
+mysql
+set global log_bin_trust_function_creators=1;
+mysql -u [go db user] -p go_react_survey < ./mysqlFunctionMake.sql

@@ -25,7 +25,7 @@ type mainInfo struct {
 	Email    string `json:"email"`
 	Name     string `json:"name"`
 	Gender   string `json:"gender"`
-	AgeRange int    `json:"ageRange"`
+	AgeRange int64  `json:"ageRange"`
 }
 
 type subInfo struct {
