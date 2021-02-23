@@ -26,6 +26,7 @@ const Home = () => {
       </Typography>
 
       {surveys.length === 0 && surveys.join('') !== 'notLogged' && <CircularProgress />}
+      {surveys.join('') === 'notLogged' && <h1>Not logged. Please sign in.</h1>}
 
       <List component="nav" aria-label="secondary mailbox folders">
         {surveys.join('') !== 'notLogged' &&
