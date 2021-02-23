@@ -116,6 +116,11 @@ func GetAvailableSurveys(w http.ResponseWriter, r *http.Request) {
 	userSession := libs.GetSimpleSession("user.User", r)
 	// TODO:: if nil, not logged in, should returns "login please"
 
+	if userSession["vendor"] == nil {
+		libs.Response401(w)
+		return
+	}
+
 	user = user.FindByVendorWithTags(userSession["vendor"].(string), userSession["vendorId"].(string))
 
 	survey := models.NewSurvey()

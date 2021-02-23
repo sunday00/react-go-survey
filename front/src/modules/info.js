@@ -18,11 +18,20 @@ function* readMySurveysSaga(action) {
 }
 
 function* readSurveysSaga(action) {
-  const res = yield call(api.getSurveys, action.payload);
-  yield put({
-    type: READ_SURVEYS_DONE,
-    payload: res.data.surveys,
-  });
+  try {
+    const res = yield call(api.getSurveys, action.payload);
+    yield put({
+      type: READ_SURVEYS_DONE,
+      payload: res.data.surveys,
+    });
+  } catch (err) {
+    if (err.response.status === 401) {
+      yield put({
+        type: READ_SURVEYS_DONE,
+        payload: 'notLogged',
+      });
+    }
+  }
 }
 
 export function* infoSaga() {

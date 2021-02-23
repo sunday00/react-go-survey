@@ -61,5 +61,7 @@ export const getMySurveys = () => {
 };
 
 export const getSurveys = () => {
-  return client.get(`/surveys/index`);
+  return client.get(`/surveys/index`).catch((err) => {
+    throw err;
+  });
 };

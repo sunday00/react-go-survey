@@ -25,13 +25,16 @@ const Home = () => {
         My surveys
       </Typography>
 
+      {surveys.length === 0 && surveys.join('') !== 'notLogged' && <CircularProgress />}
+
       <List component="nav" aria-label="secondary mailbox folders">
-        {surveys.map((s, i) => (
-          <ListItem button key={i} component="a" href={`/survey/read/${s.id}`}>
-            <ListItemText primary={s.title} />
-            <span>{s.cnt} 명 참여</span>
-          </ListItem>
-        ))}
+        {surveys.join('') !== 'notLogged' &&
+          surveys.map((s, i) => (
+            <ListItem button key={i} component="a" href={`/survey/read/${s.id}`}>
+              <ListItemText primary={s.title} />
+              <span>{s.cnt} 명 참여</span>
+            </ListItem>
+          ))}
       </List>
     </section>
   );
