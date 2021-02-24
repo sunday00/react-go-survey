@@ -45,6 +45,10 @@ export const useSurveyStyle = makeStyles((theme) => ({
     // font-family: 'Noto Sans KR', sans-serif;
     // font-family: 'Teko', sans-serif;
   },
+  article: {
+    fontFamily: 'Noto Sans KR',
+    color: '#fff',
+  },
   subTitle: {
     fontFamily: 'Jua',
     color: '#fff',

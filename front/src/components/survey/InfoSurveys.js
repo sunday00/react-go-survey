@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import CircularProgress from '@material-ui/core/CircularProgress';
+// import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -38,6 +38,6 @@ const InfoSurveys = () => {
 };
 
 //TODO::
-// 이미 종료되었는지
+// 종료까지 남은 기간
 
 export default InfoSurveys;

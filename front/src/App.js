@@ -18,6 +18,7 @@ import AuthKakaoCallBackContainer from './components/auth/AuthKakaoCallBackConta
 import AuthGoogleSigninCallBack from './components/auth/AuthGoogleSigninCallBack';
 import AuthKakaoSigninCallBack from './components/auth/AuthKakaoSigninCallBack';
 import MainWrapper from './components/MainWrapper';
+import About from './components/About';
 
 library.add(fas, fab, far);
 
@@ -86,6 +87,7 @@ function App() {
               <Route render={() => <MainWrapper />} path="/" exact />
               <Route render={() => <MainWrapper />} path={['/survey/:mode']} />
               <Route render={() => <MainWrapper />} path="/info" />
+              <Route render={() => <About />} path="/about" />
             </Container>
           </ThemeProvider>
         </BrowserRouter>

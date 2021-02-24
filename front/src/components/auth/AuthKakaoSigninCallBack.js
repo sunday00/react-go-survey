@@ -29,7 +29,7 @@ const AuthKakaoSignCallBack = ({ vendor }) => {
         const subInfo = {
           job: res.data.sub.job,
           group: res.data.sub.group,
-          subGroup: res.data.sub.group,
+          subGroup: res.data.sub.subGroup,
           interested: res.data.sub.interested,
         };
 

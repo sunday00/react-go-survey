@@ -10,33 +10,81 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { useSurveyStyle } from '../lib/styles/mainStyle';
 import { getSurveys } from '../modules/info';
 
+const ListComponent = ({ classes, surveys, title, filterCallback }) => {
+  return (
+    <section className="list-section">
+      <Typography component="h5" variant="h5" className={classes.title}>
+        {title}
+      </Typography>
+
+      <List component="nav" aria-label="secondary mailbox folders">
+        {surveys.filter(filterCallback).map((s, i) => (
+          <ListItem button key={i} component="a" href={`/survey/read/${s.id}`}>
+            <ListItemText primary={s.title} />
+          </ListItem>
+        ))}
+        {surveys.filter(filterCallback).length === 0 && (
+          <ListItem button={false}>
+            <ListItemText primary={'-'} />
+          </ListItem>
+        )}
+      </List>
+    </section>
+  );
+};
+
 const Home = () => {
-  const classes = useSurveyStyle();
   const dispatch = useDispatch();
+  const auth = useSelector((state) => state.auth);
   const surveys = useSelector((state) => state.info.surveys);
+  const classes = useSurveyStyle();
 
   useEffect(() => {
     dispatch(getSurveys());
   }, [dispatch]);
 
   return (
-    <section>
-      <Typography component="h5" variant="h5" className={classes.title}>
-        My surveys
-      </Typography>
-
+    <section className="main lists">
       {surveys.length === 0 && surveys.join('') !== 'notLogged' && <CircularProgress />}
       {surveys.join('') === 'notLogged' && <h1>Not logged. Please sign in.</h1>}
+      {surveys.join('') !== 'notLogged' && (
+        <>
+          <ListComponent
+            classes={classes}
+            surveys={surveys}
+            title={auth.user.gender === 'male' ? '남성 대상' : '여성 대상'}
+            filterCallback={(s) => s.gender === auth.user.gender}
+          />
+          <ListComponent
+            classes={classes}
+            surveys={surveys}
+            title={`${auth.subInfo.job} 대상`}
+            filterCallback={(s) => s.jobs.indexOf(auth.subInfo.job) > -1}
+          />
+          <ListComponent
+            classes={classes}
+            surveys={surveys}
+            title={`${auth.subInfo.group} 대상`}
+            filterCallback={(s) => s.groups.indexOf(auth.subInfo.group) > -1}
+          />
+          <ListComponent
+            classes={classes}
+            surveys={surveys}
+            title={`${auth.subInfo.subGroup} 대상`}
+            filterCallback={(s) => s.subGroups.indexOf(auth.subInfo.subGroup) > -1}
+          />
 
-      <List component="nav" aria-label="secondary mailbox folders">
-        {surveys.join('') !== 'notLogged' &&
-          surveys.map((s, i) => (
-            <ListItem button key={i} component="a" href={`/survey/read/${s.id}`}>
-              <ListItemText primary={s.title} />
-              <span>{s.cnt} 명 참여</span>
-            </ListItem>
+          {auth.subInfo.interested.map((interested, i) => (
+            <ListComponent
+              key={i}
+              classes={classes}
+              surveys={surveys}
+              title={`${interested}에 관심있는 사람 대상`}
+              filterCallback={(s) => s.interested.indexOf(interested) > -1}
+            />
           ))}
-      </List>
+        </>
+      )}
     </section>
   );
 };
