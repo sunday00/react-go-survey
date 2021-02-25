@@ -26,7 +26,12 @@ const InfoSurveys = () => {
       </Typography>
 
       <List component="nav" aria-label="secondary mailbox folders">
-        {surveys.map((s, i) => (
+        { surveys.join('') === 'notAvailable' && (
+          <ListItem button component="a" href={`/survey/create/main-setting`}>
+            <ListItemText primary={"Nothing... Create One?"} />
+          </ListItem>
+        ) }
+        { surveys.join('') !== 'notAvailable' && surveys.map((s, i) => (
           <ListItem button key={i} component="a" href={`/survey/result/${s.id}`}>
             <ListItemText primary={s.title} />
             <span>{s.cnt} 명 참여</span>

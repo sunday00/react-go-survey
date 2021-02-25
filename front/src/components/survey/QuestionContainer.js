@@ -70,7 +70,16 @@ const QuestionContainer = (props) => {
 
     if (quest) return quest;
     else if (storedQuest) dispatch(pushQuest(JSON.parse(storedQuest)));
-    else dispatch(pushQuest({ no: questionNo, type: 'choice', q: '', options: {} }));
+    else dispatch(pushQuest({ no: questionNo, type: 'choice', q: '', options: [{
+      optionId: 1,
+      value: '네',
+      skip: ''
+    },
+    {
+      optionId: 2,
+      value: '아니오',
+      skip: ''
+    }] }));
   }, [dispatch, questions, questionNo, quest]);
 
   const Questions = useCallback(() => {

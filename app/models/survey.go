@@ -160,7 +160,7 @@ func (s *SurveyModel) FindListByUserId(id int64) []SurveyModel {
 	var surveys []SurveyModel
 
 	rows, err := DB.Query(`
-	SELECT id, title, startAt, endAt, createdAt, COUNT(attend) cnt FROM (
+	SELECT id, title, startAt, endAt, createdAt, SUM(attend) cnt FROM (
 
     SELECT  s.id, s.title, s.startAt, s.endAt, s.createdAt, COUNT(distinct a.userId) attend
     FROM survey s
@@ -168,7 +168,7 @@ func (s *SurveyModel) FindListByUserId(id int64) []SurveyModel {
     LEFT JOIN answers a
     ON s.id = a.mainId
 
-    WHERE s.userId = ? AND a.userId IS NOT NULL
+    WHERE s.userId = ?
 
     GROUP BY s.id, a.userId
 	) t

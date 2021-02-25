@@ -61,6 +61,8 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 		console.KeyValue("t:", uri)
 
 		http.ServeFile(w, r, "front/build/static"+uri)
+	} else if strings.Contains(r.URL.Path, "manifest.json") {
+		http.ServeFile(w, r, "front/build/manifest.json")
 	} else {
 		http.ServeFile(w, r, "front/build/index.html")
 	}

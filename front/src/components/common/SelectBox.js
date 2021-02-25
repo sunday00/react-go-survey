@@ -27,6 +27,7 @@ const styles = (theme) => ({
     borderColor: theme.palette.primary.contrastText,
     backgroundColor: 'transparent',
     '& option': {
+      color: theme.palette.primary.dark,
       backgroundColor: 'transparent',
     },
     appearance: 'none',
