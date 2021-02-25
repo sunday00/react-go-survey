@@ -1,12 +1,16 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
+	"regexp"
+	"strings"
 	"survey/app/controllers/api"
 	"survey/app/controllers/auth"
 	"survey/app/controllers/survey"
 
 	"github.com/gorilla/mux"
+	"github.com/sunday00/go-console"
 )
 
 type authInstance struct{}
@@ -49,7 +53,17 @@ func init() {
 }
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/index.html", http.StatusTemporaryRedirect)
+	// http.Redirect(w, r, "/index.html", http.StatusTemporaryRedirect)
+
+	if strings.Contains(r.URL.Path, "static") {
+		reg, _ := regexp.Compile(".+\\/static")
+		uri := fmt.Sprint(reg.ReplaceAllString(r.URL.Path, ""))
+		console.KeyValue("t:", uri)
+
+		http.ServeFile(w, r, "front/build/static"+uri)
+	} else {
+		http.ServeFile(w, r, "front/build/index.html")
+	}
 }
 
 func (a *authInstance) GetTokenHandler(w http.ResponseWriter, r *http.Request) {

@@ -125,7 +125,7 @@ const QuestionContainer = (props) => {
       }
 
       // submitter is complete
-      axios.post('/survey/store', survey).then((res) => {
+      axios.post('/api/survey/store', survey).then((res) => {
         if (res.data && res.data.success === 1) {
           window.localStorage.clear();
           history.push('/');

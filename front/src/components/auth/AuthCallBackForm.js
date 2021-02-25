@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import axios from 'axios';
+import { registerApi } from '../../lib/api/auth';
 
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -53,7 +53,7 @@ const AuthCallBackForm = ({ classes, photo }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios.post('/auth/store', auth).then((res) => {
+    registerApi(auth).then((res) => {
       if (res.data.success === 1) {
         dispatch(setSigned(true));
         history.push('/');

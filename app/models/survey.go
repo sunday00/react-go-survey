@@ -216,6 +216,10 @@ func (s *SurveyModel) FindListAvailable(gender, job, mainGroup, subGroup string,
 		) t WHERE startAt < NOW() AND endAt > NOW()
 	`, gender, job, "\""+mainGroup+"\"", "\""+subGroup+"\"", "'"+strings.Join(interested, "','")+"'", ageRange, ageRange, ageRange)
 
+	if rows == nil {
+		return surveys
+	}
+
 	for rows.Next() {
 
 		type TMP struct {

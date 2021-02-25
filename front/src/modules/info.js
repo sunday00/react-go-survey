@@ -20,6 +20,11 @@ function* readMySurveysSaga(action) {
 function* readSurveysSaga(action) {
   try {
     const res = yield call(api.getSurveys, action.payload);
+
+    if (res.data.surveys === null){
+      res.data.surveys = "notAvailable";
+    }
+
     yield put({
       type: READ_SURVEYS_DONE,
       payload: res.data.surveys,

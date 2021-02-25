@@ -15,6 +15,8 @@ import (
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2/kakao"
 
+	"github.com/sunday00/go-console"
+
 	"survey/app/libs"
 )
 
@@ -122,7 +124,7 @@ func kakaoCallbackHandler(w http.ResponseWriter, r *http.Request, mode string) {
 			libs.Response401(w)
 			return
 		}
-
+		console.PrintColoredLn(mode, console.Info)
 		if mode == "signin" {
 			byt := []byte(data)
 			var dat map[string]interface{}

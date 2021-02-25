@@ -19,7 +19,7 @@ func main() {
 
 	h := app.MakeHandler()
 
-	err := http.ListenAndServe(":3001", h)
+	err := http.ListenAndServe(":3000", h)
 	if err != nil {
 		panic(err)
 	}

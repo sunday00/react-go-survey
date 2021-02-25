@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import axios from 'axios';
 import { useHistory } from 'react-router';
+import { signApi, signCallbackApi } from '../../lib/api/auth';
 
 import SimpleModal from '../common/SimpleModal';
 import { setUserProfile, setUserPhoto, setUserSubInfo, setSigned } from '../../modules/auth';
@@ -21,8 +21,7 @@ const AuthKakaoSignCallBack = ({ vendor }) => {
       process.env.REACT_APP_SERVER_DOMAIN,
     );
 
-    axios
-      .get(url, { withCredentials: true })
+    signCallbackApi({url, data:{ withCredentials: true }})
       .then((res) => {
         const userInfo = res.data.data;
 
@@ -77,7 +76,7 @@ const AuthKakaoSignCallBack = ({ vendor }) => {
       return;
     }
 
-    axios.post('/auth/sign', { ...auth, id }).then((res) => {
+    signApi({ ...auth, id }).then((res) => {
       if (res.data.success === 1) {
         dispatch(setSigned(true));
         history.push('/');

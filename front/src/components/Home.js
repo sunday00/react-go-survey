@@ -45,9 +45,10 @@ const Home = () => {
 
   return (
     <section className="main lists">
-      {surveys.length === 0 && surveys.join('') !== 'notLogged' && <CircularProgress />}
-      {surveys.join('') === 'notLogged' && <h1>Not logged. Please sign in.</h1>}
-      {surveys.join('') !== 'notLogged' && (
+      {surveys.length === 0 && surveys.join('') !== 'notLogged' && surveys.join('') !== 'notAvailable' && <CircularProgress />}
+      {surveys.length !== 0 && surveys.join('') !== 'notLogged' && surveys.join('') === 'notAvailable' && <h1>Not Available.</h1>}
+      {surveys.length !== 0 && surveys.join('') === 'notLogged' && <h1>Not logged. Please sign in.</h1>}
+      {surveys.length !== 0 && surveys.join('') !== 'notLogged' && surveys.join('') !== 'notAvailable' && (
         <>
           <ListComponent
             classes={classes}

@@ -24,7 +24,7 @@ const ChooseVendor = ({ mode }) => {
 
     if (true) {
       axios
-        .get(`/auth/google/${mode}`, {
+        .get(`/api/auth/google/${mode}`, {
           withCredentials: true,
         })
         .then((res) => {
@@ -40,7 +40,7 @@ const ChooseVendor = ({ mode }) => {
 
     if (true) {
       axios
-        .get(`/auth/kakao/${mode}`, {
+        .get(`/api/auth/kakao/${mode}`, {
           withCredentials: true,
         })
         .then((res) => {

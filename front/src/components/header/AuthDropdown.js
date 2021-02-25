@@ -53,7 +53,7 @@ const AuthDropdown = () => {
   // make modify userInfo, logout (just request cookie del post)
 
   useEffect(() => {
-    axios.post('/auth/check').then((res) => {
+    axios.post('/api/auth/check').then((res) => {
       if (res.data) {
         dispatch(setSigned(true));
         dispatch(setUserProfile(res.data.User));
@@ -82,7 +82,7 @@ const AuthDropdown = () => {
       setOpen(false);
 
       if (linkTo === '/signout') {
-        axios.post('/auth/signout').then((res) => {
+        axios.post('/api/auth/signout').then((res) => {
           dispatch(setSigned(false));
           dispatch(setUserProfile({}));
           dispatch(setUserPhoto(''));

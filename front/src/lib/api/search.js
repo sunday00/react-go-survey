@@ -49,19 +49,19 @@ export const getAllInterests = (params) => {
 };
 
 export const getOneSurvey = (params) => {
-  return client.get(`/survey/read/${params}`);
+  return client.get(`/api/survey/read/${params}`);
 };
 
 export const getResult = (params) => {
-  return client.get(`/survey/result/${params}`);
+  return client.get(`/api/survey/result/${params}`);
 };
 
 export const getMySurveys = () => {
-  return client.get(`/info/surveys`);
+  return client.get(`/api/info/surveys`);
 };
 
 export const getSurveys = () => {
-  return client.get(`/surveys/index`).catch((err) => {
+  return client.get(`/api/surveys/index`).catch((err) => {
     throw err;
   });
 };
