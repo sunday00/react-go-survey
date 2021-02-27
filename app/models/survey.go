@@ -213,7 +213,7 @@ func (s *SurveyModel) FindListAvailable(gender, job, mainGroup, subGroup string,
 			OR is_contains(JSON_ARRAY(?), id) OR JSON_LENGTH(interested)=0
 			OR age = ?
 			OR age=999 AND subAgeMin < ? AND subAgeMax > ?
-		) t WHERE startAt < NOW() AND endAt > NOW()
+		) t WHERE startAt <= NOW() AND endAt > NOW()
 	`, gender, job, "\""+mainGroup+"\"", "\""+subGroup+"\"", "'"+strings.Join(interested, "','")+"'", ageRange, ageRange, ageRange)
 
 	if rows == nil {

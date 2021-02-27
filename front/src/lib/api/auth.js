@@ -1,7 +1,7 @@
 import client from './client';
 
 export const registerApi = (params) => {
-  return client.get('/api/auth/store', params);
+  return client.post('/api/auth/store', params);
 };
 
 export const signApi = (params) => {
