@@ -48,7 +48,7 @@ const Home = () => {
       {surveys.length === 0 && surveys.join('') !== 'notLogged' && surveys.join('') !== 'notAvailable' && <CircularProgress />}
       {surveys.length !== 0 && surveys.join('') !== 'notLogged' && surveys.join('') === 'notAvailable' && <h1>Not Available.</h1>}
       {surveys.length !== 0 && surveys.join('') === 'notLogged' && <h1>Not logged. Please sign in.</h1>}
-      {surveys.length !== 0 && surveys.join('') !== 'notLogged' && surveys.join('') !== 'notAvailable' && (
+      {surveys.length !== 0 && surveys.join('') !== 'notLogged' && surveys.join('') !== 'notAvailable' && auth.user.gender && (
         <>
           <ListComponent
             classes={classes}
@@ -84,6 +84,18 @@ const Home = () => {
               filterCallback={(s) => s.interested.indexOf(interested) > -1}
             />
           ))}
+
+          <ListComponent
+            classes={classes}
+            surveys={surveys}
+            title={`누구나 참여가능한 설문`}
+            filterCallback={(s) => s.age===999 && s.subAgeMin === 0 && s.subAgeMax === 100 && s.gender === 'notCare'
+              && s.jobs.length === 1 && s.jobs[0] ===''
+              && s.groups.length === 1 && s.groups[0] ===''
+              && s.subGroups.length === 1 && s.subGroups[0] ===''
+              && s.interested.length === 1 && s.interested[0] ===''
+            }
+          />
         </>
       )}
     </section>

@@ -37,6 +37,7 @@
     "start": "BROWSER=firefox env-cmd -f ../.env react-scripts start",
     "start-windows": "env-cmd -f ../.env react-scripts start",
     "build": "env-cmd -f ../.env.prod react-scripts build",
+    "build-dev": "env-cmd -f ../.env react-scripts build",
     "test": "env-cmd -f ../.env react-scripts test",
     "eject": "env-cmd -f ../.env react-scripts eject"
   },

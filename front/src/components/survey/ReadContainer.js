@@ -82,7 +82,7 @@ const ReadContainer = ({ match }) => {
       e.preventDefault();
 
       axios
-        .post(`/survey/answer/${surveyNo}`, {
+        .post(`/api/survey/answer/${surveyNo}`, {
           surveyNo: Number.parseInt(surveyNo),
           answers,
         })

@@ -11,6 +11,11 @@ export const getSurveys = createAction(READ_SURVEYS, (surveys) => surveys);
 
 function* readMySurveysSaga(action) {
   const res = yield call(api.getMySurveys, action.payload);
+  
+  if (res.data.surveys === null){
+    res.data.surveys = "notAvailable";
+  }
+
   yield put({
     type: READ_SURVEYS_DONE,
     payload: res.data.surveys,

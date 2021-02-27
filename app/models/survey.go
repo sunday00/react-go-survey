@@ -184,7 +184,7 @@ func (s *SurveyModel) FindListByUserId(id int64) []SurveyModel {
 		if err != nil {
 			console.PrintColoredLn(err, console.Panic)
 		}
-
+		console.PrintColoredF("%v\n", console.Warning, survey)
 		surveys = append(surveys, survey)
 
 	}
