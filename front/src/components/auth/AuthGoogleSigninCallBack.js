@@ -101,7 +101,7 @@ const AuthGoogleSigninCallBack = ({ vendor }) => {
       return;
     }
 
-    axios.post('/auth/sign', { ...auth, id }).then((res) => {
+    axios.post('/api/auth/sign', { ...auth, id }).then((res) => {
       if (res.data.success === 1) {
         dispatch(setSigned(true));
         history.push('/');
